@@ -1,8 +1,8 @@
-﻿using HassClient.Helpers;
-using HassClient.Models;
-using HassClient.WS.Messages.Commands;
+﻿using HassClient.Core.Helpers;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries.StorageEntities;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     /// <summary>
     /// Factory used to create Storage Collection Messages.

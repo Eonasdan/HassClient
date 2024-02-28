@@ -1,19 +1,20 @@
-﻿using HassClient.WS.Messages;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using HassClient.WS.Messages;
+using HassClient.WS.Messages.Commands;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HassClient.WS.Serialization
 {
     internal class MessagesConverter : JsonConverter
     {
-        private readonly Type baseMessageType = typeof(BaseMessage);
+        private readonly Type _baseMessageType = typeof(BaseMessage);
 
-        private readonly Dictionary<string, Func<BaseMessage>> factoriesByType;
+        private readonly Dictionary<string, Func<BaseMessage>> _factoriesByType;
 
         public override bool CanRead => true;
 
@@ -21,14 +22,14 @@ namespace HassClient.WS.Serialization
 
         public override bool CanConvert(Type objectType)
         {
-            return this.baseMessageType.IsAssignableFrom(objectType);
+            return _baseMessageType.IsAssignableFrom(objectType);
         }
 
         public MessagesConverter()
         {
-            this.factoriesByType = Assembly.GetAssembly(this.baseMessageType)
+            _factoriesByType = Assembly.GetAssembly(_baseMessageType)
                                  .GetTypes()
-                                 .Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(this.baseMessageType) && x.GetConstructor(Type.EmptyTypes) != null)
+                                 .Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(_baseMessageType) && x.GetConstructor(Type.EmptyTypes) != null)
                                  .Select(x => Expression.Lambda<Func<BaseMessage>>(Expression.New(x)).Compile())
                                  .ToDictionary(x => x().Type);
         }
@@ -39,7 +40,7 @@ namespace HassClient.WS.Serialization
             var messageType = (string)obj["type"];
 
             BaseMessage message;
-            if (this.factoriesByType.TryGetValue(messageType, out var factory))
+            if (_factoriesByType.TryGetValue(messageType, out var factory))
             {
                 message = factory();
                 serializer.Populate(obj.CreateReader(), message);

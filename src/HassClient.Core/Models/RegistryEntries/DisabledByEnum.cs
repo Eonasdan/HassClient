@@ -1,4 +1,6 @@
-﻿namespace HassClient.Models
+﻿using JetBrains.Annotations;
+
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// Defines the disabling source of an entity in Home Assistant.
@@ -6,6 +8,7 @@
     /// More information at <see href="https://developers.home-assistant.io/docs/entity_registry_disabled_by/"/>.
     /// </para>
     /// </summary>
+    [PublicAPI]
     public enum DisabledByEnum
     {
         /// <summary>

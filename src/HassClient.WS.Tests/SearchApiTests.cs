@@ -1,10 +1,11 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using HassClient.WS.Messages.Commands.Search;
+using NUnit.Framework;
 
 namespace HassClient.WS.Tests
 {
-    public class SearchApiTests : BaseHassWSApiTest
+    public class SearchApiTests : BaseHassWsApiTest
     {
         public static Array GetItemTypes()
         {
@@ -14,7 +15,7 @@ namespace HassClient.WS.Tests
         [TestCaseSource(nameof(GetItemTypes))]
         public async Task SearchRelatedUnknown(ItemTypes itemTypes)
         {
-            var result = await this.hassWSApi.SearchRelatedAsync(itemTypes, $"Unknown_{DateTime.Now.Ticks}");
+            var result = await HassWsApi.SearchRelatedAsync(itemTypes, $"Unknown_{DateTime.Now.Ticks}");
 
             Assert.NotNull(result);
             Assert.IsNull(result.AreaIds);
@@ -27,7 +28,7 @@ namespace HassClient.WS.Tests
         [Test]
         public async Task SearchRelatedKnownEntity()
         {
-            var result = await this.hassWSApi.SearchRelatedAsync(ItemTypes.Entity, "light.bed_light");
+            var result = await HassWsApi.SearchRelatedAsync(ItemTypes.Entity, "light.bed_light");
 
             Assert.NotNull(result);
             Assert.NotNull(result.ConfigEntryIds);

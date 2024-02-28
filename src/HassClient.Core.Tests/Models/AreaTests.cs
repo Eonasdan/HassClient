@@ -1,10 +1,10 @@
-﻿using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HassClient.Core.Models.RegistryEntries;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(Area))]
     public class AreaTests
@@ -43,7 +43,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewNameMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out var initialName, out _);
+            var testEntry = CreateTestEntry(out var initialName, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -55,7 +55,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewPictureMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out var picture);
+            var testEntry = CreateTestEntry(out _, out var picture);
 
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -67,7 +67,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void DiscardPendingChanges()
         {
-            var testEntry = this.CreateTestEntry(out var initialName, out var initialPicture);
+            var testEntry = CreateTestEntry(out var initialName, out var initialPicture);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";

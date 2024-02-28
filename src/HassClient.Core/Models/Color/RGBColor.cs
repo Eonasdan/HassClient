@@ -1,4 +1,4 @@
-﻿namespace HassClient.Models
+﻿namespace HassClient.Core.Models.Color
 {
     /// <summary>
     /// Represents an RGB (red, green, blue) color.
@@ -27,11 +27,10 @@
         /// <param name="green">The green color component value.</param>
         /// <param name="blue">The blue color component value.</param>
         public RGBColor(byte red, byte green, byte blue)
-            : base()
         {
-            this.R = red;
-            this.G = green;
-            this.B = blue;
+            R = red;
+            G = green;
+            B = blue;
         }
 
         /// <summary>
@@ -46,6 +45,6 @@
         public static implicit operator RGBColor(System.Drawing.Color x) => new RGBColor(x);
 
         /// <inheritdoc/>
-        public override string ToString() => $"[{this.R}, {this.G}, {this.B}]";
+        public override string ToString() => $"[{R}, {G}, {B}]";
     }
 }

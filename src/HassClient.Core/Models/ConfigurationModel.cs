@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents the Home Assistant configuration object.
@@ -10,17 +10,17 @@ namespace HassClient.Models
     public class ConfigurationModel
     {
         [JsonProperty("whitelist_external_dirs")]
-        private string[] whitelist_external_dirs
+        private string[] WhitelistExternalDirs
         {
-            get => this.AllowedExternalDirs?.ToArray();
-            set => this.AllowedExternalDirs = this.AllowedExternalDirs ?? value.ToList();
+            get => AllowedExternalDirs?.ToArray();
+            set => AllowedExternalDirs = AllowedExternalDirs ?? value.ToList();
         }
 
         [JsonProperty("allowlist_external_dirs")]
-        private string[] allowlist_external_dirs
+        private string[] AllowListExternalDirs
         {
-            get => this.AllowedExternalDirs?.ToArray();
-            set => this.AllowedExternalDirs = this.AllowedExternalDirs ?? value.ToList();
+            get => AllowedExternalDirs?.ToArray();
+            set => AllowedExternalDirs = AllowedExternalDirs ?? value.ToList();
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace HassClient.Models
         /// Gets the version of Home Assistant that is currently running.
         /// </summary>
         [JsonProperty]
-        public CalVer Version { get; private set; }
+        public CalendarVersion Version { get; private set; }
 
         /// <summary>
         /// Gets the configuration source, or type of configuration file (usually "storage").
@@ -128,6 +128,6 @@ namespace HassClient.Models
         public string Currency { get; private set; }
 
         /// <inheritdoc />
-        public override string ToString() => this.LocationName;
+        public override string ToString() => LocationName;
     }
 }

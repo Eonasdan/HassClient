@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents the manifest that specify basic information about an integration.
@@ -54,7 +54,7 @@ namespace HassClient.Models
         /// Gets a list of GitHub usernames or team names of people that are responsible for this integration.
         /// </summary>
         [JsonProperty]
-        public string[] Codeowners { get; private set; }
+        public string[] CodeOwners { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the integration has a configuration flow to create a config entry.
@@ -81,9 +81,9 @@ namespace HassClient.Models
         /// Gets the version number from which this integration is available or compatible.
         /// </summary>
         [JsonProperty("homeassistant")]
-        public CalVer SinceHassVersion { get; private set; }
+        public CalendarVersion SinceHassVersion { get; private set; }
 
         /// <inheritdoc />
-        public override string ToString() => this.Name;
+        public override string ToString() => Name;
     }
 }

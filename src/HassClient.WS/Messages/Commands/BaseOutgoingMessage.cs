@@ -1,4 +1,4 @@
-﻿namespace HassClient.WS.Messages
+﻿namespace HassClient.WS.Messages.Commands
 {
     /// <summary>
     /// Represents an identifiable outgoing message (any but authentication messages).
@@ -9,7 +9,7 @@
         /// Initializes a new instance of the <see cref="BaseOutgoingMessage"/> class.
         /// </summary>
         /// <param name="type"><inheritdoc/></param>
-        public BaseOutgoingMessage(string type)
+        protected BaseOutgoingMessage(string type)
             : base(type)
         {
         }

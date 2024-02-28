@@ -1,4 +1,4 @@
-﻿namespace HassClient.WS.Messages
+﻿namespace HassClient.WS.Messages.Response
 {
     /// <summary>
     /// Provides information about the error occurred.
@@ -27,11 +27,11 @@
         /// </summary>
         internal ErrorInfo(ErrorCodes code)
         {
-            this.Code = code;
-            this.Message = code.ToString();
+            Code = code;
+            Message = code.ToString();
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.Code}: {this.Message}";
+        public override string ToString() => $"{Code}: {Message}";
     }
 }

@@ -1,95 +1,95 @@
-﻿using HassClient.Models;
+﻿using System.Threading.Tasks;
+using HassClient.Core.Models;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 namespace HassClient.WS.Tests
 {
-    public class ConfigurationApiTests : BaseHassWSApiTest
+    public class ConfigurationApiTests : BaseHassWsApiTest
     {
 
-        private ConfigurationModel configuration;
+        private ConfigurationModel _configuration;
 
         [OneTimeSetUp]
         [Test]
         public async Task GetConfiguration()
         {
-            if (this.configuration != null)
+            if (_configuration != null)
             {
                 return;
             }
 
-            this.configuration = await this.hassWSApi.GetConfigurationAsync();
+            _configuration = await HassWsApi.GetConfigurationAsync();
 
-            Assert.IsNotNull(this.configuration);
+            Assert.IsNotNull(_configuration);
         }
 
         [Test]
         public void ConfigurationHasAllowedExternalDirs()
         {
-            Assert.NotNull(this.configuration.AllowedExternalDirs);
-            Assert.IsNotEmpty(this.configuration.AllowedExternalDirs);
+            Assert.NotNull(_configuration.AllowedExternalDirs);
+            Assert.IsNotEmpty(_configuration.AllowedExternalDirs);
         }
 
         [Test]
         public void ConfigurationHasAllowedExternalUrls()
         {
-            Assert.NotNull(this.configuration.AllowedExternalUrls);
+            Assert.NotNull(_configuration.AllowedExternalUrls);
         }
 
         [Test]
         public void ConfigurationHasComponents()
         {
-            Assert.NotNull(this.configuration.Components);
-            Assert.IsNotEmpty(this.configuration.Components);
+            Assert.NotNull(_configuration.Components);
+            Assert.IsNotEmpty(_configuration.Components);
         }
 
         [Test]
         public void ConfigurationHasConfigDirectory()
         {
-            Assert.NotNull(this.configuration.ConfigDirectory);
+            Assert.NotNull(_configuration.ConfigDirectory);
         }
 
         [Test]
         public void ConfigurationHasConfigSource()
         {
-            Assert.NotNull(this.configuration.ConfigSource);
+            Assert.NotNull(_configuration.ConfigSource);
         }
 
         [Test]
         public void ConfigurationHasLocation()
         {
-            Assert.NotNull(this.configuration.LocationName);
-            Assert.NotZero(this.configuration.Latitude);
-            Assert.NotZero(this.configuration.Longitude);
+            Assert.NotNull(_configuration.LocationName);
+            Assert.NotZero(_configuration.Latitude);
+            Assert.NotZero(_configuration.Longitude);
         }
 
         [Test]
         public void ConfigurationHasState()
         {
-            Assert.NotNull(this.configuration.State);
+            Assert.NotNull(_configuration.State);
         }
 
         [Test]
         public void ConfigurationHasTimeZone()
         {
-            Assert.NotNull(this.configuration.TimeZone);
+            Assert.NotNull(_configuration.TimeZone);
         }
 
         [Test]
         public void ConfigurationHasUnitSystem()
         {
-            Assert.NotNull(this.configuration.UnitSystem);
-            Assert.NotNull(this.configuration.UnitSystem.Length);
-            Assert.NotNull(this.configuration.UnitSystem.Mass);
-            Assert.NotNull(this.configuration.UnitSystem.Pressure);
-            Assert.NotNull(this.configuration.UnitSystem.Temperature);
-            Assert.NotNull(this.configuration.UnitSystem.Volume);
+            Assert.NotNull(_configuration.UnitSystem);
+            Assert.NotNull(_configuration.UnitSystem.Length);
+            Assert.NotNull(_configuration.UnitSystem.Mass);
+            Assert.NotNull(_configuration.UnitSystem.Pressure);
+            Assert.NotNull(_configuration.UnitSystem.Temperature);
+            Assert.NotNull(_configuration.UnitSystem.Volume);
         }
 
         [Test]
         public void ConfigurationHasVersion()
         {
-            Assert.NotNull(this.configuration.Version);
+            Assert.NotNull(_configuration.Version);
         }
     }
 }

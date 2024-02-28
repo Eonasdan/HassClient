@@ -1,7 +1,8 @@
-﻿using HassClient.Helpers;
-using HassClient.Models;
+﻿using System;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models.Events;
+using HassClient.Core.Models.KnownEnums;
 using NUnit.Framework;
-using System;
 
 namespace HassClient.Core.Tests
 {

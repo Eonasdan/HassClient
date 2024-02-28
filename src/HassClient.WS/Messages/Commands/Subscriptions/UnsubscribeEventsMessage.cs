@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.Subscriptions
 {
     internal class UnsubscribeEventsMessage : BaseOutgoingMessage
     {

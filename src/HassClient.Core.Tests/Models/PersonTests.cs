@@ -1,15 +1,17 @@
-﻿using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Models.RegistryEntries.StorageEntities;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(Person))]
     public class PersonTests
     {
-        private readonly User testUser = User.CreateUnmodified("test", MockHelpers.GetRandomTestName(), false);
+        private readonly User _testUser = User.CreateUnmodified("test", MockHelpers.GetRandomTestName(), false);
 
         [Test]
         public void HasPublicConstructorWithParameters()
@@ -22,29 +24,29 @@ namespace HassClient.Core.Tests
         [Test]
         public void NewPersonHasPendingChanges()
         {
-            var testEntry = new Person(MockHelpers.GetRandomTestName(), this.testUser);
+            var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
             Assert.IsTrue(testEntry.HasPendingChanges);
         }
 
         [Test]
         public void NewPersonIsStorageEntry()
         {
-            var testEntry = new Person(MockHelpers.GetRandomTestName(), this.testUser);
+            var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
             Assert.IsTrue(testEntry.IsStorageEntry);
         }
 
         [Test]
         public void NewPersonIsUntracked()
         {
-            var testEntry = new Person(MockHelpers.GetRandomTestName(), this.testUser);
+            var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
             Assert.False(testEntry.IsTracked);
         }
 
         [Test]
         public void NewPersonHasUserId()
         {
-            var testEntry = new Person(MockHelpers.GetRandomTestName(), this.testUser);
-            Assert.AreEqual(testEntry.UserId, this.testUser.Id);
+            var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
+            Assert.AreEqual(testEntry.UserId, _testUser.Id);
         }
 
         private static IEnumerable<string> NullOrWhiteSpaceStringValues() => RegistryEntryBaseTests.NullOrWhiteSpaceStringValues();
@@ -53,13 +55,13 @@ namespace HassClient.Core.Tests
         [TestCaseSource(nameof(NullOrWhiteSpaceStringValues))]
         public void NewPersonWithNullOrWhiteSpaceNameThrows(string value)
         {
-            Assert.Throws<ArgumentException>(() => new Person(value, this.testUser));
+            Assert.Throws<ArgumentException>(() => new Person(value, _testUser));
         }
 
         [Test]
         public void SetNewIconThrows()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out var _, out _, out _);
+            var testEntry = CreateTestEntry(out _, out _, out var _, out _, out _);
 
             Assert.Throws<InvalidOperationException>(() => testEntry.Icon = MockHelpers.GetRandomTestName());
         }
@@ -67,7 +69,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewInvalidDeviceTrackerThrows()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out var _, out _, out _);
+            var testEntry = CreateTestEntry(out _, out _, out var _, out _, out _);
 
             Assert.Throws<InvalidOperationException>(
                 () => testEntry.DeviceTrackers.Add(MockHelpers.GetRandomEntityId(KnownDomains.Camera)));
@@ -76,7 +78,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewNameMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out _, out _, out _);
+            var testEntry = CreateTestEntry(out _, out var initialName, out _, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -88,7 +90,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewPictureMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out _, out var picture, out _);
+            var testEntry = CreateTestEntry(out _, out _, out _, out var picture, out _);
 
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -100,9 +102,9 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewUserMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out var user, out _, out _);
+            var testEntry = CreateTestEntry(out _, out _, out var user, out _, out _);
 
-            testEntry.ChangeUser(this.testUser);
+            testEntry.ChangeUser(_testUser);
             Assert.IsTrue(testEntry.HasPendingChanges);
 
             testEntry.ChangeUser(user);
@@ -113,7 +115,7 @@ namespace HassClient.Core.Tests
         public void SetNewDeviceTrackerMakesHasPendingChangesTrue()
         {
             var testDeviceTracker = MockHelpers.GetRandomEntityId(KnownDomains.DeviceTracker);
-            var testEntry = this.CreateTestEntry(out _, out _, out _, out _, out var deviceTrackers);
+            var testEntry = CreateTestEntry(out _, out _, out _, out _, out var deviceTrackers);
 
             testEntry.DeviceTrackers.Add(testDeviceTracker);
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -125,10 +127,10 @@ namespace HassClient.Core.Tests
         [Test]
         public void DiscardPendingChanges()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out var initialUser, out var initialPicture, out var initialDeviceTrackers);
+            var testEntry = CreateTestEntry(out _, out var initialName, out var initialUser, out var initialPicture, out var initialDeviceTrackers);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            testEntry.ChangeUser(this.testUser);
+            testEntry.ChangeUser(_testUser);
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";
             testEntry.DeviceTrackers.Add(MockHelpers.GetRandomEntityId(KnownDomains.DeviceTracker));
             Assert.IsTrue(testEntry.HasPendingChanges);

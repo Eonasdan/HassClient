@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.KnownEnums
 {
     /// <summary>
     /// Represents a list of known domains. Useful to reduce use of strings.
@@ -9,6 +10,7 @@ namespace HassClient.Models
         "StyleCop.CSharp.DocumentationRules",
         "SA1602:Enumeration items should be documented",
         Justification = "Due to the nature of the list, it is not necessary to document each field.")]
+    [PublicAPI]
     public enum KnownDomains
     {
         /// <summary>
@@ -54,7 +56,7 @@ namespace HassClient.Models
         Logger,
         Mailbox,
         MediaPlayer,
-        MQTT,
+        Mqtt,
         Notify,
         Number,
         PersistentNotification,
@@ -74,14 +76,14 @@ namespace HassClient.Models
         SystemLog,
         Template,
         Timer,
-        TTS,
+        Tts,
         Vacuum,
         WakeOnLan,
         WaterHeater,
         Weather,
-        WebosTV,
+        WebosTv,
         XiaomiMiio,
-        ZHA,
+        Zha,
         Zone,
     }
 }

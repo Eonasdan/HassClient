@@ -1,19 +1,20 @@
-﻿using HassClient.Models;
-using HassClient.Serialization;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.Serialization;
+using HassClient.Core.Models.Events;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Serialization;
+using NUnit.Framework;
 
 namespace HassClient.Core.Tests
 {
     [TestFixture(TestOf = typeof(HassSerializer))]
     public class SerializerTests
     {
-        private const string expectedTestValueEnumResult = "test_value";
-        private const string expectedEnumMemberTestValueEnumResult = "customized_name";
-        private const string expectedTestPropertyResult = "test_property";
-        private const string expectedTestFieldResult = "test_field";
+        private const string ExpectedTestValueEnumResult = "test_value";
+        private const string ExpectedEnumMemberTestValueEnumResult = "customized_name";
+        private const string ExpectedTestPropertyResult = "test_property";
+        private const string ExpectedTestFieldResult = "test_field";
 
         private enum TestEnum
         {
@@ -21,7 +22,7 @@ namespace HassClient.Core.Tests
 
             TestValue,
 
-            [EnumMember(Value = expectedEnumMemberTestValueEnumResult)]
+            [EnumMember(Value = ExpectedEnumMemberTestValueEnumResult)]
             EnumMemberTestValue,
         }
 
@@ -38,7 +39,7 @@ namespace HassClient.Core.Tests
             var result = TestEnum.TestValue.ToSnakeCase();
 
             Assert.NotNull(result);
-            Assert.AreEqual(expectedTestValueEnumResult, result);
+            Assert.AreEqual(ExpectedTestValueEnumResult, result);
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void TryGetEnumFromSnakeCase()
         {
-            var success = HassSerializer.TryGetEnumFromSnakeCase<TestEnum>(expectedTestValueEnumResult, out var result);
+            var success = HassSerializer.TryGetEnumFromSnakeCase<TestEnum>(ExpectedTestValueEnumResult, out var result);
 
             Assert.IsTrue(success);
             Assert.AreEqual(TestEnum.TestValue, result);
@@ -88,7 +89,7 @@ namespace HassClient.Core.Tests
             var result = HassSerializer.SerializeObject(value);
 
             Assert.NotNull(result);
-            Assert.AreEqual($"\"{expectedTestValueEnumResult}\"", result);
+            Assert.AreEqual($"\"{ExpectedTestValueEnumResult}\"", result);
         }
 
         [Test]
@@ -107,7 +108,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void EnumValuesAreConvertedFromSnakeCase()
         {
-            var result = HassSerializer.DeserializeObject<TestEnum>($"\"{expectedTestValueEnumResult}\"");
+            var result = HassSerializer.DeserializeObject<TestEnum>($"\"{ExpectedTestValueEnumResult}\"");
 
             Assert.NotNull(result);
             Assert.AreEqual(TestEnum.TestValue, result);
@@ -129,17 +130,17 @@ namespace HassClient.Core.Tests
         [Test]
         public void PropertiesAreConvertedToSnakeCase()
         {
-            var value = new TestClass() { TestProperty = nameof(TestClass.TestProperty) };
+            var value = new TestClass { TestProperty = nameof(TestClass.TestProperty) };
             var result = HassSerializer.SerializeObject(value);
 
             Assert.NotNull(result);
-            Assert.IsTrue(result.Contains($"\"{expectedTestPropertyResult}\":\"{value.TestProperty}\""));
+            Assert.IsTrue(result.Contains($"\"{ExpectedTestPropertyResult}\":\"{value.TestProperty}\""));
         }
 
         [Test]
         public void PropertiesAreConvertedFromSnakeCase()
         {
-            var result = HassSerializer.DeserializeObject<TestClass>($"{{\"{expectedTestPropertyResult}\":\"{nameof(TestClass.TestProperty)}\"}}");
+            var result = HassSerializer.DeserializeObject<TestClass>($"{{\"{ExpectedTestPropertyResult}\":\"{nameof(TestClass.TestProperty)}\"}}");
 
             Assert.NotNull(result);
             Assert.AreEqual(nameof(TestClass.TestProperty), result.TestProperty);
@@ -148,17 +149,17 @@ namespace HassClient.Core.Tests
         [Test]
         public void FieldsAreConvertedToSnakeCase()
         {
-            var value = new TestClass() { TestField = nameof(TestClass.TestField) };
+            var value = new TestClass { TestField = nameof(TestClass.TestField) };
             var result = HassSerializer.SerializeObject(value);
 
             Assert.NotNull(result);
-            Assert.IsTrue(result.Contains($"\"{expectedTestFieldResult}\":\"{value.TestField}\""));
+            Assert.IsTrue(result.Contains($"\"{ExpectedTestFieldResult}\":\"{value.TestField}\""));
         }
 
         [Test]
         public void FieldsAreConvertedFromSnakeCase()
         {
-            var result = HassSerializer.DeserializeObject<TestClass>($"{{\"{expectedTestFieldResult}\":\"{nameof(TestClass.TestField)}\"}}");
+            var result = HassSerializer.DeserializeObject<TestClass>($"{{\"{ExpectedTestFieldResult}\":\"{nameof(TestClass.TestField)}\"}}");
 
             Assert.NotNull(result);
             Assert.AreEqual(nameof(TestClass.TestField), result.TestField);
@@ -167,21 +168,21 @@ namespace HassClient.Core.Tests
         [Test]
         public void JObjectPropertiesAreConvertedToSnakeCase()
         {
-            var value = new TestClass() { TestProperty = nameof(TestClass.TestProperty) };
+            var value = new TestClass { TestProperty = nameof(TestClass.TestProperty) };
             var result = HassSerializer.CreateJObject(value);
 
             Assert.NotNull(result);
-            Assert.AreEqual(value.TestProperty, result.GetValue(expectedTestPropertyResult).ToString());
+            Assert.AreEqual(value.TestProperty, result.GetValue(ExpectedTestPropertyResult).ToString());
         }
 
         [Test]
         public void JObjectFieldsAreConvertedToSnakeCase()
         {
-            var value = new TestClass() { TestField = nameof(TestClass.TestField) };
+            var value = new TestClass { TestField = nameof(TestClass.TestField) };
             var result = HassSerializer.CreateJObject(value);
 
             Assert.NotNull(result);
-            Assert.AreEqual(value.TestField, result.GetValue(expectedTestFieldResult).ToString());
+            Assert.AreEqual(value.TestField, result.GetValue(ExpectedTestFieldResult).ToString());
         }
 
         [Test]
@@ -192,8 +193,8 @@ namespace HassClient.Core.Tests
 
             Assert.NotNull(result);
             Assert.AreEqual(1, result.Count);
-            Assert.IsTrue(result.ContainsKey(expectedTestPropertyResult));
-            Assert.IsFalse(result.ContainsKey(expectedTestFieldResult));
+            Assert.IsTrue(result.ContainsKey(ExpectedTestPropertyResult));
+            Assert.IsFalse(result.ContainsKey(ExpectedTestFieldResult));
         }
 
         [Test]

@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// Represents a device.
@@ -11,22 +12,22 @@ namespace HassClient.Models
     /// </summary>
     public class Device : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> areaId = new ModifiableProperty<string>(nameof(AreaId));
+        private readonly ModifiableProperty<string> _areaId = new ModifiableProperty<string>(nameof(AreaId));
 
         [JsonProperty]
-        private readonly ModifiableProperty<DisabledByEnum?> disabledBy = new ModifiableProperty<DisabledByEnum?>(nameof(disabledBy));
+        private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new ModifiableProperty<DisabledByEnum?>(nameof(_disabledBy));
 
         [JsonProperty]
-        private readonly ModifiableProperty<string> nameByUser = new ModifiableProperty<string>(nameof(nameByUser));
+        private readonly ModifiableProperty<string> _nameByUser = new ModifiableProperty<string>(nameof(_nameByUser));
 
         [JsonProperty("name")]
-        private string originalName;
+        private string _originalName;
 
         /// <inheritdoc />
-        internal protected override string UniqueId
+        protected internal override string UniqueId
         {
-            get => this.Id;
-            set => this.Id = value;
+            get => Id;
+            set => Id = value;
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace HassClient.Models
         /// <summary>
         /// Gets the original name of the device assigned when was created.
         /// </summary>
-        public string OriginalName => this.originalName;
+        public string OriginalName => _originalName;
 
         /// <summary>
         /// Gets the current name of this device.
@@ -50,8 +51,8 @@ namespace HassClient.Models
         [JsonIgnore]
         public string Name
         {
-            get => this.nameByUser.Value ?? this.originalName;
-            set => this.nameByUser.Value = value == this.originalName ? null : value;
+            get => _nameByUser.Value ?? _originalName;
+            set => _nameByUser.Value = value == _originalName ? null : value;
         }
 
         /// <summary>
@@ -96,13 +97,13 @@ namespace HassClient.Models
         /// Gets the firmware version of the device.
         /// </summary>
         [JsonProperty]
-        public string SWVersion { get; private set; }
+        public string SwVersion { get; private set; }
 
         /// <summary>
         /// Gets the hardware version of the device.
         /// </summary>
         [JsonProperty]
-        public string HWVersion { get; private set; }
+        public string HwVersion { get; private set; }
 
         /// <summary>
         /// Gets the type of entry.
@@ -123,8 +124,8 @@ namespace HassClient.Models
         /// </summary>
         public string AreaId
         {
-            get => this.areaId.Value;
-            set => this.areaId.Value = value;
+            get => _areaId.Value;
+            set => _areaId.Value = value;
         }
 
         /// <summary>
@@ -137,13 +138,13 @@ namespace HassClient.Models
         /// Gets a value indicating the disabling source, if any.
         /// </summary>
         [JsonIgnore]
-        public DisabledByEnum DisabledBy => this.disabledBy.Value ?? DisabledByEnum.None;
+        public DisabledByEnum DisabledBy => _disabledBy.Value ?? DisabledByEnum.None;
 
         /// <summary>
         /// Gets a value indicating whether the device is disabled.
         /// </summary>
         [JsonIgnore]
-        public bool IsDisabled => this.DisabledBy != DisabledByEnum.None;
+        public bool IsDisabled => DisabledBy != DisabledByEnum.None;
 
         [JsonConstructor]
         private Device()
@@ -153,14 +154,17 @@ namespace HassClient.Models
         // Used for testing purposes.
         internal static Device CreateUnmodified(string id, string name, string areaId = null, DisabledByEnum disabledBy = DisabledByEnum.None)
         {
-            var result = new Device()
+            var result = new Device
             {
                 Id = id,
-                originalName = name,
+                _originalName = name,
                 AreaId = areaId,
+                _disabledBy =
+                {
+                    Value = disabledBy
+                }
             };
 
-            result.disabledBy.Value = disabledBy;
             result.SaveChanges();
 
             return result;
@@ -169,25 +173,25 @@ namespace HassClient.Models
         /// <inheritdoc />
         protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
         {
-            yield return this.areaId;
-            yield return this.disabledBy;
-            yield return this.nameByUser;
+            yield return _areaId;
+            yield return _disabledBy;
+            yield return _nameByUser;
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(Device)}: {this.Name}";
+        public override string ToString() => $"{nameof(Device)}: {Name}";
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj is Device device &&
-                   this.Id == device.Id;
+                   Id == device.Id;
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return -401120461 + EqualityComparer<string>.Default.GetHashCode(this.Id);
+            return -401120461 + EqualityComparer<string>.Default.GetHashCode(Id);
         }
     }
 }

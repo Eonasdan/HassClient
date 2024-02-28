@@ -1,11 +1,10 @@
-﻿using HassClient.Models;
-using HassClient.WS.Messages.Commands;
+﻿using HassClient.Core.Models.RegistryEntries;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class UserMessagesFactory : RegistryEntryCollectionMessagesFactory<User>
     {
-        public static UserMessagesFactory Instance = new UserMessagesFactory();
+        public static readonly UserMessagesFactory Instance = new UserMessagesFactory();
 
         public UserMessagesFactory()
             : base("config/auth", "user")

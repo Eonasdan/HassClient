@@ -1,12 +1,11 @@
-﻿using HassClient.Models;
-using HassClient.Serialization;
-using HassClient.WS.Messages.Commands;
+﻿using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Serialization;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class DeviceRegistryMessagesFactory : RegistryEntryCollectionMessagesFactory<Device>
     {
-        public static DeviceRegistryMessagesFactory Instance = new DeviceRegistryMessagesFactory();
+        public static readonly DeviceRegistryMessagesFactory Instance = new DeviceRegistryMessagesFactory();
 
         public DeviceRegistryMessagesFactory()
             : base("config/device_registry", "device")
@@ -15,15 +14,14 @@ namespace HassClient.WS.Messages
 
         public BaseOutgoingMessage CreateUpdateMessage(Device device, bool? disable, bool forceUpdate)
         {
-            var model = this.CreateDefaultUpdateObject(device, forceUpdate);
+            var model = CreateDefaultUpdateObject(device, forceUpdate);
 
-            if (disable.HasValue)
-            {
-                var merged = HassSerializer.CreateJObject(new { DisabledBy = disable.Value ? DisabledByEnum.User : (DisabledByEnum?)null });
-                model.Merge(merged);
-            }
+            if (!disable.HasValue) return CreateUpdateMessage(device.Id, model);
+            
+            var merged = HassSerializer.CreateJObject(new { DisabledBy = disable.Value ? DisabledByEnum.User : (DisabledByEnum?)null });
+            model.Merge(merged);
 
-            return this.CreateUpdateMessage(device.Id, model);
+            return CreateUpdateMessage(device.Id, model);
         }
     }
 }

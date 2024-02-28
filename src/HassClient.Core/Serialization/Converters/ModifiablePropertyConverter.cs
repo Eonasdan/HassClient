@@ -1,8 +1,8 @@
-﻿using HassClient.Models;
+﻿using System;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
 using Newtonsoft.Json;
-using System;
 
-namespace HassClient.Serialization
+namespace HassClient.Core.Serialization.Converters
 {
     /// <summary>
     /// Converter for <see cref="ModifiableProperty{T}"/>.
@@ -12,9 +12,13 @@ namespace HassClient.Serialization
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var type = value.GetType();
-            value = type.GetProperty(nameof(ModifiableProperty<object>.Value))
-                        .GetValue(value, null);
+            if (value != null)
+            {
+                var type = value.GetType();
+                value = type.GetProperty(nameof(ModifiableProperty<object>.Value))
+                    ?.GetValue(value, null);
+            }
+
             serializer.Serialize(writer, value);
         }
 
@@ -27,7 +31,7 @@ namespace HassClient.Serialization
             if (existingValue != null)
             {
                 objectType.GetProperty(nameof(ModifiableProperty<object>.Value))
-                          .SetValue(existingValue, value);
+                    ?.SetValue(existingValue, value);
             }
             else
             {

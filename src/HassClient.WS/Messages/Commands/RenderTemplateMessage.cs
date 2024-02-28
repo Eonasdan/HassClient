@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using HassClient.WS.Messages.Response;
+using Newtonsoft.Json;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands
 {
     internal class RenderTemplateMessage : BaseOutgoingMessage
     {
-        private TaskCompletionSource<string> templateEventReceivedTCS;
+        private readonly TaskCompletionSource<string> _templateEventReceivedTcs;
 
         [JsonIgnore]
-        public Task<string> WaitResponseTask => this.templateEventReceivedTCS.Task;
+        public Task<string> WaitResponseTask => _templateEventReceivedTcs.Task;
 
         [JsonProperty(Required = Required.Always)]
         public string Template { get; set; }
@@ -22,13 +23,13 @@ namespace HassClient.WS.Messages
         public RenderTemplateMessage()
             : base("render_template")
         {
-            this.templateEventReceivedTCS = new TaskCompletionSource<string>();
+            _templateEventReceivedTcs = new TaskCompletionSource<string>();
         }
 
         public void ProcessEventReceivedMessage(EventResultMessage eventResultMessage)
         {
             var templateEventInfo = eventResultMessage.DeserializeEvent<TemplateEventInfo>();
-            this.templateEventReceivedTCS.SetResult(templateEventInfo.Result);
+            _templateEventReceivedTcs.SetResult(templateEventInfo.Result);
         }
     }
 }

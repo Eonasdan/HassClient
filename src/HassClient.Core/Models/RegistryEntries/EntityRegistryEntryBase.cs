@@ -1,17 +1,18 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// Base class that defines a entity registry entry.
     /// </summary>
     public abstract class EntityRegistryEntryBase : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> name = new ModifiableProperty<string>(nameof(Name));
+        private readonly ModifiableProperty<string> _name = new ModifiableProperty<string>(nameof(Name));
 
-        private readonly ModifiableProperty<string> icon = new ModifiableProperty<string>(nameof(Icon));
+        private readonly ModifiableProperty<string> _icon = new ModifiableProperty<string>(nameof(Icon));
 
         /// <summary>
         /// Gets a value indicating that the name of the entity registry entry can be
@@ -30,16 +31,16 @@ namespace HassClient.Models
         /// </summary>
         public virtual string Name
         {
-            get => this.name.Value;
+            get => _name.Value;
             set
             {
-                if (!this.AcceptsNullOrWhiteSpaceName &&
+                if (!AcceptsNullOrWhiteSpaceName &&
                     string.IsNullOrWhiteSpace(value))
                 {
-                    throw new InvalidOperationException($"'{nameof(this.Name)}' cannot be null or whitespace.");
+                    throw new InvalidOperationException($"'{nameof(Name)}' cannot be null or whitespace.");
                 }
 
-                this.name.Value = value;
+                _name.Value = value;
             }
         }
 
@@ -49,8 +50,8 @@ namespace HassClient.Models
         [JsonProperty]
         public virtual string Icon
         {
-            get => this.icon.Value;
-            set => this.icon.Value = value;
+            get => _icon.Value;
+            set => _icon.Value = value;
         }
 
         [JsonConstructor]
@@ -65,14 +66,14 @@ namespace HassClient.Models
         /// <param name="icon">The entity icon.</param>
         protected EntityRegistryEntryBase(string name, string icon)
         {
-            if (!this.AcceptsNullOrWhiteSpaceName &&
+            if (!AcceptsNullOrWhiteSpaceName &&
                 string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace", nameof(name));
             }
 
-            this.Name = name;
-            this.Icon = icon;
+            Name = name;
+            Icon = icon;
         }
 
         /// <summary>
@@ -81,26 +82,26 @@ namespace HassClient.Models
         /// <returns>
         /// <see langword="true"/> if the property should be serialized; otherwise, <see langword="false"/>.
         /// </returns>
-        public bool ShouldSerializeIcon() => this.Icon != null || this.IsTracked;
+        public bool ShouldSerializeIcon() => Icon != null || IsTracked;
 
         /// <inheritdoc />
         protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
         {
-            yield return this.name;
-            yield return this.icon;
+            yield return _name;
+            yield return _icon;
         }
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj is EntityRegistryEntryBase registryEntryBase &&
-                   this.UniqueId == registryEntryBase.UniqueId;
+                   UniqueId == registryEntryBase.UniqueId;
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return -401120461 + EqualityComparer<string>.Default.GetHashCode(this.UniqueId);
+            return -401120461 + EqualityComparer<string>.Default.GetHashCode(UniqueId);
         }
     }
 }

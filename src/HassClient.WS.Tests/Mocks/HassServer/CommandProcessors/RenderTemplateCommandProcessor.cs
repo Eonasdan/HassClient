@@ -1,44 +1,46 @@
-﻿using Bogus;
-using HassClient.Helpers;
-using HassClient.Serialization;
-using HassClient.WS.Messages;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Bogus;
+using HassClient.Core.Helpers;
+using HassClient.Core.Serialization;
+using HassClient.WS.Messages;
+using HassClient.WS.Messages.Commands;
+using HassClient.WS.Messages.Response;
+using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Tests.Mocks.HassServer
+namespace HassClient.WS.Tests.Mocks.HassServer.CommandProcessors
 {
     public class RenderTemplateCommandProcessor : BaseCommandProcessor
     {
-        private HashSet<string> entityIds;
+        private HashSet<string> _entityIds;
 
         public override bool CanProcess(BaseIdentifiableMessage receivedCommand) => receivedCommand is RenderTemplateMessage;
 
-        public override BaseIdentifiableMessage ProccessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
+        public override BaseIdentifiableMessage ProcessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
         {
             var commandRenderTemplate = receivedCommand as RenderTemplateMessage;
 
-            this.entityIds = new HashSet<string>();
-            var result = Regex.Replace(commandRenderTemplate.Template, @"{{ (.*) }}", this.RenderTemplateValue);
-            var listeners = new ListenersTemplateInfo()
+            _entityIds = new HashSet<string>();
+            var result = Regex.Replace(commandRenderTemplate.Template, @"{{ (.*) }}", RenderTemplateValue);
+            var listeners = new ListenersTemplateInfo
             {
                 All = false,
                 Time = false,
             };
-            listeners.Entities = this.entityIds.ToArray();
+            listeners.Entities = _entityIds.ToArray();
             listeners.Domains = listeners.Entities.Select(x => x.GetDomain()).ToArray();
-            this.entityIds = null;
+            _entityIds = null;
 
-            var renderTemplateEvent = new TemplateEventInfo()
+            var renderTemplateEvent = new TemplateEventInfo
             {
                 Result = result,
                 Listeners = listeners,
             };
 
-            var eventMsg = new EventResultMessage()
+            var eventMsg = new EventResultMessage
             {
                 Id = commandRenderTemplate.Id,
                 Event = new JRaw(HassSerializer.SerializeObject(renderTemplateEvent))
@@ -49,28 +51,26 @@ namespace HassClient.WS.Tests.Mocks.HassServer
                 await context.SendMessageAsync(eventMsg, CancellationToken.None);
             });
 
-            return this.CreateResultMessageWithResult(null);
+            return CreateResultMessageWithResult(null);
         }
 
         private string RenderTemplateValue(Match match)
         {
             var statesPattern = @"states\('(.*)'\)";
-            return Regex.Replace(match.Groups[1].Value, statesPattern, this.RenderStateValue);
+            return Regex.Replace(match.Groups[1].Value, statesPattern, RenderStateValue);
         }
 
         private string RenderStateValue(Match match)
         {
             var entityId = match.Groups[1].Value;
-            this.entityIds.Add(entityId);
+            _entityIds.Add(entityId);
 
             if (entityId.GetDomain() == "sun")
             {
                 return "below_horizon";
             }
-            else
-            {
-                return (new Faker()).RandomEntityState();
-            }
+
+            return (new Faker()).RandomEntityState();
         }
     }
 }

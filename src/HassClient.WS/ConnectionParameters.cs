@@ -3,18 +3,18 @@
 namespace HassClient.WS
 {
     /// <summary>
-    /// Represents the connection parameters used by <see cref="HassWSApi"/>.
+    /// Represents the connection parameters used by <see cref="HassWsApi"/>.
     /// </summary>
     public class ConnectionParameters
     {
-        private Uri endpoint;
+        private Uri _endpoint;
 
         /// <summary>
         /// Gets or sets an <see cref="Uri"/> representing the web socket connection endpoint. (e.g. <c>ws://localhost:8123/api/websocket</c>).
         /// </summary>
         public Uri Endpoint
         {
-            get => this.endpoint;
+            get => _endpoint;
             set
             {
                 if (value.Scheme != "ws" && value.Scheme != "wss")
@@ -22,7 +22,7 @@ namespace HassClient.WS
                     throw new ArgumentException($"Invalid URI Scheme: {value.Scheme}");
                 }
 
-                this.endpoint = value;
+                _endpoint = value;
             }
         }
 
@@ -79,7 +79,7 @@ namespace HassClient.WS
 
             uriBuilder.Path = "/api/websocket";
 
-            return new ConnectionParameters()
+            return new ConnectionParameters
             {
                 Endpoint = uriBuilder.Uri,
                 AccessToken = accessToken,
@@ -104,7 +104,7 @@ namespace HassClient.WS
                 throw new InvalidOperationException($"Error initializing API as Supervisor: Environment variable '{tokenEnvVar}' not found.");
             }
 
-            return new ConnectionParameters()
+            return new ConnectionParameters
             {
                 Endpoint = new Uri("ws://supervisor/core/websocket"),
                 AccessToken = supervisorToken,

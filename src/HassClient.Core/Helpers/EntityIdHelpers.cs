@@ -1,7 +1,7 @@
-﻿using HassClient.Models;
-using System;
+﻿using System;
+using HassClient.Core.Models.KnownEnums;
 
-namespace HassClient.Helpers
+namespace HassClient.Core.Helpers
 {
     /// <summary>
     /// Contains extension methods to operate with entities ids.

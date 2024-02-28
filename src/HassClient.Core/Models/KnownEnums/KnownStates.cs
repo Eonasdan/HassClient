@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.KnownEnums
 {
     /// <summary>
     /// Represents a list of known states. Useful to reduce use of strings.
@@ -10,6 +11,7 @@ namespace HassClient.Models
         "StyleCop.CSharp.DocumentationRules",
         "SA1602:Enumeration items should be documented",
         Justification = "Due to the nature of the list, it is not necessary to document each field.")]
+    [PublicAPI]
     public enum KnownStates
     {
         /// <summary>
@@ -39,8 +41,7 @@ namespace HassClient.Models
         BackedUp,
         BellowHorizon,
         Cleaning,
-        [EnumMember(Value = "clear-night")]
-        ClearNight,
+        [EnumMember(Value = "clear-night")] ClearNight,
         Closed,
         Closing,
         Cloudy,
@@ -67,6 +68,7 @@ namespace HassClient.Models
         Idle,
         Initializing,
         Lightning,
+
         [EnumMember(Value = "lightning-rainy")]
         LightningRainy,
         Locked,
@@ -91,8 +93,7 @@ namespace HassClient.Models
         Returning,
         Sleeping,
         Snowy,
-        [EnumMember(Value = "snowy-rainy")]
-        SnowyRainy,
+        [EnumMember(Value = "snowy-rainy")] SnowyRainy,
         Standby,
         Still,
         Stopped,
@@ -102,8 +103,7 @@ namespace HassClient.Models
         Unlocked,
         Vibrate,
         Windy,
-        [EnumMember(Value = "windy-variant")]
-        WindyVariant,
+        [EnumMember(Value = "windy-variant")] WindyVariant,
         Zoning,
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class UserResponse
     {
@@ -9,6 +9,6 @@ namespace HassClient.WS.Messages
         public JRaw UserRaw { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.UserRaw}";
+        public override string ToString() => $"{UserRaw}";
     }
 }

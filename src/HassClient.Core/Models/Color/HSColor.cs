@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.Color
 {
     /// <summary>
     /// Represents a HSV color by hue and saturation.
@@ -23,23 +23,22 @@ namespace HassClient.Models
         /// <param name="hue">The hue value in the range [0, 360].</param>
         /// <param name="saturation">The saturation value in the range [0, 100].</param>
         public HSColor(uint hue, uint saturation)
-            : base()
         {
             if (hue > 360)
             {
-                throw new ArgumentOutOfRangeException(nameof(hue), hue, $"Hue value must be in the range [0, 360]");
+                throw new ArgumentOutOfRangeException(nameof(hue), hue, "Hue value must be in the range [0, 360]");
             }
 
             if (saturation > 100)
             {
-                throw new ArgumentOutOfRangeException(nameof(saturation), saturation, $"Saturation value must be in the range [0, 100]");
+                throw new ArgumentOutOfRangeException(nameof(saturation), saturation, "Saturation value must be in the range [0, 100]");
             }
 
-            this.Hue = hue;
-            this.Saturation = saturation;
+            Hue = hue;
+            Saturation = saturation;
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"[{this.Hue}, {this.Saturation}]";
+        public override string ToString() => $"[{Hue}, {Saturation}]";
     }
 }

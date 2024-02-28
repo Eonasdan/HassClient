@@ -1,4 +1,4 @@
-﻿namespace HassClient.WS.Messages
+﻿namespace HassClient.WS.Messages.Commands
 {
     internal class GetManifestMessage : BaseOutgoingMessage
     {

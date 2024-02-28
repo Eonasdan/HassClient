@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.KnownEnums
 {
     /// <summary>
     /// Represents a list of known services. Useful to reduce use of strings.
@@ -9,6 +10,7 @@ namespace HassClient.Models
         "StyleCop.CSharp.DocumentationRules",
         "SA1602:Enumeration items should be documented",
         Justification = "Due to the nature of the list, it is not necessary to document each field.")]
+    [PublicAPI]
     public enum KnownServices
     {
         /// <summary>

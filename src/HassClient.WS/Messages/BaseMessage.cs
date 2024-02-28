@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace HassClient.WS.Messages
 {
@@ -24,17 +24,17 @@ namespace HassClient.WS.Messages
         /// from: <see href="https://github.com/home-assistant/core/search?q=async_register_command"/>.
         /// </para>
         /// </param>
-        public BaseMessage(string type)
+        protected BaseMessage(string type)
         {
             if (string.IsNullOrWhiteSpace(type))
             {
-                throw new System.ArgumentException($"'{nameof(type)}' cannot be null or whitespace", nameof(type));
+                throw new ArgumentException($"'{nameof(type)}' cannot be null or whitespace", nameof(type));
             }
 
-            this.Type = type;
+            Type = type;
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.Type}";
+        public override string ToString() => $"{Type}";
     }
 }

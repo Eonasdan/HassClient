@@ -1,8 +1,8 @@
-﻿using HassClient.Serialization;
+﻿using HassClient.Core.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Defines information related with a Home Assistant UI panel.
@@ -52,10 +52,10 @@ namespace HassClient.Models
         /// <returns>The deserialized configuration object.</returns>
         public T DeserializeConfig<T>()
         {
-            return HassSerializer.DeserializeObject<T>(this.Configuration);
+            return HassSerializer.DeserializeObject<T>(Configuration);
         }
 
         /// <inheritdoc />
-        public override string ToString() => this.Title ?? this.UrlPath;
+        public override string ToString() => Title ?? UrlPath;
     }
 }

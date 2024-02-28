@@ -1,44 +1,44 @@
-﻿using HassClient.Core.Tests;
-using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using HassClient.Core.Models.RegistryEntries.StorageEntities;
+using HassClient.Core.Tests;
+using NUnit.Framework;
 
-namespace HassClient.WS.Tests
+namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryApiTests
 {
-    public class ZoneApiTests : BaseHassWSApiTest
+    public class ZoneApiTests : BaseHassWsApiTest
     {
-        private Zone testZone;
+        private Zone _testZone;
 
         [OneTimeSetUp]
         [Test, Order(1)]
         public async Task CreateZone()
         {
-            if (this.testZone == null)
+            if (_testZone == null)
             {
-                this.testZone = new Zone(MockHelpers.GetRandomTestName(), 20.1f, 34.6f, 10.5f, "mdi:fan", true);
-                var result = await this.hassWSApi.CreateStorageEntityRegistryEntryAsync(this.testZone);
+                _testZone = new Zone(MockHelpers.GetRandomTestName(), 20.1f, 34.6f, 10.5f, "mdi:fan", true);
+                var result = await HassWsApi.CreateStorageEntityRegistryEntryAsync(_testZone);
 
                 Assert.IsTrue(result, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(this.testZone);
-            Assert.NotNull(this.testZone.UniqueId);
-            Assert.NotNull(this.testZone.Name);
-            Assert.IsFalse(this.testZone.HasPendingChanges);
-            Assert.IsTrue(this.testZone.IsTracked);
+            Assert.NotNull(_testZone);
+            Assert.NotNull(_testZone.UniqueId);
+            Assert.NotNull(_testZone.Name);
+            Assert.IsFalse(_testZone.HasPendingChanges);
+            Assert.IsTrue(_testZone.IsTracked);
         }
 
         [Test, Order(2)]
         public async Task GetZones()
         {
-            var result = await this.hassWSApi.GetStorageEntityRegistryEntriesAsync<Zone>();
+            var result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<Zone>();
 
             Assert.NotNull(result);
             Assert.IsNotEmpty(result);
-            Assert.IsTrue(result.Contains(this.testZone));
+            Assert.IsTrue(result.Contains(_testZone));
             Assert.IsTrue(result.All(x => x.Id != null));
             Assert.IsTrue(result.All(x => x.UniqueId != null));
             Assert.IsTrue(result.All(x => x.EntityId.StartsWith("zone.")));
@@ -47,83 +47,83 @@ namespace HassClient.WS.Tests
             Assert.IsTrue(result.Any(x => x.Latitude > 0));
             Assert.IsTrue(result.Any(x => x.Longitude != x.Latitude));
             Assert.IsTrue(result.Any(x => x.Radius > 0));
-            Assert.IsTrue(result.Any(x => x.IsPassive == true));
+            Assert.IsTrue(result.Any(x => x.IsPassive));
             Assert.IsTrue(result.Any(x => x.Icon != null));
         }
 
         [Test, Order(3)]
         public async Task UpdateZoneName()
         {
-            this.testZone.Name = $"{nameof(ZoneApiTests)}_{DateTime.Now.Ticks}";
-            var result = await this.hassWSApi.UpdateStorageEntityRegistryEntryAsync(this.testZone);
+            _testZone.Name = $"{nameof(ZoneApiTests)}_{DateTime.Now.Ticks}";
+            var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone);
 
             Assert.IsTrue(result);
-            Assert.IsFalse(this.testZone.HasPendingChanges);
+            Assert.IsFalse(_testZone.HasPendingChanges);
         }
 
         [Test, Order(4)]
         public async Task UpdateZoneInitial()
         {
-            this.testZone.IsPassive = false;
-            var result = await this.hassWSApi.UpdateStorageEntityRegistryEntryAsync(this.testZone);
+            _testZone.IsPassive = false;
+            var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone);
 
             Assert.IsTrue(result);
-            Assert.IsFalse(this.testZone.HasPendingChanges);
+            Assert.IsFalse(_testZone.HasPendingChanges);
         }
 
         [Test, Order(5)]
         public async Task UpdateZoneIcon()
         {
-            this.testZone.Icon = $"mdi:lightbulb";
-            var result = await this.hassWSApi.UpdateStorageEntityRegistryEntryAsync(this.testZone);
+            _testZone.Icon = "mdi:lightbulb";
+            var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone);
 
             Assert.IsTrue(result);
-            Assert.IsFalse(this.testZone.HasPendingChanges);
+            Assert.IsFalse(_testZone.HasPendingChanges);
         }
 
         [Test, Order(6)]
         public async Task UpdateWithForce()
         {
-            var initialName = this.testZone.Name;
-            var initialIcon = this.testZone.Icon;
-            var initialLongitude = this.testZone.Longitude;
-            var initialLatitude = this.testZone.Latitude;
-            var initialRadius = this.testZone.Radius;
-            var initialIsPassive = this.testZone.IsPassive;
-            var clonedEntry = this.testZone.Clone();
+            var initialName = _testZone.Name;
+            var initialIcon = _testZone.Icon;
+            var initialLongitude = _testZone.Longitude;
+            var initialLatitude = _testZone.Latitude;
+            var initialRadius = _testZone.Radius;
+            var initialIsPassive = _testZone.IsPassive;
+            var clonedEntry = _testZone.Clone();
             clonedEntry.Name = $"{initialName}_cloned";
             clonedEntry.Icon = $"{initialIcon}_cloned";
             clonedEntry.Longitude = initialLongitude + 15f;
             clonedEntry.Latitude = initialLatitude + 15f;
             clonedEntry.Radius = initialRadius + 15f;
             clonedEntry.IsPassive = !initialIsPassive;
-            var result = await this.hassWSApi.UpdateStorageEntityRegistryEntryAsync(clonedEntry);
+            var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(clonedEntry);
             Assert.IsTrue(result, "SetUp failed");
-            Assert.False(this.testZone.HasPendingChanges, "SetUp failed");
+            Assert.False(_testZone.HasPendingChanges, "SetUp failed");
 
-            result = await this.hassWSApi.UpdateStorageEntityRegistryEntryAsync(this.testZone, forceUpdate: true);
+            result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone, forceUpdate: true);
             Assert.IsTrue(result);
-            Assert.AreEqual(initialName, this.testZone.Name);
-            Assert.AreEqual(initialIcon, this.testZone.Icon);
-            Assert.AreEqual(initialLongitude, this.testZone.Longitude);
-            Assert.AreEqual(initialLatitude, this.testZone.Latitude);
-            Assert.AreEqual(initialRadius, this.testZone.Radius);
-            Assert.AreEqual(initialIsPassive, this.testZone.IsPassive);
-            Assert.IsFalse(this.testZone.HasPendingChanges);
+            Assert.AreEqual(initialName, _testZone.Name);
+            Assert.AreEqual(initialIcon, _testZone.Icon);
+            Assert.AreEqual(initialLongitude, _testZone.Longitude);
+            Assert.AreEqual(initialLatitude, _testZone.Latitude);
+            Assert.AreEqual(initialRadius, _testZone.Radius);
+            Assert.AreEqual(initialIsPassive, _testZone.IsPassive);
+            Assert.IsFalse(_testZone.HasPendingChanges);
         }
 
         [OneTimeTearDown]
         [Test, Order(7)]
         public async Task DeleteZone()
         {
-            if (this.testZone == null)
+            if (_testZone == null)
             {
                 return;
             }
 
-            var result = await this.hassWSApi.DeleteStorageEntityRegistryEntryAsync(this.testZone);
-            var deletedZone = this.testZone;
-            this.testZone = null;
+            var result = await HassWsApi.DeleteStorageEntityRegistryEntryAsync(_testZone);
+            var deletedZone = _testZone;
+            _testZone = null;
 
             Assert.IsTrue(result);
             Assert.IsFalse(deletedZone.IsTracked);

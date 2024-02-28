@@ -1,10 +1,11 @@
-﻿using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(ModifiablePropertyCollection<string>))]
     public class ModifiablePropertyCollectionTests
@@ -12,7 +13,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void DoesNotAcceptsDuplicatedValues()
         {
-            var collectionProperty = this.CreateCollectionProperty();
+            var collectionProperty = CreateCollectionProperty();
 
             const string item = "Test";
             collectionProperty.Value.Add(item);
@@ -24,7 +25,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void AddInvalidValueWhenUsingValidationFuncThrows()
         {
-            var collectionProperty = this.CreateCollectionProperty(0, x => x == "Test");
+            var collectionProperty = CreateCollectionProperty(0, x => x == "Test");
 
             Assert.Throws<InvalidOperationException>(() => collectionProperty.Value.Add("Test2"));
         }
@@ -33,7 +34,7 @@ namespace HassClient.Core.Tests
         public void AddValidValueWhenUsingValidationFuncDoesNotThrows()
         {
             const string item = "Test";
-            var collectionProperty = this.CreateCollectionProperty(0, validationFunc: x => x == item);
+            var collectionProperty = CreateCollectionProperty(0, validationFunc: x => x == item);
 
             Assert.DoesNotThrow(() => collectionProperty.Value.Add(item));
         }
@@ -41,7 +42,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SaveChangesMakesHasPendingChangesFalse()
         {
-            var collectionProperty = this.CreateCollectionProperty(hasChanges: true);
+            var collectionProperty = CreateCollectionProperty(hasChanges: true);
             Assert.IsTrue(collectionProperty.HasPendingChanges);
 
             collectionProperty.SaveChanges();
@@ -51,7 +52,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void DiscardPendingChangesMakesHasPendingChangesFalse()
         {
-            var collectionProperty = this.CreateCollectionProperty(hasChanges: true);
+            var collectionProperty = CreateCollectionProperty(hasChanges: true);
             Assert.IsTrue(collectionProperty.HasPendingChanges);
 
             collectionProperty.DiscardPendingChanges();
@@ -61,7 +62,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void DiscardPendingChangesRestoresPreviousValues()
         {
-            var collectionProperty = this.CreateCollectionProperty(2);
+            var collectionProperty = CreateCollectionProperty();
             var initialValues = collectionProperty.Value.ToArray();
 
             collectionProperty.Value.Add("Test");
@@ -73,7 +74,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void AddNewValueMakesHasPendingChangesTrue()
         {
-            var collectionProperty = this.CreateCollectionProperty();
+            var collectionProperty = CreateCollectionProperty();
             Assert.IsFalse(collectionProperty.HasPendingChanges);
 
             collectionProperty.Value.Add("Test");
@@ -84,7 +85,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void RemoveValueMakesHasPendingChangesTrue()
         {
-            var collectionProperty = this.CreateCollectionProperty();
+            var collectionProperty = CreateCollectionProperty();
             Assert.IsFalse(collectionProperty.HasPendingChanges);
 
             collectionProperty.Value.Remove(collectionProperty.Value.First());
@@ -95,7 +96,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void ClearValuesMakesHasPendingChangesTrue()
         {
-            var collectionProperty = this.CreateCollectionProperty(2);
+            var collectionProperty = CreateCollectionProperty();
             Assert.IsFalse(collectionProperty.HasPendingChanges);
 
             collectionProperty.Value.Clear();
@@ -105,7 +106,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void AddAndRemoveValueMakesHasPendingChangesFalse()
         {
-            var collectionProperty = this.CreateCollectionProperty(2);
+            var collectionProperty = CreateCollectionProperty();
             Assert.IsFalse(collectionProperty.HasPendingChanges);
 
             const string item = "Test";
@@ -119,7 +120,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void RemoveAndAddValueMakesHasPendingChangesFalse()
         {
-            var collectionProperty = this.CreateCollectionProperty(2);
+            var collectionProperty = CreateCollectionProperty();
             var existingValue = collectionProperty.Value.First();
             Assert.IsFalse(collectionProperty.HasPendingChanges);
 
@@ -133,7 +134,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void ClearAndAddSameValuesMakesHasPendingChangesFalse()
         {
-            var collectionProperty = this.CreateCollectionProperty(2);
+            var collectionProperty = CreateCollectionProperty();
             var initialValues = collectionProperty.Value.ToArray();
             Assert.IsFalse(collectionProperty.HasPendingChanges);
 
@@ -150,7 +151,7 @@ namespace HassClient.Core.Tests
         private ModifiablePropertyCollection<string> CreateCollectionProperty(int elementCount = 2, Func<string, bool> validationFunc = null, bool hasChanges = false, [CallerMemberName] string collectionName = null)
         {
             var collection = new ModifiablePropertyCollection<string>(collectionName, validationFunc);
-            for (int i = 0; i < elementCount; i++)
+            for (var i = 0; i < elementCount; i++)
             {
                 collection.Value.Add(MockHelpers.GetRandomEntityId(KnownDomains.Climate));
             }

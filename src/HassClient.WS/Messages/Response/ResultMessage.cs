@@ -1,8 +1,8 @@
-﻿using HassClient.Serialization;
+﻿using HassClient.Core.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Response
 {
     internal class ResultMessage : BaseIncomingMessage
     {
@@ -22,12 +22,12 @@ namespace HassClient.WS.Messages
 
         public T DeserializeResult<T>()
         {
-            return HassSerializer.DeserializeObject<T>(this.Result);
+            return HassSerializer.DeserializeObject<T>(Result);
         }
 
         public void PopulateResult(object target)
         {
-            HassSerializer.PopulateObject(this.Result, target);
+            HassSerializer.PopulateObject(Result, target);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace HassClient.Models
+﻿namespace HassClient.Core.Models.RegistryEntries.Modifiable
 {
     /// <summary>
     /// Represents a modifiable property from a model.

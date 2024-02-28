@@ -1,10 +1,10 @@
-﻿using HassClient.Models;
-using HassClient.Serialization;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Serialization;
+using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Messages.Commands
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     /// <summary>
     /// Factory used to create Registry Entry Collection Messages.
@@ -13,24 +13,20 @@ namespace HassClient.WS.Messages.Commands
     public abstract class RegistryEntryCollectionMessagesFactory<TModel>
         where TModel : RegistryEntryBase
     {
-        private readonly string apiPrefix;
-
-        private readonly string modelName;
-
         /// <summary>
-        /// Gets the API prefix used in underlaying message types.
+        /// Gets the API prefix used in underlying message types.
         /// </summary>
-        public string ApiPrefix => this.apiPrefix;
+        public string ApiPrefix { get; }
 
         /// <summary>
         /// Gets the model name used to generate model identifier property.
         /// </summary>
-        public string ModelName => this.modelName;
+        public string ModelName { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistryEntryCollectionMessagesFactory{TModel}"/> class.
         /// </summary>
-        /// <param name="apiPrefix">The API prefix used in underlaying message types.</param>
+        /// <param name="apiPrefix">The API prefix used in underlying message types.</param>
         /// <param name="modelName">The name used to generate model identifier property.</param>
         protected RegistryEntryCollectionMessagesFactory(string apiPrefix, string modelName)
         {
@@ -49,8 +45,8 @@ namespace HassClient.WS.Messages.Commands
              * "lovelace/dashboards"
              */
 
-            this.apiPrefix = apiPrefix;
-            this.modelName = modelName;
+            ApiPrefix = apiPrefix;
+            ModelName = modelName;
         }
 
         /// <summary>
@@ -61,7 +57,7 @@ namespace HassClient.WS.Messages.Commands
         /// </returns>
         public BaseOutgoingMessage CreateListMessage()
         {
-            return new RawCommandMessage($"{this.apiPrefix}/list");
+            return new RawCommandMessage($"{ApiPrefix}/list");
         }
 
         /// <summary>
@@ -74,7 +70,7 @@ namespace HassClient.WS.Messages.Commands
         /// </returns>
         protected BaseOutgoingMessage CreateCreateMessage(TModel model)
         {
-            return this.CreateCreateMessage(this.CreateDefaultCreateObject(model));
+            return CreateCreateMessage(CreateDefaultCreateObject(model));
         }
 
         /// <summary>
@@ -90,7 +86,7 @@ namespace HassClient.WS.Messages.Commands
         /// </returns>
         protected BaseOutgoingMessage CreateUpdateMessage(TModel model, bool forceUpdate)
         {
-            return this.CreateUpdateMessage(model.UniqueId, this.CreateDefaultUpdateObject(model, forceUpdate));
+            return CreateUpdateMessage(model.UniqueId, CreateDefaultUpdateObject(model, forceUpdate));
         }
 
         /// <summary>
@@ -102,7 +98,7 @@ namespace HassClient.WS.Messages.Commands
         /// </returns>
         protected BaseOutgoingMessage CreateDeleteMessage(TModel model)
         {
-            return this.CreateDeleteMessage(model.UniqueId);
+            return CreateDeleteMessage(model.UniqueId);
         }
 
         /// <summary>
@@ -117,7 +113,7 @@ namespace HassClient.WS.Messages.Commands
         protected BaseOutgoingMessage CreateCreateMessage(object model, IEnumerable<string> selectedProperties = null)
         {
             var mergedObject = HassSerializer.CreateJObject(model, selectedProperties);
-            return new RawCommandMessage($"{this.apiPrefix}/create", mergedObject);
+            return new RawCommandMessage($"{ApiPrefix}/create", mergedObject);
         }
 
         /// <summary>
@@ -133,8 +129,8 @@ namespace HassClient.WS.Messages.Commands
         protected BaseOutgoingMessage CreateUpdateMessage(string modelId, object model, IEnumerable<string> selectedProperties = null)
         {
             var mergedObject = HassSerializer.CreateJObject(model, selectedProperties);
-            this.AddModelIdProperty(mergedObject, modelId);
-            return new RawCommandMessage($"{this.apiPrefix}/update", mergedObject);
+            AddModelIdProperty(mergedObject, modelId);
+            return new RawCommandMessage($"{ApiPrefix}/update", mergedObject);
         }
 
         /// <summary>
@@ -147,8 +143,8 @@ namespace HassClient.WS.Messages.Commands
         protected BaseOutgoingMessage CreateDeleteMessage(string modelId)
         {
             var mergedObject = new JObject();
-            this.AddModelIdProperty(mergedObject, modelId);
-            return new RawCommandMessage($"{this.apiPrefix}/delete", mergedObject);
+            AddModelIdProperty(mergedObject, modelId);
+            return new RawCommandMessage($"{ApiPrefix}/delete", mergedObject);
         }
 
         /// <summary>
@@ -163,8 +159,8 @@ namespace HassClient.WS.Messages.Commands
         protected BaseOutgoingMessage CreateCustomOperationMessage(string customOpName, string modelId, TModel model = null, IEnumerable<string> selectedProperties = null)
         {
             var mergedObject = model != null ? HassSerializer.CreateJObject(model, selectedProperties) : new JObject();
-            this.AddModelIdProperty(mergedObject, modelId);
-            return new RawCommandMessage($"{this.apiPrefix}/{customOpName}", mergedObject);
+            AddModelIdProperty(mergedObject, modelId);
+            return new RawCommandMessage($"{ApiPrefix}/{customOpName}", mergedObject);
         }
 
         /// <summary>
@@ -193,7 +189,7 @@ namespace HassClient.WS.Messages.Commands
 
         private void AddModelIdProperty(JObject mergedObject, string modelId)
         {
-            var propertyName = $"{this.modelName}_id";
+            var propertyName = $"{ModelName}_id";
             if (!mergedObject.ContainsKey(propertyName))
             {
                 mergedObject.Add(propertyName, modelId);

@@ -1,7 +1,7 @@
-﻿using HassClient.Serialization;
-using System;
+﻿using System;
+using HassClient.Core.Serialization;
 
-namespace HassClient.Helpers
+namespace HassClient.Core.Helpers
 {
     /// <summary>
     /// Cache used to reduce use of string in KnownEnum types.
@@ -10,33 +10,31 @@ namespace HassClient.Helpers
     internal class KnownEnumCache<TEnum>
             where TEnum : struct, Enum
     {
-        private Map<string, TEnum> cache = new Map<string, TEnum>();
+        private readonly Map<string, TEnum> _cache = new Map<string, TEnum>();
 
-        private TEnum? valueForNullString;
+        private readonly TEnum? _valueForNullString;
 
         public KnownEnumCache(TEnum? valueForNullString = null)
         {
-            this.valueForNullString = valueForNullString;
+            _valueForNullString = valueForNullString;
         }
 
         public TEnum AsEnum(string value)
         {
             if (string.IsNullOrEmpty(value))
             {
-                if (this.valueForNullString.HasValue)
+                if (_valueForNullString.HasValue)
                 {
-                    return this.valueForNullString.Value;
+                    return _valueForNullString.Value;
                 }
-                else
-                {
-                    throw new ArgumentException($"'{nameof(value)}' cannot be null or empty", nameof(value));
-                }
+
+                throw new ArgumentException($"'{nameof(value)}' cannot be null or empty", nameof(value));
             }
 
-            if (!this.cache.Forward.TryGetValue(value, out var result) &&
+            if (!_cache.Forward.TryGetValue(value, out var result) &&
                 HassSerializer.TryGetEnumFromSnakeCase(value, out result))
             {
-                this.cache.Add(value, result);
+                _cache.Add(value, result);
             }
 
             return result;
@@ -44,11 +42,9 @@ namespace HassClient.Helpers
 
         public string AsString(TEnum value)
         {
-            if (!this.cache.Reverse.TryGetValue(value, out var result))
-            {
-                result = value.ToSnakeCaseUnchecked();
-                this.cache.Add(result, value);
-            }
+            if (_cache.Reverse.TryGetValue(value, out var result)) return result;
+            result = value.ToSnakeCaseUnchecked();
+            _cache.Add(result, value);
 
             return result;
         }

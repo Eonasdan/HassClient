@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents a container for units of measure.

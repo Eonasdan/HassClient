@@ -1,32 +1,33 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// Defines a registry entry model that can be updated by the user using the API.
     /// </summary>
     public abstract class RegistryEntryBase
     {
-        private IModifiableProperty[] modifiableProperties;
+        private readonly IModifiableProperty[] _modifiableProperties;
 
         /// <summary>
         /// Gets a value indicating whether the object has been deserialized.
         /// </summary>
-        protected bool isDeserialized;
+        protected bool IsDeserialized;
 
         /// <summary>
         /// Gets the unique identifier that represents this Registry Entry.
         /// </summary>
-        internal protected abstract string UniqueId { get; set; }
+        protected internal abstract string UniqueId { get; set; }
 
         /// <summary>
         /// Gets a value indicating that the registry entry already exists on the Home Assistant instance.
         /// </summary>
         [JsonIgnore]
-        public bool IsTracked => this.isDeserialized && this.UniqueId != null;
+        public bool IsTracked => IsDeserialized && UniqueId != null;
 
         /// <summary>
         /// Gets a value indicating that the registry entry is marked as dirty and is pending to be updated.
@@ -38,14 +39,14 @@ namespace HassClient.Models
         /// Gets a value indicating that the model has pending changes waiting to update.
         /// </summary>
         [JsonIgnore]
-        public bool HasPendingChanges => this.modifiableProperties.Any(x => x.HasPendingChanges);
+        public bool HasPendingChanges => _modifiableProperties.Any(x => x.HasPendingChanges);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistryEntryBase"/> class.
         /// </summary>
         public RegistryEntryBase()
         {
-            this.modifiableProperties = this.GetModifiableProperties().ToArray();
+            _modifiableProperties = GetModifiableProperties().ToArray();
         }
 
         /// <summary>
@@ -57,8 +58,8 @@ namespace HassClient.Models
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            this.isDeserialized = true;
-            this.SaveChanges();
+            IsDeserialized = true;
+            SaveChanges();
         }
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace HassClient.Models
         /// </summary>
         protected void SaveChanges()
         {
-            foreach (var property in this.modifiableProperties)
+            foreach (var property in _modifiableProperties)
             {
                 property.SaveChanges();
             }
@@ -80,7 +81,7 @@ namespace HassClient.Models
         /// </summary>
         public void DiscardPendingChanges()
         {
-            foreach (var property in this.modifiableProperties)
+            foreach (var property in _modifiableProperties)
             {
                 property.DiscardPendingChanges();
             }
@@ -88,18 +89,18 @@ namespace HassClient.Models
 
         internal void Untrack()
         {
-            this.UniqueId = null;
+            UniqueId = null;
         }
 
         internal IEnumerable<string> GetModifiablePropertyNames()
         {
-            return this.modifiableProperties
+            return _modifiableProperties
                           .Select(x => x.Name);
         }
 
         internal IEnumerable<string> GetModifiedPropertyNames()
         {
-            return this.modifiableProperties
+            return _modifiableProperties
                        .Where(x => x.HasPendingChanges)
                        .Select(x => x.Name);
         }

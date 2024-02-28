@@ -1,11 +1,11 @@
-﻿using HassClient.WS.Messages;
-using System;
+﻿using System;
+using HassClient.WS.Messages.Response;
 
 namespace HassClient.WS
 {
     internal class SocketEventSubscription
     {
-        private EventHandler<EventResultInfo> internalEventHandler;
+        private EventHandler<EventResultInfo> _internalEventHandler;
 
         public uint SubscriptionId { get; set; }
 
@@ -13,30 +13,30 @@ namespace HassClient.WS
 
         public SocketEventSubscription(uint subscriptionId)
         {
-            this.SubscriptionId = subscriptionId;
+            SubscriptionId = subscriptionId;
         }
 
         public void AddSubscription(EventHandler<EventResultInfo> eventHandler)
         {
-            this.internalEventHandler += eventHandler;
-            this.SubscriptionCount++;
+            _internalEventHandler += eventHandler;
+            SubscriptionCount++;
         }
 
         public void RemoveSubscription(EventHandler<EventResultInfo> eventHandler)
         {
-            this.internalEventHandler -= eventHandler;
-            this.SubscriptionCount--;
+            _internalEventHandler -= eventHandler;
+            SubscriptionCount--;
         }
 
         public void Invoke(EventResultInfo eventResultInfo)
         {
-            this.internalEventHandler?.Invoke(this, eventResultInfo);
+            _internalEventHandler?.Invoke(this, eventResultInfo);
         }
 
         public void ClearAllSubscriptions()
         {
-            this.internalEventHandler = null;
-            this.SubscriptionCount = 0;
+            _internalEventHandler = null;
+            SubscriptionCount = 0;
         }
     }
 }

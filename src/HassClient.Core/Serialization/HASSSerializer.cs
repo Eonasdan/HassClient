@@ -1,44 +1,48 @@
-﻿using HassClient.Helpers;
-using HassClient.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models.Events;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Serialization.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 
-namespace HassClient.Serialization
+namespace HassClient.Core.Serialization
 {
     /// <summary>
     /// Helper class used by the Home Assistant client for serialization.
     /// </summary>
     public static class HassSerializer
     {
-        private readonly static NamingStrategy namingStrategy = new SnakeCaseNamingStrategy { OverrideSpecifiedNames = false };
+        private static readonly NamingStrategy NamingStrategy = new SnakeCaseNamingStrategy { OverrideSpecifiedNames = false };
 
-        internal static JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
+        internal static readonly JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
         {
             ContractResolver = CreateContractResolver<DefaultContractResolver>(),
             Converters = new List<JsonConverter>
             {
-                new CalVerConverter(),
+                new CalendarVersionConverter(),
                 new ColorConverter(),
                 new ModifiablePropertyConverter(),
-                new StringEnumConverter(namingStrategy),
+                new StringEnumConverter(NamingStrategy),
                 new TupleSetToDictionaryConverter(),
             },
         };
 
-        private readonly static JsonSerializer serializer = CreateSerializer();
+        private static readonly JsonSerializer Serializer = CreateSerializer();
 
         private static JsonSerializer CreateSerializer() => JsonSerializer.CreateDefault(DefaultSettings);
 
         private static T CreateContractResolver<T>()
             where T : DefaultContractResolver, new()
         {
-            var result = new T();
-            result.NamingStrategy = namingStrategy;
+            var result = new T
+            {
+                NamingStrategy = NamingStrategy
+            };
             return result;
         }
 
@@ -96,7 +100,7 @@ namespace HassClient.Serialization
         {
             if (value != null)
             {
-                JsonConvert.PopulateObject((string)value.Value, target, DefaultSettings);
+                JsonConvert.PopulateObject((string)value.Value ?? string.Empty, target, DefaultSettings);
             }
         }
 
@@ -134,7 +138,7 @@ namespace HassClient.Serialization
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var ser = serializer;
+            var ser = Serializer;
 
             if (selectedProperties != null)
             {
@@ -218,7 +222,7 @@ namespace HassClient.Serialization
         /// <see cref="HassSerializer"/> settings.</returns>
         public static string GetDefaultSerializedPropertyName(string name)
         {
-            return namingStrategy.GetPropertyName(name, false);
+            return NamingStrategy.GetPropertyName(name, false);
         }
     }
 }

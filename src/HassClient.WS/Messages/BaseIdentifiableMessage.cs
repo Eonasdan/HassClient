@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace HassClient.WS.Messages
 {
@@ -18,12 +17,12 @@ namespace HassClient.WS.Messages
         /// Initializes a new instance of the <see cref="BaseIdentifiableMessage"/> class.
         /// </summary>
         /// <param name="type"><inheritdoc/></param>
-        public BaseIdentifiableMessage(string type)
+        protected BaseIdentifiableMessage(string type)
             : base(type)
         {
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{base.ToString()} Id:{this.Id}";
+        public override string ToString() => $"{base.ToString()} Id:{Id}";
     }
 }

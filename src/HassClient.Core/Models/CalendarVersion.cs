@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
-    /// Calendar versioning representation used by Home Assitant.
+    /// Calendar versioning representation used by Home Assistant.
     /// </summary>
-    public class CalVer
+    public class CalendarVersion
     {
         /// <summary>
         /// Gets or sets the year in which this version was released.
@@ -31,27 +31,27 @@ namespace HassClient.Models
         /// <summary>
         /// Gets the release date extracted from <see cref="Year"/> and <see cref="Month"/>.
         /// </summary>
-        public DateTime ReleaseDate => new DateTime(this.Year, this.Month, 1);
+        public DateTime ReleaseDate => new DateTime(Year, Month, 1);
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.Year}.{this.Month}.{this.Micro}{this.Modifier}";
+        public override string ToString() => $"{Year}.{Month}.{Micro}{Modifier}";
 
         /// <summary>
-        /// Converts an string representation of a version number to an equivalent <see cref="CalVer"/> object.
+        /// Converts an string representation of a version number to an equivalent <see cref="CalendarVersion"/> object.
         /// </summary>
         /// <param name="input">An string representing a calendar version (eg: 2021.12.0b3).</param>
         /// <exception cref="ArgumentNullException"><paramref name="input"/> is null.</exception>
         /// <exception cref="ArgumentException"><paramref name="input"/> has fewer than two or more than three version components.</exception>
         /// <returns>An object that is equivalent to the version specified in the <paramref name="input"/> parameter.</returns>
-        public static CalVer Create(string input)
+        public static CalendarVersion Create(string input)
         {
-            var value = new CalVer();
+            var value = new CalendarVersion();
             value.Parse(input);
             return value;
         }
 
         /// <summary>
-        /// Parse <see cref="CalVer"/> properties from an string representation.
+        /// Parse <see cref="CalendarVersion"/> properties from an string representation.
         /// </summary>
         /// <param name="input">An string representing a calendar version (eg: 2021.12.0b3).</param>
         /// <exception cref="ArgumentNullException"><paramref name="input"/> is null.</exception>
@@ -72,13 +72,13 @@ namespace HassClient.Models
             var yearPart = parts[0];
             if (!int.TryParse(yearPart, out var year))
             {
-                throw new ArgumentException($"Unexpected version format. {nameof(this.Year)} cannot be parsed from '{yearPart}'", nameof(input));
+                throw new ArgumentException($"Unexpected version format. {nameof(Year)} cannot be parsed from '{yearPart}'", nameof(input));
             }
 
             var monthPart = parts[1];
             if (!int.TryParse(monthPart, out var month))
             {
-                throw new ArgumentException($"Unexpected version format. {nameof(this.Month)} cannot be parsed from '{monthPart}'", nameof(input));
+                throw new ArgumentException($"Unexpected version format. {nameof(Month)} cannot be parsed from '{monthPart}'", nameof(input));
             }
 
             var micro = 0;
@@ -92,17 +92,17 @@ namespace HassClient.Models
 
                 if (string.IsNullOrEmpty(microStr) && string.IsNullOrEmpty(modifierStr))
                 {
-                    throw new ArgumentException($"Unexpected version format. {nameof(this.Micro)} and {nameof(this.Modifier)} cannot be parsed from '{microModifierPart}'", nameof(input));
+                    throw new ArgumentException($"Unexpected version format. {nameof(Micro)} and {nameof(Modifier)} cannot be parsed from '{microModifierPart}'", nameof(input));
                 }
 
                 micro = !string.IsNullOrEmpty(microStr) ? int.Parse(microStr) : 0;
                 modifier = modifierStr;
             }
 
-            this.Year = year;
-            this.Month = month;
-            this.Micro = micro;
-            this.Modifier = modifier;
+            Year = year;
+            Month = month;
+            Micro = micro;
+            Modifier = modifier;
         }
     }
 }

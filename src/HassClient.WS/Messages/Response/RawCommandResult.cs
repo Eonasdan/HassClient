@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Response
 {
     /// <summary>
     /// The result of a raw command operation.
@@ -24,7 +24,7 @@ namespace HassClient.WS.Messages
 
         internal static RawCommandResult FromResultMessage(ResultMessage message)
         {
-            return new RawCommandResult()
+            return new RawCommandResult
             {
                 Success = message.Success,
                 Error = message.Error,

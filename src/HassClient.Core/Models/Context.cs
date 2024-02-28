@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents an entity state's context.
@@ -26,6 +26,6 @@ namespace HassClient.Models
         public string UserId { get; private set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(Context)}: {this.Id}{(!string.IsNullOrWhiteSpace(this.ParentId) ? " / Parent: " + this.ParentId : string.Empty)}";
+        public override string ToString() => $"{nameof(Context)}: {Id}{(!string.IsNullOrWhiteSpace(ParentId) ? " / Parent: " + ParentId : string.Empty)}";
     }
 }

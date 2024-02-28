@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents a service domain definition in Home Assistant.
@@ -25,7 +25,7 @@ namespace HassClient.Models
         /// Gets a flat, fully-qualified list of services in this service domain.
         /// </summary>
         [JsonIgnore]
-        public IEnumerable<string> FlatServiceList => this.Services.Select(s => $"{this.Domain}.{s}");
+        public IEnumerable<string> FlatServiceList => Services.Select(s => $"{Domain}.{s}");
 
         /// <summary>
         /// Retrieves a service object from this domain by its name, or returns <see langword="null" /> if the service does not exist.
@@ -33,7 +33,7 @@ namespace HassClient.Models
         /// <param name="service">The service name to retrieve.</param>
         /// <returns>The <see cref="Service" />, if the name exists in this domain, otherwise <see langword="null" />.</returns>
         [JsonIgnore]
-        public Service this[string service] => this.Services.ContainsKey(service) ? this.Services[service] : null;
+        public Service this[string service] => Services.ContainsKey(service) ? Services[service] : null;
 
         /// <summary>
         /// If the specified <paramref name="serviceName" /> exists, populates the <paramref name="fullServiceName" /> with the
@@ -45,9 +45,9 @@ namespace HassClient.Models
         /// <returns><see langword="true" /> if a match was found, otherwise <see langword="false" />.</returns>
         public bool TryGetService(string serviceName, out string fullServiceName)
         {
-            if (this.Services.ContainsKey(serviceName))
+            if (Services.ContainsKey(serviceName))
             {
-                fullServiceName = $"{this.Domain}.{serviceName}";
+                fullServiceName = $"{Domain}.{serviceName}";
                 return true;
             }
 
@@ -56,6 +56,6 @@ namespace HassClient.Models
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"Service Domain: {this.Domain} ({this.Services?.Count ?? 0} service(s))";
+        public override string ToString() => $"Service Domain: {Domain} ({Services?.Count ?? 0} service(s))";
     }
 }

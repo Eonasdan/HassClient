@@ -1,10 +1,10 @@
-﻿using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HassClient.Core.Models.RegistryEntries.StorageEntities;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(Zone))]
     public class ZoneTests
@@ -43,7 +43,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewNameMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out var initialName, out _, out _, out _, out _, out _);
+            var testEntry = CreateTestEntry(out var initialName, out _, out _, out _, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -55,7 +55,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewIconMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialIcon, out _, out _, out _, out _);
+            var testEntry = CreateTestEntry(out _, out var initialIcon, out _, out _, out _, out _);
 
             testEntry.Icon = "mdi:test";
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -67,7 +67,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewLongitudeMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out var initialLongitude, out _, out _, out _);
+            var testEntry = CreateTestEntry(out _, out _, out var initialLongitude, out _, out _, out _);
 
             testEntry.Longitude += 10;
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -79,7 +79,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewLatitudeMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out _, out var initialLatitude, out _, out _);
+            var testEntry = CreateTestEntry(out _, out _, out _, out var initialLatitude, out _, out _);
 
             testEntry.Latitude += 10;
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -91,7 +91,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewRadiusMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out _, out _, out var initialRadius, out _);
+            var testEntry = CreateTestEntry(out _, out _, out _, out _, out var initialRadius, out _);
 
             testEntry.Radius += 10;
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -103,7 +103,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewIsPassiveMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out _, out _, out _, out var initialIsPassive);
+            var testEntry = CreateTestEntry(out _, out _, out _, out _, out _, out var initialIsPassive);
 
             testEntry.IsPassive = !initialIsPassive;
             Assert.IsTrue(testEntry.HasPendingChanges);

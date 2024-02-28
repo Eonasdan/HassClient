@@ -1,6 +1,6 @@
-﻿using HassClient.Models;
+﻿using HassClient.Core.Models.RegistryEntries.StorageEntities;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class PersonResponse
     {
@@ -9,6 +9,6 @@ namespace HassClient.WS.Messages
         public Person[] Config { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(this.Storage)}: {this.Storage?.Length ?? 0}\t{nameof(this.Config)}: {this.Config?.Length ?? 0}";
+        public override string ToString() => $"{nameof(Storage)}: {Storage?.Length ?? 0}\t{nameof(Config)}: {Config?.Length ?? 0}";
     }
 }

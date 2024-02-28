@@ -1,10 +1,10 @@
-﻿using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HassClient.Core.Models.RegistryEntries;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(User))]
     public class UserTests
@@ -43,7 +43,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewNameMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out var initialName);
+            var testEntry = CreateTestEntry(out var initialName);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -55,7 +55,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewIsAdministratorMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _);
+            var testEntry = CreateTestEntry(out _);
 
             testEntry.IsAdministrator = true;
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -68,7 +68,7 @@ namespace HassClient.Core.Tests
         public void AddNewGroupIdMakesHasPendingChangesTrue()
         {
             var testGroupId = "TestGroupId";
-            var testEntry = this.CreateTestEntry(out _);
+            var testEntry = CreateTestEntry(out _);
 
             testEntry.GroupIds.Add(testGroupId);
             Assert.IsTrue(testEntry.HasPendingChanges);

@@ -1,33 +1,34 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// Represents a Home Assistant user.
     /// </summary>
     public class User : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> name = new ModifiableProperty<string>(nameof(Name));
+        private readonly ModifiableProperty<string> _name = new ModifiableProperty<string>(nameof(Name));
 
-        private readonly ModifiableProperty<bool> isActive = new ModifiableProperty<bool>(nameof(IsActive));
+        private readonly ModifiableProperty<bool> _isActive = new ModifiableProperty<bool>(nameof(IsActive));
 
-        private readonly ModifiableProperty<bool> isLocalOnly = new ModifiableProperty<bool>(nameof(IsLocalOnly));
+        private readonly ModifiableProperty<bool> _isLocalOnly = new ModifiableProperty<bool>(nameof(IsLocalOnly));
 
-        private readonly ModifiablePropertyCollection<string> groupIds = new ModifiablePropertyCollection<string>(nameof(GroupIds));
+        private readonly ModifiablePropertyCollection<string> _groupIds = new ModifiablePropertyCollection<string>(nameof(GroupIds));
 
         /// <summary>
         /// The System Administrator group id constant.
         /// </summary>
-        public const string SYSADMIN_GROUP_ID = "system-admin";
+        public const string SysadminGroupId = "system-admin";
 
         /// <inheritdoc />
-        internal protected override string UniqueId
+        protected internal override string UniqueId
         {
-            get => this.Id;
-            set => this.Id = value;
+            get => Id;
+            set => Id = value;
         }
 
         /// <summary>
@@ -42,15 +43,15 @@ namespace HassClient.Models
         [JsonProperty]
         public string Name
         {
-            get => this.name.Value;
+            get => _name.Value;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new InvalidOperationException($"'{nameof(this.Name)}' cannot be null or whitespace.");
+                    throw new InvalidOperationException($"'{nameof(Name)}' cannot be null or whitespace.");
                 }
 
-                this.name.Value = value;
+                _name.Value = value;
             }
         }
 
@@ -66,8 +67,8 @@ namespace HassClient.Models
         [JsonProperty("local_only")]
         public bool IsLocalOnly
         {
-            get => this.isLocalOnly.Value;
-            set => this.isLocalOnly.Value = value;
+            get => _isLocalOnly.Value;
+            set => _isLocalOnly.Value = value;
         }
 
         /// <summary>
@@ -76,8 +77,8 @@ namespace HassClient.Models
         [JsonProperty]
         public bool IsActive
         {
-            get => this.isActive.Value;
-            set => this.isActive.Value = value;
+            get => _isActive.Value;
+            set => _isActive.Value = value;
         }
 
         /// <summary>
@@ -86,16 +87,16 @@ namespace HassClient.Models
         [JsonIgnore]
         public bool IsAdministrator
         {
-            get => this.GroupIds?.Contains(SYSADMIN_GROUP_ID) == true;
+            get => GroupIds?.Contains(SysadminGroupId) == true;
             set
             {
                 if (value)
                 {
-                    this.GroupIds.Add(SYSADMIN_GROUP_ID);
+                    GroupIds.Add(SysadminGroupId);
                 }
                 else
                 {
-                    this.GroupIds.Remove(SYSADMIN_GROUP_ID);
+                    GroupIds.Remove(SysadminGroupId);
                 }
             }
         }
@@ -116,10 +117,7 @@ namespace HassClient.Models
         /// Gets a set of group ids where the user is included.
         /// </summary>
         [JsonProperty]
-        public ICollection<string> GroupIds
-        {
-            get => this.groupIds.Value;
-        }
+        public ICollection<string> GroupIds => _groupIds.Value;
 
         /// <summary>
         /// Gets the credentials of this user.
@@ -144,13 +142,12 @@ namespace HassClient.Models
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace", nameof(name));
             }
 
-            this.Name = name;
-            if (groupIds != null)
+            Name = name;
+            if (groupIds == null) return;
+            
+            foreach (var item in groupIds)
             {
-                foreach (var item in groupIds)
-                {
-                    this.groupIds.Value.Add(item);
-                }
+                _groupIds.Value.Add(item);
             }
         }
 
@@ -158,11 +155,11 @@ namespace HassClient.Models
         /// Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
         /// <param name="name">The name of the user.</param>
-        /// <param name="isAdministrator">A value indicating is the user will be included in the <see cref="SYSADMIN_GROUP_ID"/>.</param>
+        /// <param name="isAdministrator">A value indicating is the user will be included in the <see cref="SysadminGroupId"/>.</param>
         public User(string name, bool isAdministrator)
             : this(name)
         {
-            this.IsAdministrator = isAdministrator;
+            IsAdministrator = isAdministrator;
         }
 
         /// <summary>
@@ -171,7 +168,7 @@ namespace HassClient.Models
         /// <returns>
         /// <see langword="true"/> if the property should be serialized; otherwise, <see langword="false"/>.
         /// </returns>
-        public bool ShouldSerializeIsActive() => this.IsTracked;
+        public bool ShouldSerializeIsActive() => IsTracked;
 
         // Used for testing purposes.
         internal static User CreateUnmodified(string uniqueId, string name, bool isOwner)
@@ -189,37 +186,37 @@ namespace HassClient.Models
         /// <inheritdoc />
         protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
         {
-            yield return this.name;
-            yield return this.isActive;
-            yield return this.isLocalOnly;
-            yield return this.groupIds;
+            yield return _name;
+            yield return _isActive;
+            yield return _isLocalOnly;
+            yield return _groupIds;
         }
 
         internal void SetIsActive(bool value)
         {
-            this.IsActive = value;
+            IsActive = value;
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(User)}: {this.Name}";
+        public override string ToString() => $"{nameof(User)}: {Name}";
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj is User user &&
-                   this.Id == user.Id;
+                   Id == user.Id;
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return 2108858624 + EqualityComparer<string>.Default.GetHashCode(this.Id);
+            return 2108858624 + EqualityComparer<string>.Default.GetHashCode(Id);
         }
 
         // Used for testing purposes.
         internal User Clone()
         {
-            var result = CreateUnmodified(this.UniqueId, this.Name, this.IsOwner);
+            var result = CreateUnmodified(UniqueId, Name, IsOwner);
             return result;
         }
     }

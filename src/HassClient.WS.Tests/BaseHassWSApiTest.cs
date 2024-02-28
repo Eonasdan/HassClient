@@ -1,21 +1,22 @@
-using HassClient.Serialization;
-using Newtonsoft.Json.Serialization;
-using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using HassClient.Core.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using NUnit.Framework;
 
 namespace HassClient.WS.Tests
 {
-    public abstract class BaseHassWSApiTest
+    public abstract class BaseHassWsApiTest
     {
         public const string TestsInstanceBaseUrlVar = "TestsInstanceBaseUrl";
         public const string TestsAccessTokenVar = "TestsAccessToken";
 
-        private readonly ConnectionParameters connectionParameters;
+        private readonly ConnectionParameters _connectionParameters;
 
-        protected HassWSApi hassWSApi;
+        protected HassWsApi HassWsApi;
 
-        public BaseHassWSApiTest()
+        public BaseHassWsApiTest()
         {
             var instanceBaseUrl = Environment.GetEnvironmentVariable(TestsInstanceBaseUrlVar);
             var accessToken = Environment.GetEnvironmentVariable(TestsAccessTokenVar);
@@ -30,19 +31,19 @@ namespace HassClient.WS.Tests
                 Assert.Ignore($"Hass access token for tests not provided. It should be set in the environment variable '{TestsAccessTokenVar}'");
             }
 
-            this.connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(instanceBaseUrl, accessToken);
+            _connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(instanceBaseUrl, accessToken);
         }
 
         [OneTimeSetUp]
         protected virtual async Task OneTimeSetUp()
         {
-            this.hassWSApi = new HassWSApi();
-            await this.hassWSApi.ConnectAsync(this.connectionParameters);
+            HassWsApi = new HassWsApi();
+            await HassWsApi.ConnectAsync(_connectionParameters);
 
-            HassSerializer.DefaultSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
-            HassSerializer.DefaultSettings.Error += this.HassSerializerError;
+            HassSerializer.DefaultSettings.MissingMemberHandling = MissingMemberHandling.Error;
+            HassSerializer.DefaultSettings.Error += HassSerializerError;
 
-            Assert.AreEqual(this.hassWSApi.ConnectionState, ConnectionStates.Connected, "SetUp failed");
+            Assert.AreEqual(HassWsApi.ConnectionState, ConnectionStates.Connected, "SetUp failed");
         }
 
         private void HassSerializerError(object sender, ErrorEventArgs args)

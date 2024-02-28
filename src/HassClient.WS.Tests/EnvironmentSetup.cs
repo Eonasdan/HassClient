@@ -1,23 +1,23 @@
-﻿using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Containers;
-using NUnit.Framework;
-using HassClient.WS.Tests.Extensions;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using HassClient.WS.Tests.Extensions;
+using NUnit.Framework;
 
 namespace HassClient.WS.Tests
 {
     [SetUpFixture]
     public class EnvironmentSetup
     {
-        private IContainer hassContainer;
+        private IContainer _hassContainer;
 
         [OneTimeSetUp]
         public async Task GlobalSetupAsync()
         {
-            var instanceBaseUrl = Environment.GetEnvironmentVariable(BaseHassWSApiTest.TestsInstanceBaseUrlVar);
+            var instanceBaseUrl = Environment.GetEnvironmentVariable(BaseHassWsApiTest.TestsInstanceBaseUrlVar);
 
             if (instanceBaseUrl == null)
             {
@@ -26,38 +26,38 @@ namespace HassClient.WS.Tests
                 Directory.CreateDirectory(tmpDirectory);
                 DirectoryExtensions.CopyFilesRecursively("./resources", tmpDirectory);
 
-                const int HassPort = 8123;
-                const string HassVersion = "latest";
+                const int hassPort = 8123;
+                const string hassVersion = "latest";
                 const string tokenFilename = "TOKEN";
                 var testcontainersBuilder = new ContainerBuilder()
-                      .WithImage($"homeassistant/home-assistant:{HassVersion}")
-                      .WithPortBinding(HassPort, assignRandomHostPort: true)
-                      .WithExposedPort(HassPort)
+                      .WithImage($"homeassistant/home-assistant:{hassVersion}")
+                      .WithPortBinding(hassPort, assignRandomHostPort: true)
+                      .WithExposedPort(hassPort)
                       .WithBindMount(Path.Combine(tmpDirectory, "config"), "/config")
                       .WithBindMount(Path.Combine(tmpDirectory, "scripts"), "/app")
                       .WithWaitStrategy(Wait.ForUnixContainer()
-                                            .UntilPortIsAvailable(HassPort))
+                                            .UntilPortIsAvailable(hassPort))
                       .WithEntrypoint("/bin/bash", "-c")
                       .WithCommand($"python3 /app/create_token.py >/app/{tokenFilename} && /init");
 
-                this.hassContainer = testcontainersBuilder.Build();
-                await this.hassContainer.StartAsync();
+                _hassContainer = testcontainersBuilder.Build();
+                await _hassContainer.StartAsync();
 
-                var mappedPort = this.hassContainer.GetMappedPublicPort(HassPort);
+                var mappedPort = _hassContainer.GetMappedPublicPort(hassPort);
                 var hostTokenPath = Path.Combine(tmpDirectory, "scripts", tokenFilename);
                 var accessToken = File.ReadLines(hostTokenPath).First();
 
-                Environment.SetEnvironmentVariable(BaseHassWSApiTest.TestsInstanceBaseUrlVar, $"http://localhost:{mappedPort}");
-                Environment.SetEnvironmentVariable(BaseHassWSApiTest.TestsAccessTokenVar, accessToken);
+                Environment.SetEnvironmentVariable(BaseHassWsApiTest.TestsInstanceBaseUrlVar, $"http://localhost:{mappedPort}");
+                Environment.SetEnvironmentVariable(BaseHassWsApiTest.TestsAccessTokenVar, accessToken);
             }
         }
 
         [OneTimeTearDown]
         public async Task GlobalTeardown()
         {
-            if (this.hassContainer != null)
+            if (_hassContainer != null)
             {
-                await this.hassContainer.DisposeAsync();
+                await _hassContainer.DisposeAsync();
             }
         }
     }

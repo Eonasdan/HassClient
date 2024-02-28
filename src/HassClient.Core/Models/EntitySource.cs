@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Defines the source of an entity. This can be helpful to see if it's coming from configuration.yaml
@@ -33,12 +33,12 @@ namespace HassClient.Models
         public string ConfigEntry { get; private set; }
 
         /// <summary>
-        /// Gets a value indicathing whether the entity uses a custom component platform.
+        /// Gets a value indicating whether the entity uses a custom component platform.
         /// </summary>
         [JsonProperty("custom_component")]
         public bool IsCustomComponent { get; private set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"Id: {this.EntityId} Domain: {this.Domain} Source: {this.Source} ";
+        public override string ToString() => $"Id: {EntityId} Domain: {Domain} Source: {Source} ";
     }
 }

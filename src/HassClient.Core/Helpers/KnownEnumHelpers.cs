@@ -1,20 +1,21 @@
-﻿using HassClient.Models;
-using HassClient.Serialization;
-using System;
+﻿using System;
+using HassClient.Core.Models.Events;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Serialization;
 
-namespace HassClient.Helpers
+namespace HassClient.Core.Helpers
 {
     /// <summary>
     /// Contains extension methods to convert between known enums such as <see cref="KnownDomains"/>,
     /// <see cref="KnownServices"/> or <see cref="KnownEventTypes"/> to snake case strings.
     /// <para>
     /// It uses an internal cache, so these methods should be used instead of
-    /// <see cref="HassSerializer.ToSnakeCase{TEnum}(TEnum)"/>.
+    /// <see cref="HassSerializer.ToSnakeCase{TEnum}"/>.
     /// </para>
     /// </summary>
-    public static partial class KnownEnumHelpers
+    public static class KnownEnumHelpers
     {
-        private static KnownEnumCache<KnownDomains> knownDomainsCache = new KnownEnumCache<KnownDomains>();
+        private static readonly KnownEnumCache<KnownDomains> KnownDomainsCache = new KnownEnumCache<KnownDomains>();
 
         /// <summary>
         /// Converts a given <paramref name="domain"/> to <see cref="KnownDomains"/>.
@@ -30,7 +31,7 @@ namespace HassClient.Helpers
                 throw new ArgumentException($"'{nameof(domain)}' cannot be null or empty", nameof(domain));
             }
 
-            return knownDomainsCache.AsEnum(domain);
+            return KnownDomainsCache.AsEnum(domain);
         }
 
         /// <summary>
@@ -42,10 +43,10 @@ namespace HassClient.Helpers
         /// </returns>
         public static string ToDomainString(this KnownDomains domain)
         {
-            return knownDomainsCache.AsString(domain);
+            return KnownDomainsCache.AsString(domain);
         }
 
-        private static KnownEnumCache<KnownEventTypes> knownEventTypesCache = new KnownEnumCache<KnownEventTypes>();
+        private static readonly KnownEnumCache<KnownEventTypes> KnownEventTypesCache = new KnownEnumCache<KnownEventTypes>();
 
         /// <summary>
         /// Converts a given snake case <paramref name="eventType"/> to <see cref="KnownDomains"/>.
@@ -63,7 +64,7 @@ namespace HassClient.Helpers
                 throw new ArgumentException($"'{nameof(eventType)}' cannot be null or empty", nameof(eventType));
             }
 
-            return knownEventTypesCache.AsEnum(eventType);
+            return KnownEventTypesCache.AsEnum(eventType);
         }
 
         /// <summary>
@@ -75,10 +76,10 @@ namespace HassClient.Helpers
         /// </returns>
         public static string ToEventTypeString(this KnownEventTypes eventType)
         {
-            return knownEventTypesCache.AsString(eventType);
+            return KnownEventTypesCache.AsString(eventType);
         }
 
-        private static KnownEnumCache<KnownServices> knownServicesCache = new KnownEnumCache<KnownServices>();
+        private static readonly KnownEnumCache<KnownServices> KnownServicesCache = new KnownEnumCache<KnownServices>();
 
         /// <summary>
         /// Converts a given snake case <paramref name="service"/> to <see cref="KnownServices"/>.
@@ -96,7 +97,7 @@ namespace HassClient.Helpers
                 throw new ArgumentException($"'{nameof(service)}' cannot be null or empty", nameof(service));
             }
 
-            return knownServicesCache.AsEnum(service);
+            return KnownServicesCache.AsEnum(service);
         }
 
         /// <summary>
@@ -108,10 +109,10 @@ namespace HassClient.Helpers
         /// </returns>
         public static string ToServiceString(this KnownServices service)
         {
-            return knownServicesCache.AsString(service);
+            return KnownServicesCache.AsString(service);
         }
 
-        private static KnownEnumCache<KnownStates> knownStatesCache = new KnownEnumCache<KnownStates>(KnownStates.Unknown);
+        private static readonly KnownEnumCache<KnownStates> KnownStatesCache = new KnownEnumCache<KnownStates>(KnownStates.Unknown);
 
         /// <summary>
         /// Converts a given snake case <paramref name="state"/> to <see cref="KnownStates"/>.
@@ -124,7 +125,7 @@ namespace HassClient.Helpers
         /// </returns>
         public static KnownStates AsKnownState(this string state)
         {
-            return knownStatesCache.AsEnum(state);
+            return KnownStatesCache.AsEnum(state);
         }
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace HassClient.Helpers
         /// </returns>
         public static string ToStateString(this KnownStates state)
         {
-            return knownStatesCache.AsString(state);
+            return KnownStatesCache.AsString(state);
         }
     }
 }

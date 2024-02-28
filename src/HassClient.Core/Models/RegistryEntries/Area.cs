@@ -1,23 +1,24 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// Represents an area.
     /// </summary>
     public class Area : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> name = new ModifiableProperty<string>(nameof(Name));
+        private readonly ModifiableProperty<string> _name = new ModifiableProperty<string>(nameof(Name));
 
-        private readonly ModifiableProperty<string> picture = new ModifiableProperty<string>(nameof(Picture));
+        private readonly ModifiableProperty<string> _picture = new ModifiableProperty<string>(nameof(Picture));
 
         /// <inheritdoc />
-        internal protected override string UniqueId
+        protected internal override string UniqueId
         {
-            get => this.Id;
-            set => this.Id = value;
+            get => Id;
+            set => Id = value;
         }
 
         /// <summary>
@@ -32,15 +33,15 @@ namespace HassClient.Models
         [JsonProperty]
         public string Name
         {
-            get => this.name.Value;
+            get => _name.Value;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new InvalidOperationException($"'{nameof(this.Name)}' cannot be null or whitespace.");
+                    throw new InvalidOperationException($"'{nameof(Name)}' cannot be null or whitespace.");
                 }
 
-                this.name.Value = value;
+                _name.Value = value;
             }
         }
 
@@ -50,8 +51,8 @@ namespace HassClient.Models
         [JsonProperty]
         public string Picture
         {
-            get => this.picture.Value;
-            set => this.picture.Value = value;
+            get => _picture.Value;
+            set => _picture.Value = value;
         }
 
         [JsonConstructor]
@@ -71,8 +72,8 @@ namespace HassClient.Models
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace", nameof(name));
             }
 
-            this.Name = name;
-            this.Picture = picture;
+            Name = name;
+            Picture = picture;
         }
 
         // Used for testing purposes.
@@ -86,31 +87,31 @@ namespace HassClient.Models
         /// <inheritdoc />
         protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
         {
-            yield return this.name;
-            yield return this.picture;
+            yield return _name;
+            yield return _picture;
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(Area)}: {this.Name}";
+        public override string ToString() => $"{nameof(Area)}: {Name}";
 
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj is Area area &&
-                   this.Id == area.Id;
+                   Id == area.Id;
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return 2108858624 + EqualityComparer<string>.Default.GetHashCode(this.Id);
+            return 2108858624 + EqualityComparer<string>.Default.GetHashCode(Id);
         }
 
         // Used for testing purposes.
         internal Area Clone()
         {
-            var result = CreateUnmodified(this.Name, this.Picture);
-            result.UniqueId = this.UniqueId;
+            var result = CreateUnmodified(Name, Picture);
+            result.UniqueId = UniqueId;
             return result;
         }
     }

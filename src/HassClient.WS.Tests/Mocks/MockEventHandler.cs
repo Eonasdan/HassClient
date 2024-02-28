@@ -6,6 +6,6 @@ namespace HassClient.WS.Tests.Mocks
     {
         public event EventHandler<T> Event;
 
-        public EventHandler<T> EventHandler => this.Event;
+        public EventHandler<T> EventHandler => Event;
     }
 }

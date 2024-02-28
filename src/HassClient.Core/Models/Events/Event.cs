@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.Events
 {
     /// <summary>
     /// Represents an event definition in Home Assistant.
@@ -21,6 +21,6 @@ namespace HassClient.Models
         public int ListenerCount { get; internal set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"Event: {this.Name} ({this.ListenerCount} listener(s))";
+        public override string ToString() => $"Event: {Name} ({ListenerCount} listener(s))";
     }
 }

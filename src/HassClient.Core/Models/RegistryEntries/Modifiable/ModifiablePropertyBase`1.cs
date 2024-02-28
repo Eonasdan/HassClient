@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries.Modifiable
 {
     /// <summary>
     /// Base class that represents a modifiable property from a model.
@@ -8,9 +8,9 @@ namespace HassClient.Models
     /// <typeparam name="T">The property type.</typeparam>
     public abstract class ModifiablePropertyBase<T> : IModifiableProperty
     {
-        private Func<T, bool> validationFunc;
+        private readonly Func<T, bool> _validationFunc;
 
-        private readonly string validationExceptionMessage;
+        private readonly string _validationExceptionMessage;
 
         /// <inheritdoc />
         public string Name
@@ -28,7 +28,7 @@ namespace HassClient.Models
         /// <param name="name">The property name.</param>
         public ModifiablePropertyBase(string name)
         {
-            this.Name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace HassClient.Models
         public ModifiablePropertyBase(string name, Func<T, bool> validationFunc, string validationExceptionMessage = null)
             : this(name)
         {
-            this.validationFunc = validationFunc;
-            this.validationExceptionMessage = validationExceptionMessage;
+            _validationFunc = validationFunc;
+            _validationExceptionMessage = validationExceptionMessage;
         }
 
         /// <summary>
@@ -54,11 +54,9 @@ namespace HassClient.Models
         /// <param name="value">The value to test.</param>
         protected void ValidateValue(T value)
         {
-            if (this.validationFunc?.Invoke(value) == false)
-            {
-                var message = this.validationExceptionMessage ?? $"'{value}' is not valid value for the property {this.Name}.";
-                throw new InvalidOperationException(message);
-            }
+            if (_validationFunc?.Invoke(value) != false) return;
+            var message = _validationExceptionMessage ?? $"'{value}' is not valid value for the property {Name}.";
+            throw new InvalidOperationException(message);
         }
 
         /// <inheritdoc />

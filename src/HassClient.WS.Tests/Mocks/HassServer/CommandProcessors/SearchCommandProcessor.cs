@@ -1,15 +1,16 @@
 ﻿using Bogus;
-using HassClient.Serialization;
+using HassClient.Core.Serialization;
 using HassClient.WS.Messages;
+using HassClient.WS.Messages.Commands.Search;
 using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Tests.Mocks.HassServer
+namespace HassClient.WS.Tests.Mocks.HassServer.CommandProcessors
 {
     public class SearchCommandProcessor : BaseCommandProcessor
     {
         public override bool CanProcess(BaseIdentifiableMessage receivedCommand) => receivedCommand is SearchRelatedMessage;
 
-        public override BaseIdentifiableMessage ProccessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
+        public override BaseIdentifiableMessage ProcessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
         {
             var searchMessage = receivedCommand as SearchRelatedMessage;
             var resultResponse = new SearchRelatedResponse();
@@ -18,15 +19,15 @@ namespace HassClient.WS.Tests.Mocks.HassServer
                 searchMessage.ItemId == "light.bed_light")
             {
                 var faker = new Faker();
-                resultResponse.AreaIds = new[] { faker.RandomUUID() };
-                resultResponse.AutomationIds = new[] { faker.RandomUUID() };
-                resultResponse.ConfigEntryIds = new[] { faker.RandomUUID() };
-                resultResponse.DeviceIds = new[] { faker.RandomUUID() };
+                resultResponse.AreaIds = new[] { faker.RandomUuid() };
+                resultResponse.AutomationIds = new[] { faker.RandomUuid() };
+                resultResponse.ConfigEntryIds = new[] { faker.RandomUuid() };
+                resultResponse.DeviceIds = new[] { faker.RandomUuid() };
                 resultResponse.EntityIds = new[] { faker.RandomEntityId() };
             }
 
             var resultObject = new JRaw(HassSerializer.SerializeObject(resultResponse));
-            return this.CreateResultMessageWithResult(resultObject);
+            return CreateResultMessageWithResult(resultObject);
         }
     }
 }

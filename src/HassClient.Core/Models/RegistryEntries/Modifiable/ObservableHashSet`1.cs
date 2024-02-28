@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries.Modifiable
 {
     /// <summary>
     /// Represents an observable set that can track pending changes.
@@ -11,31 +11,31 @@ namespace HassClient.Models
     /// <typeparam name="T">The collection elements type.</typeparam>
     internal class ObservableHashSet<T> : ObservableCollection<T>
     {
-        private HashSet<T> addedValues = new HashSet<T>();
+        private readonly HashSet<T> _addedValues = new HashSet<T>();
 
-        private HashSet<T> removedValues = new HashSet<T>();
+        private readonly HashSet<T> _removedValues = new HashSet<T>();
 
-        private Action<T> validationCallback;
+        private readonly Action<T> _validationCallback;
 
-        public bool HasPendingChanges => this.addedValues.Count > 0 || this.removedValues.Count > 0;
+        public bool HasPendingChanges => _addedValues.Count > 0 || _removedValues.Count > 0;
 
         public ObservableHashSet(Action<T> validationCallback)
         {
-            this.validationCallback = validationCallback;
+            _validationCallback = validationCallback;
         }
 
         /// <inheritdoc />
         protected override void InsertItem(int index, T item)
         {
-            if (this.Contains(item))
+            if (Contains(item))
             {
                 return;
             }
 
-            this.validationCallback(item);
-            if (!this.removedValues.Remove(item))
+            _validationCallback(item);
+            if (!_removedValues.Remove(item))
             {
-                this.addedValues.Add(item);
+                _addedValues.Add(item);
             }
 
             base.InsertItem(index, item);
@@ -46,9 +46,9 @@ namespace HassClient.Models
         {
             var item = this[index];
 
-            if (!this.addedValues.Remove(item))
+            if (!_addedValues.Remove(item))
             {
-                this.removedValues.Add(item);
+                _removedValues.Add(item);
             }
 
             base.RemoveItem(index);
@@ -57,12 +57,12 @@ namespace HassClient.Models
         /// <inheritdoc />
         protected override void ClearItems()
         {
-            foreach (var item in this.Except(this.addedValues))
+            foreach (var item in this.Except(_addedValues))
             {
-                this.removedValues.Add(item);
+                _removedValues.Add(item);
             }
 
-            this.addedValues.Clear();
+            _addedValues.Clear();
 
             base.ClearItems();
         }
@@ -81,25 +81,24 @@ namespace HassClient.Models
 
         public void SaveChanges()
         {
-            this.addedValues.Clear();
-            this.removedValues.Clear();
+            _addedValues.Clear();
+            _removedValues.Clear();
         }
 
         public void DiscardPendingChanges()
         {
-            foreach (var item in this.removedValues)
+            foreach (var item in _removedValues)
             {
-                base.InsertItem(this.Count, item);
+                base.InsertItem(Count, item);
             }
 
-            foreach (var item in this.addedValues)
+            foreach (var index in _addedValues.Select(IndexOf))
             {
-                var index = this.IndexOf(item);
                 base.RemoveItem(index);
             }
 
-            this.addedValues.Clear();
-            this.removedValues.Clear();
+            _addedValues.Clear();
+            _removedValues.Clear();
         }
     }
 }

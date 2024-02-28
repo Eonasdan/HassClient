@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.Search
 {
     internal class SearchRelatedMessage : BaseOutgoingMessage
     {
@@ -18,8 +18,8 @@ namespace HassClient.WS.Messages
         public SearchRelatedMessage(ItemTypes itemType, string itemId)
             : this()
         {
-            this.ItemType = itemType;
-            this.ItemId = itemId;
+            ItemType = itemType;
+            ItemId = itemId;
         }
     }
 }

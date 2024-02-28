@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class EntityEntryResponse
     {
@@ -11,6 +11,6 @@ namespace HassClient.WS.Messages
         public int ReloadDelay { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.EntityEntryRaw}";
+        public override string ToString() => $"{EntityEntryRaw}";
     }
 }

@@ -1,36 +1,36 @@
-﻿using HassClient.Models;
-using HassClient.Serialization;
-using HassClient.WS.Messages;
+﻿using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Serialization;
+using HassClient.WS.Messages.Commands.RegistryEntryCollections;
 using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Tests.Mocks.HassServer
+namespace HassClient.WS.Tests.Mocks.HassServer.CommandProcessors
 {
     internal class UserStorageCollectionCommandProcessor
         : RegistryEntryCollectionCommandProcessor<UserMessagesFactory, User>
     {
-        protected override object ProccessCreateCommand(MockHassServerRequestContext context, JToken merged)
+        protected override object ProcessCreateCommand(MockHassServerRequestContext context, JToken merged)
         {
-            var user = (User)base.ProccessCreateCommand(context, merged);
+            var user = (User)base.ProcessCreateCommand(context, merged);
             user.SetIsActive(true);
-            return new UserResponse() { UserRaw = new JRaw(HassSerializer.SerializeObject(user)) };
+            return new UserResponse { UserRaw = new JRaw(HassSerializer.SerializeObject(user)) };
         }
 
-        protected override object ProccessUpdateCommand(MockHassServerRequestContext context, JToken merged)
+        protected override object ProcessUpdateCommand(MockHassServerRequestContext context, JToken merged)
         {
-            var user = base.ProccessUpdateCommand(context, merged);
-            return new UserResponse() { UserRaw = new JRaw(HassSerializer.SerializeObject(user)) };
+            var user = base.ProcessUpdateCommand(context, merged);
+            return new UserResponse { UserRaw = new JRaw(HassSerializer.SerializeObject(user)) };
         }
 
-        protected override object ProccessListCommand(MockHassServerRequestContext context, JToken merged)
+        protected override object ProcessListCommand(MockHassServerRequestContext context, JToken merged)
         {
-            return base.ProccessListCommand(context, merged);
+            return base.ProcessListCommand(context, merged);
         }
 
         protected override void PrepareHassContext(MockHassServerRequestContext context)
         {
             base.PrepareHassContext(context);
-            var ownerUser = User.CreateUnmodified(this.faker.RandomUUID(), "owner", true);
-            context.HassDB.CreateObject(ownerUser);
+            var ownerUser = User.CreateUnmodified(Faker.RandomUuid(), "owner", true);
+            context.HassDb.CreateObject(ownerUser);
         }
     }
 }

@@ -1,58 +1,58 @@
-﻿using HassClient.Helpers;
-using HassClient.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models.Events;
 using HassClient.WS.Messages;
-using System.Collections.Generic;
+using HassClient.WS.Messages.Commands.Subscriptions;
 
-namespace HassClient.WS.Tests.Mocks.HassServer
+namespace HassClient.WS.Tests.Mocks.HassServer.CommandProcessors
 {
     public class EventSubscriptionsProcessor : BaseCommandProcessor
     {
-        private readonly Dictionary<string, List<uint>> subscribersByEventType = new Dictionary<string, List<uint>>();
+        private readonly Dictionary<string, List<uint>> _subscribersByEventType = new();
 
         public override bool CanProcess(BaseIdentifiableMessage receivedCommand)
         {
             return receivedCommand is SubscribeEventsMessage || receivedCommand is UnsubscribeEventsMessage;
         }
 
-        public override BaseIdentifiableMessage ProccessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
+        public override BaseIdentifiableMessage ProcessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
         {
             if (receivedCommand is SubscribeEventsMessage subscribeMessage)
             {
                 var eventType = subscribeMessage.EventType ?? KnownEventTypes.Any.ToEventTypeString();
-                if (!this.subscribersByEventType.TryGetValue(eventType, out var subcribers))
+                if (!_subscribersByEventType.TryGetValue(eventType, out var subscribers))
                 {
-                    subcribers = new List<uint>();
-                    this.subscribersByEventType.Add(eventType, subcribers);
+                    subscribers = new List<uint>();
+                    _subscribersByEventType.Add(eventType, subscribers);
 
                 }
-                subcribers.Add(subscribeMessage.Id);
-                return this.CreateResultMessageWithResult(null);
+                subscribers.Add(subscribeMessage.Id);
+                return CreateResultMessageWithResult(null);
             }
-            else if (receivedCommand is UnsubscribeEventsMessage unsubscribeMessage)
+
+            if (receivedCommand is not UnsubscribeEventsMessage unsubscribeMessage)
+                return CreateResultMessageWithResult(null);
+            
+            foreach (var item in _subscribersByEventType.Values.Where(item => item.Remove(unsubscribeMessage.SubscriptionId)))
             {
-                foreach (var item in this.subscribersByEventType.Values)
-                {
-                    if (item.Remove(unsubscribeMessage.SubscriptionId))
-                    {
-                        //success = true;
-                        break;
-                    }
-                }
+                //success = true;
+                break;
             }
 
-            return this.CreateResultMessageWithResult(null);
+            return CreateResultMessageWithResult(null);
         }
 
         public bool TryGetSubscribers(KnownEventTypes eventType, out List<uint> subscribers)
         {
             subscribers = new List<uint>();
             if (eventType != KnownEventTypes.Any &&
-                this.subscribersByEventType.TryGetValue(KnownEventTypes.Any.ToEventTypeString(), out var anySubscribers))
+                _subscribersByEventType.TryGetValue(KnownEventTypes.Any.ToEventTypeString(), out var anySubscribers))
             {
                 subscribers.AddRange(anySubscribers);
             }
 
-            if (this.subscribersByEventType.TryGetValue(eventType.ToEventTypeString(), out var typeSubscribers))
+            if (_subscribersByEventType.TryGetValue(eventType.ToEventTypeString(), out var typeSubscribers))
             {
                 subscribers.AddRange(typeSubscribers);
             }
@@ -62,7 +62,7 @@ namespace HassClient.WS.Tests.Mocks.HassServer
 
         public void ClearSubscriptions()
         {
-            this.subscribersByEventType.Clear();
+            _subscribersByEventType.Clear();
         }
     }
 }

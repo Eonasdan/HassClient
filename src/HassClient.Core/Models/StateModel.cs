@@ -1,12 +1,13 @@
-﻿using HassClient.Helpers;
-using HassClient.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents a single entity's state.
@@ -29,7 +30,7 @@ namespace HassClient.Models
         /// Gets the state that this entity is currently in as a <see cref="KnownStates"/>.
         /// </summary>
         [JsonIgnore]
-        public KnownStates KnownState => this.State.AsKnownState();
+        public KnownStates KnownState => State.AsKnownState();
 
         /// <summary>
         /// Gets the entity's current attributes and values.
@@ -64,7 +65,7 @@ namespace HassClient.Models
         /// <typeparam name="T">The desired type to cast the attribute value to.</typeparam>
         /// <param name="name">The name of the attribute to retrieve the value for.</param>
         /// <returns>The attribute's current value, cast to type <typeparamref name="T" />.</returns>
-        public T GetAttributeValue<T>(string name) => !this.Attributes.ContainsKey(name) ? default : HassSerializer.DeserializeObject<T>(this.Attributes[name]);
+        public T GetAttributeValue<T>(string name) => !Attributes.ContainsKey(name) ? default : HassSerializer.DeserializeObject<T>(Attributes[name]);
 
         /// <summary>
         /// Attempts to get the values of the specified attribute by <paramref name="name"/> as an
@@ -82,16 +83,16 @@ namespace HassClient.Models
         /// </returns>
         public IEnumerable<T> GetAttributeValues<T>(string name)
         {
-            return this.GetAttributeValue<IEnumerable<T>>(name) ?? Enumerable.Empty<T>();
+            return GetAttributeValue<IEnumerable<T>>(name) ?? Enumerable.Empty<T>();
         }
 
         internal TEnum GetAttributeValue<TEnum>(string name, KnownEnumCache<TEnum> knownEnumCache)
             where TEnum : struct, Enum
         {
-            return knownEnumCache.AsEnum(this.GetAttributeValue<string>(name));
+            return knownEnumCache.AsEnum(GetAttributeValue<string>(name));
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{this.EntityId}: {this.State}";
+        public override string ToString() => $"{EntityId}: {State}";
     }
 }

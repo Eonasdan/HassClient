@@ -1,10 +1,11 @@
-﻿using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries.StorageEntities;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(InputBoolean))]
     public class InputBooleanTests
@@ -43,7 +44,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewNameMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out _, out _);
+            var testEntry = CreateTestEntry(out _, out var initialName, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -55,7 +56,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewIconMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out var initialIcon, out _);
+            var testEntry = CreateTestEntry(out _, out _, out var initialIcon, out _);
 
             testEntry.Icon = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -67,7 +68,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewInitialMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out _, out var initial);
+            var testEntry = CreateTestEntry(out _, out _, out _, out var initial);
 
             testEntry.Initial = !initial;
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -79,7 +80,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void DiscardPendingChanges()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out var initialIcon, out var initial);
+            var testEntry = CreateTestEntry(out _, out var initialName, out var initialIcon, out var initial);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.Icon = MockHelpers.GetRandomTestName();

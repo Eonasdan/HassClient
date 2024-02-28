@@ -1,4 +1,4 @@
-﻿namespace HassClient.WS.Messages
+﻿namespace HassClient.WS.Messages.Response
 {
     /// <summary>
     /// Represents the error codes for <see cref="ErrorInfo"/>.

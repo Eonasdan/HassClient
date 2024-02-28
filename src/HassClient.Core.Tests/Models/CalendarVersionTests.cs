@@ -1,44 +1,44 @@
-﻿using HassClient.Models;
+﻿using System;
+using HassClient.Core.Models;
 using NUnit.Framework;
-using System;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
-    [TestFixture(TestOf = typeof(CalVer))]
-    public class CalVerTests
+    [TestFixture(TestOf = typeof(CalendarVersion))]
+    public class CalendarVersionTests
     {
         [Test]
         public void CreateWithNullThrows()
         {
-            var version = new CalVer();
-            Assert.Throws<ArgumentNullException>(() => CalVer.Create(null));
+            var version = new CalendarVersion();
+            Assert.Throws<ArgumentNullException>(() => CalendarVersion.Create(null));
         }
 
         [Test]
         public void CreateWithInvalidYearThrows()
         {
-            var version = new CalVer();
-            Assert.Throws<ArgumentException>(() => CalVer.Create("invalid"));
+            var version = new CalendarVersion();
+            Assert.Throws<ArgumentException>(() => CalendarVersion.Create("invalid"));
         }
 
         [Test]
         public void CreateWithInvalidMonthThrows()
         {
-            var version = new CalVer();
-            Assert.Throws<ArgumentException>(() => CalVer.Create("2022.invalid"));
+            var version = new CalendarVersion();
+            Assert.Throws<ArgumentException>(() => CalendarVersion.Create("2022.invalid"));
         }
 
         [Test]
         public void CreateWithInvalidMicroAndModifierThrows()
         {
-            var version = new CalVer();
-            Assert.Throws<ArgumentException>(() => CalVer.Create("2022.02.''"));
+            var version = new CalendarVersion();
+            Assert.Throws<ArgumentException>(() => CalendarVersion.Create("2022.02.''"));
         }
 
         [Test]
         public void CreateWithYearAndMonth()
         {
-            var version = CalVer.Create("2022.02");
+            var version = CalendarVersion.Create("2022.02");
 
             Assert.AreEqual(2022, version.Year);
             Assert.AreEqual(2, version.Month);
@@ -49,7 +49,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void CreateWithYearAndMonthAndMicro()
         {
-            var version = CalVer.Create("2022.02.13");
+            var version = CalendarVersion.Create("2022.02.13");
 
             Assert.AreEqual(2022, version.Year);
             Assert.AreEqual(2, version.Month);
@@ -60,7 +60,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void CreateWithYearAndMonthAndModifier()
         {
-            var version = CalVer.Create("2022.02.b3");
+            var version = CalendarVersion.Create("2022.02.b3");
 
             Assert.AreEqual(2022, version.Year);
             Assert.AreEqual(2, version.Month);
@@ -71,7 +71,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void CreateWithYearAndMonthMicroAndModifier()
         {
-            var version = CalVer.Create("2022.02.4b3");
+            var version = CalendarVersion.Create("2022.02.4b3");
 
             Assert.AreEqual(2022, version.Year);
             Assert.AreEqual(2, version.Month);
@@ -82,7 +82,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void CreateDateIsCorrect()
         {
-            var version = CalVer.Create("2022.02.4b3");
+            var version = CalendarVersion.Create("2022.02.4b3");
 
             Assert.AreEqual(2022, version.ReleaseDate.Year);
             Assert.AreEqual(2, version.ReleaseDate.Month);
@@ -92,7 +92,7 @@ namespace HassClient.Core.Tests
         public void ToStringIsCorrect()
         {
             var expectedVersionString = "2022.2.4b3";
-            var version = CalVer.Create(expectedVersionString);
+            var version = CalendarVersion.Create(expectedVersionString);
 
             Assert.AreEqual(expectedVersionString, version.ToString());
         }

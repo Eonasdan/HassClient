@@ -1,11 +1,12 @@
-﻿using HassClient.Helpers;
-using HassClient.Models;
-using HassClient.Serialization;
+﻿using System;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models;
+using HassClient.Core.Models.Events;
+using HassClient.Core.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Response
 {
     /// <summary>
     /// Information of a fired Home Assistant event.
@@ -22,7 +23,7 @@ namespace HassClient.WS.Messages
         /// Gets the event type as <see cref="KnownEventTypes"/>.
         /// </summary>
         [JsonIgnore]
-        public KnownEventTypes KnownEventType => this.EventType.AsKnownEventType();
+        public KnownEventTypes KnownEventType => EventType.AsKnownEventType();
 
         /// <summary>
         /// Gets or sets the time at which the event was fired.
@@ -54,17 +55,10 @@ namespace HassClient.WS.Messages
         /// <returns>The deserialized data object.</returns>
         public T DeserializeData<T>()
         {
-            try
-            {
-                return HassSerializer.DeserializeObject<T>(this.Data);
-            }
-            catch (JsonException)
-            {
-                throw;
-            }
+            return HassSerializer.DeserializeObject<T>(Data);
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"Event {this.EventType} fired at {this.TimeFired} from {this.Origin}";
+        public override string ToString() => $"Event {EventType} fired at {TimeFired} from {Origin}";
     }
 }

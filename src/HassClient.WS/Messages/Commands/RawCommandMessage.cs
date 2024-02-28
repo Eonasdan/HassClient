@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands
 {
     /// <summary>
     /// Outgoing message used for raw commands.
@@ -22,7 +22,7 @@ namespace HassClient.WS.Messages
         public RawCommandMessage(string type, object mergedObject = null)
             : base(type)
         {
-            this.MergedObject = mergedObject;
+            MergedObject = mergedObject;
         }
     }
 }

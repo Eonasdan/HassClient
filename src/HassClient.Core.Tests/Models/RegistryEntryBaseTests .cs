@@ -1,10 +1,11 @@
-﻿using HassClient.Models;
-using HassClient.Serialization;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Serialization;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(EntityRegistryEntryBase))]
     public class RegistryEntryBaseTests
@@ -13,7 +14,7 @@ namespace HassClient.Core.Tests
         {
             public override string EntityId => MockHelpers.GetRandomEntityId(KnownDomains.Camera);
 
-            internal protected override string UniqueId { get; set; }
+            protected internal override string UniqueId { get; set; }
 
             public TestRegistryEntry(string name, string icon = null)
                 : base(name, icon)

@@ -1,10 +1,11 @@
-﻿using HassClient.Helpers;
+﻿using System.Collections.Generic;
+using System.Linq;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// The Entity Registry keeps a registry of entities. Entities are uniquely identified by their domain, platform and
@@ -13,36 +14,36 @@ namespace HassClient.Models
     public class EntityRegistryEntry : EntityRegistryEntryBase
     {
         [JsonProperty]
-        private readonly ModifiableProperty<DisabledByEnum?> disabledBy = new ModifiableProperty<DisabledByEnum?>(nameof(disabledBy));
+        private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new ModifiableProperty<DisabledByEnum?>(nameof(_disabledBy));
 
         [JsonProperty(Required = Required.Always)]
-        private string entityId;
+        private string _entityId;
 
-        private string deviceClass;
+        private string _deviceClass;
 
         /// <inheritdoc />
         [JsonProperty]
-        internal protected override string UniqueId { get; set; }
+        protected internal override string UniqueId { get; set; }
 
         /// <inheritdoc />
         public override string Name
         {
-            get => base.Name ?? this.OriginalName;
-            set => base.Name = value != this.OriginalName ? value : null;
+            get => base.Name ?? OriginalName;
+            set => base.Name = value != OriginalName ? value : null;
         }
 
         /// <inheritdoc />
         public override string Icon
         {
-            get => base.Icon ?? this.OriginalIcon;
-            set => base.Icon = value != this.OriginalIcon ? value : null;
+            get => base.Icon ?? OriginalIcon;
+            set => base.Icon = value != OriginalIcon ? value : null;
         }
 
         /// <inheritdoc />
         protected override bool AcceptsNullOrWhiteSpaceName => true;
 
         /// <inheritdoc />
-        public override string EntityId => this.entityId;
+        public override string EntityId => _entityId;
 
         /// <summary>
         /// Gets the original friendly name of this entity.
@@ -69,8 +70,8 @@ namespace HassClient.Models
         [JsonProperty]
         public string DeviceClass
         {
-            get => this.deviceClass ?? this.OriginalDeviceClass;
-            set => this.deviceClass = value != this.OriginalDeviceClass ? value : null;
+            get => _deviceClass ?? OriginalDeviceClass;
+            set => _deviceClass = value != OriginalDeviceClass ? value : null;
         }
 
         /// <summary>
@@ -101,13 +102,13 @@ namespace HassClient.Models
         /// Gets a value indicating the disabling source, if any.
         /// </summary>
         [JsonIgnore]
-        public DisabledByEnum DisabledBy => this.disabledBy.Value ?? DisabledByEnum.None;
+        public DisabledByEnum DisabledBy => _disabledBy.Value ?? DisabledByEnum.None;
 
         /// <summary>
         /// Gets a value indicating whether the entity is disabled.
         /// </summary>
         [JsonIgnore]
-        public bool IsDisabled => this.DisabledBy != DisabledByEnum.None;
+        public bool IsDisabled => DisabledBy != DisabledByEnum.None;
 
         /// <summary>
         /// Gets the capabilities of the entity.
@@ -142,7 +143,7 @@ namespace HassClient.Models
         /// Gets the domain of the entity.
         /// </summary>
         [JsonIgnore]
-        public string Domain => EntityIdHelpers.GetDomain(this.EntityId);
+        public string Domain => EntityId.GetDomain();
 
         [JsonConstructor]
         private EntityRegistryEntry()
@@ -159,14 +160,14 @@ namespace HassClient.Models
         /// <param name="name">The original name.</param>
         /// <param name="icon">The original icon.</param>
         /// <param name="disabledBy">The original disable.</param>
-        internal protected EntityRegistryEntry(string entityId, string name, string icon, DisabledByEnum disabledBy = DisabledByEnum.None)
+        protected internal EntityRegistryEntry(string entityId, string name, string icon, DisabledByEnum disabledBy = DisabledByEnum.None)
             : base(name, icon)
         {
-            this.entityId = entityId;
-            this.Platform = entityId.GetDomain();
-            this.disabledBy.Value = disabledBy;
+            _entityId = entityId;
+            Platform = entityId.GetDomain();
+            _disabledBy.Value = disabledBy;
 
-            this.SaveChanges();
+            SaveChanges();
         }
 
         // Used for testing purposes.
@@ -184,28 +185,28 @@ namespace HassClient.Models
         /// <inheritdoc />
         protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
         {
-            return base.GetModifiableProperties().Append(this.disabledBy);
+            return base.GetModifiableProperties().Append(_disabledBy);
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(EntityRegistryEntry)}: {this.EntityId}";
+        public override string ToString() => $"{nameof(EntityRegistryEntry)}: {EntityId}";
 
         // Used for testing purposes.
         internal EntityRegistryEntry Clone()
         {
-            var result = CreateUnmodified(this.EntityId, this.Name, this.Icon, this.DisabledBy);
-            result.UniqueId = this.UniqueId;
-            result.entityId = this.entityId;
-            result.AreaId = this.AreaId;
-            result.Capabilities = this.Capabilities;
-            result.ConfigEntryId = this.ConfigEntryId;
-            result.DeviceClass = this.DeviceClass;
-            result.DeviceId = this.DeviceId;
-            result.OriginalName = this.OriginalName;
-            result.OriginalIcon = this.OriginalIcon;
-            result.Platform = this.Platform;
-            result.SupportedFeatures = this.SupportedFeatures;
-            result.UnitOfMeasurement = this.UnitOfMeasurement;
+            var result = CreateUnmodified(EntityId, Name, Icon, DisabledBy);
+            result.UniqueId = UniqueId;
+            result._entityId = _entityId;
+            result.AreaId = AreaId;
+            result.Capabilities = Capabilities;
+            result.ConfigEntryId = ConfigEntryId;
+            result.DeviceClass = DeviceClass;
+            result.DeviceId = DeviceId;
+            result.OriginalName = OriginalName;
+            result.OriginalIcon = OriginalIcon;
+            result.Platform = Platform;
+            result.SupportedFeatures = SupportedFeatures;
+            result.UnitOfMeasurement = UnitOfMeasurement;
             return result;
         }
     }

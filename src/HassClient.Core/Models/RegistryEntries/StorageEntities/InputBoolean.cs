@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries.StorageEntities
 {
     /// <summary>
     /// Represents an input boolean.
@@ -10,7 +12,7 @@ namespace HassClient.Models
     [StorageEntityDomain(KnownDomains.InputBoolean)]
     public class InputBoolean : StorageEntityRegistryEntryBase
     {
-        private readonly ModifiableProperty<bool> initial = new ModifiableProperty<bool>(nameof(Initial));
+        private readonly ModifiableProperty<bool> _initial = new ModifiableProperty<bool>(nameof(Initial));
 
         /// <summary>
         /// Gets or sets the initial value when Home Assistant starts.
@@ -18,13 +20,12 @@ namespace HassClient.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool Initial
         {
-            get => this.initial.Value;
-            set => this.initial.Value = value;
+            get => _initial.Value;
+            set => _initial.Value = value;
         }
 
         [JsonConstructor]
         private InputBoolean()
-            : base()
         {
         }
 
@@ -37,7 +38,7 @@ namespace HassClient.Models
         public InputBoolean(string name, string icon = null, bool initial = false)
             : base(name, icon)
         {
-            this.Initial = initial;
+            Initial = initial;
         }
 
         // Used for testing purposes.
@@ -51,16 +52,16 @@ namespace HassClient.Models
         /// <inheritdoc />
         protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
         {
-            return base.GetModifiableProperties().Append(this.initial);
+            return base.GetModifiableProperties().Append(_initial);
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(InputBoolean)}: {this.Name}";
+        public override string ToString() => $"{nameof(InputBoolean)}: {Name}";
 
         // Used for testing purposes.
         internal InputBoolean Clone()
         {
-            var result = CreateUnmodified(this.UniqueId, this.Name, this.Icon, this.Initial);
+            var result = CreateUnmodified(UniqueId, Name, Icon, Initial);
             return result;
         }
     }

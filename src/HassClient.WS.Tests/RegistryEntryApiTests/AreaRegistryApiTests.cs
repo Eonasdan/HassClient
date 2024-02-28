@@ -1,81 +1,80 @@
-﻿using HassClient.Core.Tests;
-using HassClient.Models;
-using NUnit.Framework;
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Tests;
+using NUnit.Framework;
 
-namespace HassClient.WS.Tests
+namespace HassClient.WS.Tests.RegistryEntryApiTests
 {
-    public class AreaRegistryApiTests : BaseHassWSApiTest
+    public class AreaRegistryApiTests : BaseHassWsApiTest
     {
-        private Area testArea;
+        private Area _testArea;
 
         [OneTimeSetUp]
         [Test, Order(1)]
         public async Task CreateArea()
         {
-            if (this.testArea == null)
+            if (_testArea == null)
             {
-                this.testArea = new Area(MockHelpers.GetRandomTestName());
-                var result = await this.hassWSApi.CreateAreaAsync(testArea);
+                _testArea = new Area(MockHelpers.GetRandomTestName());
+                var result = await HassWsApi.CreateAreaAsync(_testArea);
                 Assert.IsTrue(result, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(this.testArea.Id);
-            Assert.NotNull(this.testArea.Name);
-            Assert.IsFalse(this.testArea.HasPendingChanges);
-            Assert.IsTrue(this.testArea.IsTracked);
+            Assert.NotNull(_testArea.Id);
+            Assert.NotNull(_testArea.Name);
+            Assert.IsFalse(_testArea.HasPendingChanges);
+            Assert.IsTrue(_testArea.IsTracked);
         }
 
         [Test, Order(2)]
         public async Task GetAreas()
         {
-            var areas = await this.hassWSApi.GetAreasAsync();
+            var areas = await HassWsApi.GetAreasAsync();
 
             Assert.NotNull(areas);
             Assert.IsNotEmpty(areas);
-            Assert.IsTrue(areas.Contains(this.testArea));
+            Assert.IsTrue(areas.Contains(_testArea));
         }
 
         [Test, Order(3)]
         public async Task UpdateArea()
         {
-            this.testArea.Name = MockHelpers.GetRandomTestName();
-            var result = await this.hassWSApi.UpdateAreaAsync(this.testArea);
+            _testArea.Name = MockHelpers.GetRandomTestName();
+            var result = await HassWsApi.UpdateAreaAsync(_testArea);
 
             Assert.IsTrue(result);
-            Assert.False(this.testArea.HasPendingChanges);
+            Assert.False(_testArea.HasPendingChanges);
         }
 
         [Test, Order(4)]
         public async Task UpdateWithForce()
         {
-            var initialName = this.testArea.Name;
-            var clonedArea = this.testArea.Clone();
+            var initialName = _testArea.Name;
+            var clonedArea = _testArea.Clone();
             clonedArea.Name = $"{initialName}_cloned";
-            var result = await this.hassWSApi.UpdateAreaAsync(clonedArea);
+            var result = await HassWsApi.UpdateAreaAsync(clonedArea);
             Assert.IsTrue(result, "SetUp failed");
-            Assert.False(this.testArea.HasPendingChanges, "SetUp failed");
+            Assert.False(_testArea.HasPendingChanges, "SetUp failed");
 
-            result = await this.hassWSApi.UpdateAreaAsync(this.testArea, forceUpdate: true);
+            result = await HassWsApi.UpdateAreaAsync(_testArea, forceUpdate: true);
             Assert.IsTrue(result);
-            Assert.AreEqual(initialName, this.testArea.Name);
+            Assert.AreEqual(initialName, _testArea.Name);
         }
 
         [OneTimeTearDown]
         [Test, Order(5)]
         public async Task DeleteArea()
         {
-            if (this.testArea == null)
+            if (_testArea == null)
             {
                 return;
             }
 
-            var result = await this.hassWSApi.DeleteAreaAsync(this.testArea);
-            var deletedArea = this.testArea;
-            this.testArea = null;
+            var result = await HassWsApi.DeleteAreaAsync(_testArea);
+            var deletedArea = _testArea;
+            _testArea = null;
 
             Assert.IsTrue(result);
             Assert.IsFalse(deletedArea.IsTracked);

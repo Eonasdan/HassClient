@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents a single service definition.
@@ -24,7 +25,7 @@ namespace HassClient.Models
         /// Gets the targets that the service supports.
         /// </summary>
         [JsonProperty("target")]
-        public Dictionary<string, Newtonsoft.Json.Linq.JRaw> Targets { get; private set; }
+        public Dictionary<string, JRaw> Targets { get; private set; }
 
         /// <summary>
         /// Gets the fields/parameters that the service supports.

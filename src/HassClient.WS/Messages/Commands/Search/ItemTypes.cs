@@ -1,8 +1,11 @@
-﻿namespace HassClient
+﻿using JetBrains.Annotations;
+
+namespace HassClient.WS.Messages.Commands.Search
 {
     /// <summary>
     /// Well known Home Assistant item types used during relation search.
     /// </summary>
+    [PublicAPI]
     public enum ItemTypes
     {
         /// <summary>

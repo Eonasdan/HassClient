@@ -1,10 +1,12 @@
 ﻿using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.Events
 {
     /// <summary>
     /// Collection of built-in event types available in any Home Assistant instance by default.
     /// </summary>
+    [PublicAPI]
     public enum KnownEventTypes
     {
         /// <summary>

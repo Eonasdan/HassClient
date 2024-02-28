@@ -1,8 +1,9 @@
-﻿using HassClient.Models;
+﻿using System.Linq;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries;
 using NUnit.Framework;
-using System.Linq;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(EntityRegistryEntry))]
     public class EntityRegistryEntryTests
@@ -19,7 +20,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewNameMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out _, out _);
+            var testEntry = CreateTestEntry(out _, out var initialName, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -31,7 +32,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewIconMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out var initialIcon, out _);
+            var testEntry = CreateTestEntry(out _, out _, out var initialIcon, out _);
 
             testEntry.Icon = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -55,7 +56,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void DiscardPendingChanges()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out var initialIcon, out var initialDisabledBy);
+            var testEntry = CreateTestEntry(out _, out var initialName, out var initialIcon, out var initialDisabledBy);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.Icon = MockHelpers.GetRandomTestName();

@@ -1,4 +1,4 @@
-﻿namespace HassClient.Models
+﻿namespace HassClient.Core.Models.Color
 {
     /// <summary>
     /// Represents an RGBW (red, green, blue, white) color.
@@ -20,7 +20,7 @@
         public RGBWColor(byte red, byte green, byte blue, byte white)
             : base(red, green, blue)
         {
-            this.W = white;
+            W = white;
         }
 
         /// <summary>
@@ -35,6 +35,6 @@
         public static implicit operator RGBWColor(System.Drawing.Color x) => new RGBWColor(x);
 
         /// <inheritdoc/>
-        public override string ToString() => $"[{this.R}, {this.G}, {this.B}, {this.W}]";
+        public override string ToString() => $"[{R}, {G}, {B}, {W}]";
     }
 }

@@ -1,11 +1,13 @@
-﻿using HassClient.Helpers;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries.Modifiable;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries.StorageEntities
 {
     /// <summary>
     /// Represents a person.
@@ -13,14 +15,14 @@ namespace HassClient.Models
     [StorageEntityDomain(KnownDomains.Person)]
     public class Person : StorageEntityRegistryEntryBase
     {
-        private readonly ModifiableProperty<string> userId = new ModifiableProperty<string>(nameof(UserId));
+        private readonly ModifiableProperty<string> _userId = new ModifiableProperty<string>(nameof(UserId));
 
-        private readonly ModifiablePropertyCollection<string> deviceTrackers =
+        private readonly ModifiablePropertyCollection<string> _deviceTrackers =
             new ModifiablePropertyCollection<string>(
                 nameof(DeviceTrackers),
                 v => v.IsValidDomainEntityId(KnownDomains.DeviceTracker));
 
-        private readonly ModifiableProperty<string> picture = new ModifiableProperty<string>(nameof(Picture));
+        private readonly ModifiableProperty<string> _picture = new ModifiableProperty<string>(nameof(Picture));
         //// "device_trackers":["device_tracker.demo_anne_therese","device_tracker.demo_paulus"],
         //// "picture":"/api/image/serve/f986543a0ea7b88ebffcd1213aeffb32/512x512"}
 
@@ -38,18 +40,15 @@ namespace HassClient.Models
         [JsonProperty]
         public string UserId
         {
-            get => this.userId.Value;
-            private set => this.userId.Value = value;
+            get => _userId.Value;
+            private set => _userId.Value = value;
         }
 
         /// <summary>
         /// Gets or sets a list of device trackers entities associated to this person entity.
         /// </summary>
         [JsonProperty]
-        public ICollection<string> DeviceTrackers
-        {
-            get => this.deviceTrackers.Value;
-        }
+        public ICollection<string> DeviceTrackers => _deviceTrackers.Value;
 
         /// <summary>
         /// Gets or sets a URL (relative or absolute) to a picture for the person entity.
@@ -57,11 +56,11 @@ namespace HassClient.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Picture
         {
-            get => this.picture.Value;
+            get => _picture.Value;
             set
             {
-                this.CheckSupportModification();
-                this.picture.Value = value;
+                CheckSupportModification();
+                _picture.Value = value;
             }
         }
 
@@ -86,14 +85,13 @@ namespace HassClient.Models
 
         [JsonConstructor]
         private Person()
-         : base()
         {
         }
 
         private Person(string name, string userId)
             : base(name, null)
         {
-            this.UserId = userId;
+            UserId = userId;
         }
 
         /// <summary>
@@ -109,7 +107,7 @@ namespace HassClient.Models
                 throw new ArgumentNullException(nameof(user));
             }
 
-            this.IsStorageEntry = true;
+            IsStorageEntry = true;
         }
 
         /// <summary>
@@ -124,14 +122,14 @@ namespace HassClient.Models
                 throw new ArgumentNullException(nameof(user));
             }
 
-            this.CheckSupportModification(nameof(this.UserId));
+            CheckSupportModification(nameof(UserId));
 
-            this.UserId = user.Id;
+            UserId = user.Id;
         }
 
         private void CheckSupportModification([CallerMemberName] string propertyName = null)
         {
-            if (this.IsTracked && !this.IsStorageEntry)
+            if (IsTracked && !IsStorageEntry)
             {
                 throw new NotSupportedException($"The property {propertyName} can only be modified on {nameof(Person)} storage entries.");
             }
@@ -162,19 +160,19 @@ namespace HassClient.Models
         protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
         {
             return base.GetModifiableProperties()
-                       .Append(this.userId)
-                       .Append(this.picture)
-                       .Append(this.deviceTrackers)
-                       .Where(x => x.Name != nameof(this.Icon));
+                       .Append(_userId)
+                       .Append(_picture)
+                       .Append(_deviceTrackers)
+                       .Where(x => x.Name != nameof(Icon));
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{nameof(Person)}: {this.Name}";
+        public override string ToString() => $"{nameof(Person)}: {Name}";
 
         // Used for testing purposes.
         internal Person Clone()
         {
-            var result = CreateUnmodified(this.UniqueId, this.Name, this.UserId, this.Picture, this.DeviceTrackers);
+            var result = CreateUnmodified(UniqueId, Name, UserId, Picture, DeviceTrackers);
             return result;
         }
     }

@@ -1,17 +1,17 @@
-﻿using HassClient.Models;
-using HassClient.Serialization;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using HassClient.Core.Models.Color;
+using HassClient.Core.Serialization.Converters;
+using Newtonsoft.Json;
+using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Converters
 {
     [TestFixture(TestOf = typeof(ColorConverter))]
     public class ColorConverterTests
     {
-        private readonly ColorConverter converter = new ColorConverter();
+        private readonly ColorConverter _converter = new();
 
         [Test]
         [TestCase(typeof(Color))]
@@ -24,23 +24,24 @@ namespace HassClient.Core.Tests
         [TestCase(typeof(XYColor))]
         public void CanConvertColors(Type colorType)
         {
-            var canConvert = converter.CanConvert(colorType);
+            var canConvert = _converter.CanConvert(colorType);
 
             Assert.True(canConvert);
         }
 
         public static IEnumerable<TestCaseData> WriteReadJsonTestCases()
         {
-            var createData = (Color color) => new TestCaseData(color).SetName($"{{m}}{color.GetType().Name}");
+            yield return CreateData(new RGBColor(10, 20, 30));
+            yield return CreateData(new RGBWColor(10, 20, 30, 255));
+            yield return CreateData(new RGBWWColor(10, 20, 30, 128, 255));
+            yield return CreateData(new HSColor(10, 20));
+            yield return CreateData(new XYColor(0.2f, 0.6f));
+            yield return CreateData(new NameColor("test_color"));
+            yield return CreateData(new KelvinTemperatureColor(1337));
+            yield return CreateData(new MiredsTemperatureColor(256));
+            yield break;
 
-            yield return createData(new RGBColor(10, 20, 30));
-            yield return createData(new RGBWColor(10, 20, 30, 255));
-            yield return createData(new RGBWWColor(10, 20, 30, 128, 255));
-            yield return createData(new HSColor(10, 20));
-            yield return createData(new XYColor(0.2f, 0.6f));
-            yield return createData(new NameColor("test_color"));
-            yield return createData(new KelvinTemperatureColor(1337));
-            yield return createData(new MiredsTemperatureColor(256));
+            TestCaseData CreateData(Color color) => new TestCaseData(color).SetName($"{{m}}{color.GetType().Name}");
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace HassClient.Core.Tests
             var textWriter = new StringWriter();
             var jsonWriter = new JsonTextWriter(textWriter);
             var serializer = JsonSerializer.Create();
-            converter.WriteJson(jsonWriter, color, serializer);
+            _converter.WriteJson(jsonWriter, color, serializer);
 
             Assert.AreEqual(GetJsonRepresentation(color), textWriter.ToString());
         }
@@ -62,7 +63,7 @@ namespace HassClient.Core.Tests
             var textReader = new StringReader(GetJsonRepresentation(color));
             var jsonReader = new JsonTextReader(textReader);
             var serializer = JsonSerializer.Create();
-            var result = converter.ReadJson(jsonReader, color.GetType(), null, serializer);
+            var result = _converter.ReadJson(jsonReader, color.GetType(), null, serializer);
 
             Assert.NotNull(result);
             Assert.AreNotEqual(color, result);
@@ -71,16 +72,17 @@ namespace HassClient.Core.Tests
 
         public static IEnumerable<TestCaseData> ReadJsonWithExisingValueTestCases()
         {
-            var createData = (Color existing, Color color) => new TestCaseData(existing, color).SetName($"{{m}}{color.GetType().Name}");
+            yield return CreateData(new RGBColor(10, 20, 30), new RGBColor(40, 50, 60));
+            yield return CreateData(new RGBWColor(10, 20, 30, 255), new RGBWColor(40, 50, 60, 128));
+            yield return CreateData(new RGBWWColor(10, 20, 30, 128, 255), new RGBWWColor(40, 50, 60, 64, 128));
+            yield return CreateData(new HSColor(10, 20), new HSColor(30, 40));
+            yield return CreateData(new XYColor(0.2f, 0.6f), new XYColor(0.4f, 0.8f));
+            yield return CreateData(new NameColor("test_color"), new NameColor("new_color"));
+            yield return CreateData(new KelvinTemperatureColor(1337), new KelvinTemperatureColor(2001));
+            yield return CreateData(new MiredsTemperatureColor(256), new MiredsTemperatureColor(106));
+            yield break;
 
-            yield return createData(new RGBColor(10, 20, 30), new RGBColor(40, 50, 60));
-            yield return createData(new RGBWColor(10, 20, 30, 255), new RGBWColor(40, 50, 60, 128));
-            yield return createData(new RGBWWColor(10, 20, 30, 128, 255), new RGBWWColor(40, 50, 60, 64, 128));
-            yield return createData(new HSColor(10, 20), new HSColor(30, 40));
-            yield return createData(new XYColor(0.2f, 0.6f), new XYColor(0.4f, 0.8f));
-            yield return createData(new NameColor("test_color"), new NameColor("new_color"));
-            yield return createData(new KelvinTemperatureColor(1337), new KelvinTemperatureColor(2001));
-            yield return createData(new MiredsTemperatureColor(256), new MiredsTemperatureColor(106));
+            TestCaseData CreateData(Color existing, Color color) => new TestCaseData(existing, color).SetName($"{{m}}{color.GetType().Name}");
         }
 
         [Test]
@@ -90,7 +92,7 @@ namespace HassClient.Core.Tests
             var textReader = new StringReader(GetJsonRepresentation(color));
             var jsonReader = new JsonTextReader(textReader);
             var serializer = JsonSerializer.Create();
-            var result = converter.ReadJson(jsonReader, color.GetType(), existing, serializer);
+            var result = _converter.ReadJson(jsonReader, color.GetType(), existing, serializer);
 
             Assert.NotNull(result);
             Assert.AreEqual(existing, result);
@@ -99,22 +101,13 @@ namespace HassClient.Core.Tests
 
         private string GetJsonRepresentation(Color color)
         {
-            if (color is NameColor)
+            return color switch
             {
-                return $"\"{color}\"";
-            }
-            else if (color is KelvinTemperatureColor kelvinColor)
-            {
-                return kelvinColor.Kelvins.ToString();
-            }
-            else if (color is MiredsTemperatureColor miredsColor)
-            {
-                return miredsColor.Mireds.ToString();
-            }
-            else
-            {
-                return color.ToString().Replace(" ", string.Empty);
-            }
+                NameColor => $"\"{color}\"",
+                KelvinTemperatureColor kelvinColor => kelvinColor.Kelvins.ToString(),
+                MiredsTemperatureColor miredsColor => miredsColor.Mireds.ToString(),
+                _ => color.ToString()?.Replace(" ", string.Empty)
+            };
         }
     }
 }

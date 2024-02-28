@@ -1,10 +1,12 @@
-﻿using Bogus;
-using HassClient.Helpers;
-using HassClient.Models;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bogus;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries;
+using Newtonsoft.Json.Linq;
 
 namespace HassClient.WS.Tests.Mocks
 {
@@ -12,15 +14,15 @@ namespace HassClient.WS.Tests.Mocks
     {
         public static readonly Faker<Device> DeviceFaker =
             new Faker<Device>()
-            .CustomInstantiator((f) => Device.CreateUnmodified(f.RandomUUID(), f.Commerce.ProductName(), f.RandomUUID(), f.Random.Enum<DisabledByEnum>()))
-            .RuleFor(x => x.ConfigurationEntries, f => new[] { f.RandomUUID() })
-            .RuleFor(x => x.Connections, f => new Dictionary<string, string>() { { "zigbee", f.Internet.Mac() } })
+            .CustomInstantiator(f => Device.CreateUnmodified(f.RandomUuid(), f.Commerce.ProductName(), f.RandomUuid(), f.Random.Enum<DisabledByEnum>()))
+            .RuleFor(x => x.ConfigurationEntries, f => new[] { f.RandomUuid() })
+            .RuleFor(x => x.Connections, f => new Dictionary<string, string> { { "zigbee", f.Internet.Mac() } })
             .RuleFor(x => x.Manufacturer, f => f.Company.CompanyName())
             .RuleFor(x => x.Model, f => f.Commerce.Product())
             .RuleFor(x => x.Name, f => f.Random.Bool() ? f.Commerce.ProductName() : null)
-            .RuleFor(x => x.SWVersion, f => f.Random.Hexadecimal(8))
-            .RuleFor(x => x.Identifiers, f => new Dictionary<string, string>() { { "zha", string.Empty } })
-            .RuleFor(x => x.ViaDeviceId, f => f.RandomUUID())
+            .RuleFor(x => x.SwVersion, f => f.Random.Hexadecimal(8))
+            .RuleFor(x => x.Identifiers, f => new Dictionary<string, string> { { "zha", string.Empty } })
+            .RuleFor(x => x.ViaDeviceId, f => f.RandomUuid())
             .FinishWith((f, x) => x.Identifiers["zha"] = x.Connections["zigbee"]);
 
         public static readonly Faker<PanelInfo> PanelInfoFaker =
@@ -33,7 +35,7 @@ namespace HassClient.WS.Tests.Mocks
 
         public static readonly Faker<EntitySource> EntitySourceFaker =
             new Faker<EntitySource>()
-            .RuleFor(x => x.ConfigEntry, f => f.RandomUUID())
+            .RuleFor(x => x.ConfigEntry, f => f.RandomUuid())
             .RuleFor(x => x.EntityId, f => f.RandomEntityId())
             .RuleFor(x => x.Domain, (f, x) => x.EntityId.GetDomain())
             .RuleFor(x => x.Source, "config_entry");
@@ -63,13 +65,13 @@ namespace HassClient.WS.Tests.Mocks
             .RuleFor(x => x.State, "RUNNING")
             .RuleFor(x => x.TimeZone, f => f.Date.TimeZoneString())
             .RuleFor(x => x.UnitSystem, UnitSystemFaker.Generate())
-            .RuleFor(x => x.Version, CalVer.Create("2022.1.0"));
+            .RuleFor(x => x.Version, CalendarVersion.Create("2022.1.0"));
 
         public static readonly Faker<Context> ContextFaker =
             new Faker<Context>()
-            .RuleFor(x => x.Id, f => f.RandomUUID())
-            .RuleFor(x => x.ParentId, f => f.RandomUUID())
-            .RuleFor(x => x.UserId, f => f.RandomUUID());
+            .RuleFor(x => x.Id, f => f.RandomUuid())
+            .RuleFor(x => x.ParentId, f => f.RandomUuid())
+            .RuleFor(x => x.UserId, f => f.RandomUuid());
 
         public static readonly Faker<StateModel> StateModelFaker =
             new Faker<StateModel>()
@@ -77,7 +79,7 @@ namespace HassClient.WS.Tests.Mocks
             .RuleFor(x => x.EntityId, f => f.RandomEntityId())
             .RuleFor(x => x.Context, f => ContextFaker.Generate())
             .RuleFor(x => x.State, f => f.RandomEntityState())
-            .RuleFor(x => x.Attributes, (f, x) => new Dictionary<string, JRaw>() { { "friendly_name", new JRaw($"\"{x.EntityId.SplitEntityId()[1]}\"") } });
+            .RuleFor(x => x.Attributes, (f, x) => new Dictionary<string, JRaw> { { "friendly_name", new JRaw($"\"{x.EntityId.SplitEntityId()[1]}\"") } });
 
         public static readonly Faker<StateChangedEvent> StateChangedEventFaker =
             new Faker<StateChangedEvent>()
@@ -103,7 +105,7 @@ namespace HassClient.WS.Tests.Mocks
             faker.RuleFor(x => x.EntityId, f => entityId ?? f.RandomEntityId())
                  .Generate();
 
-        public static string RandomUUID(this Faker faker) => faker.Random.Hexadecimal(32, string.Empty);
+        public static string RandomUuid(this Faker faker) => faker.Random.Hexadecimal(32, string.Empty);
 
         public static string RandomDomain(this Faker faker) => faker.RandomKnownDomain().ToDomainString();
 
@@ -142,7 +144,7 @@ namespace HassClient.WS.Tests.Mocks
 
         public static IEnumerable<T> Generate<T>(this Faker faker, int count, Func<Faker, T> generator)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 yield return generator(faker);
             }

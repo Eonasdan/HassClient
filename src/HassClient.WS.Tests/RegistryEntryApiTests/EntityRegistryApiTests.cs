@@ -1,24 +1,25 @@
-﻿using HassClient.Core.Tests;
-using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Models.RegistryEntries.StorageEntities;
+using HassClient.Core.Tests;
+using NUnit.Framework;
 
-namespace HassClient.WS.Tests
+namespace HassClient.WS.Tests.RegistryEntryApiTests
 {
-    public class EntityRegistryApiTests : BaseHassWSApiTest
+    public class EntityRegistryApiTests : BaseHassWsApiTest
     {
-        private InputBoolean testInputBoolean;
+        private InputBoolean _testInputBoolean;
 
-        private string testEntityId;
+        private string _testEntityId;
 
         protected override async Task OneTimeSetUp()
         {
             await base.OneTimeSetUp();
-            this.testInputBoolean = new InputBoolean(MockHelpers.GetRandomTestName(), "mdi:switch");
-            var result = await this.hassWSApi.CreateStorageEntityRegistryEntryAsync(this.testInputBoolean);
-            this.testEntityId = this.testInputBoolean.EntityId;
+            _testInputBoolean = new InputBoolean(MockHelpers.GetRandomTestName(), "mdi:switch");
+            var result = await HassWsApi.CreateStorageEntityRegistryEntryAsync(_testInputBoolean);
+            _testEntityId = _testInputBoolean.EntityId;
 
             Assert.IsTrue(result, "SetUp failed");
         }
@@ -26,13 +27,13 @@ namespace HassClient.WS.Tests
         protected override async Task OneTimeTearDown()
         {
             await base.OneTimeTearDown();
-            await this.hassWSApi.DeleteStorageEntityRegistryEntryAsync(this.testInputBoolean);
+            await HassWsApi.DeleteStorageEntityRegistryEntryAsync(_testInputBoolean);
         }
 
         [Test]
         public async Task GetEntities()
         {
-            var entities = await this.hassWSApi.GetEntitiesAsync();
+            var entities = await HassWsApi.GetEntitiesAsync();
 
             Assert.IsNotNull(entities);
             Assert.IsNotEmpty(entities);
@@ -44,7 +45,7 @@ namespace HassClient.WS.Tests
         [Test]
         public void GetEntityWithNullEntityIdThrows()
         {
-            Assert.ThrowsAsync<ArgumentException>(() => this.hassWSApi.GetEntityAsync(null));
+            Assert.ThrowsAsync<ArgumentException>(() => HassWsApi.GetEntityAsync(null));
         }
 
         [Test]
@@ -52,14 +53,14 @@ namespace HassClient.WS.Tests
         {
             var testEntity = new EntityRegistryEntry("switch.TestEntity", null, null);
 
-            Assert.ThrowsAsync<ArgumentException>(() => this.hassWSApi.UpdateEntityAsync(testEntity, testEntity.EntityId));
+            Assert.ThrowsAsync<ArgumentException>(() => HassWsApi.UpdateEntityAsync(testEntity, testEntity.EntityId));
         }
 
         [Test]
         public async Task GetEntity()
         {
             var entityId = "light.bed_light";
-            var entity = await this.hassWSApi.GetEntityAsync(entityId);
+            var entity = await HassWsApi.GetEntityAsync(entityId);
 
             Assert.IsNotNull(entity);
             Assert.IsNotNull(entity.ConfigEntryId);
@@ -71,14 +72,14 @@ namespace HassClient.WS.Tests
         [Test, Order(1), NonParallelizable]
         public async Task GetCreatedEntity()
         {
-            var entity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
+            var entity = await HassWsApi.GetEntityAsync(_testEntityId);
 
             Assert.IsNotNull(entity);
             Assert.IsNotNull(entity.OriginalName);
             Assert.IsNotNull(entity.OriginalIcon);
             Assert.IsNotNull(entity.Name);
             Assert.IsNotNull(entity.Icon);
-            Assert.AreEqual(this.testEntityId, entity.EntityId);
+            Assert.AreEqual(_testEntityId, entity.EntityId);
         }
 
         [Order(1), NonParallelizable]
@@ -86,12 +87,12 @@ namespace HassClient.WS.Tests
         [TestCase(false)]
         public async Task UpdateEntityDisable(bool disable)
         {
-            var testEntity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
+            var testEntity = await HassWsApi.GetEntityAsync(_testEntityId);
 
-            var result = await this.hassWSApi.UpdateEntityAsync(testEntity, disable: disable);
+            var result = await HassWsApi.UpdateEntityAsync(testEntity, disable: disable);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(this.testEntityId, testEntity.EntityId);
+            Assert.AreEqual(_testEntityId, testEntity.EntityId);
             Assert.AreEqual(disable, testEntity.IsDisabled);
         }
 
@@ -99,13 +100,13 @@ namespace HassClient.WS.Tests
         public async Task UpdateEntityName()
         {
             var newName = MockHelpers.GetRandomTestName();
-            var testEntity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
+            var testEntity = await HassWsApi.GetEntityAsync(_testEntityId);
 
             testEntity.Name = newName;
-            var result = await this.hassWSApi.UpdateEntityAsync(testEntity);
+            var result = await HassWsApi.UpdateEntityAsync(testEntity);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(this.testEntityId, testEntity.EntityId);
+            Assert.AreEqual(_testEntityId, testEntity.EntityId);
             Assert.AreEqual(newName, testEntity.Name);
             Assert.AreNotEqual(newName, testEntity.OriginalName);
         }
@@ -113,14 +114,14 @@ namespace HassClient.WS.Tests
         [Test, Order(1), NonParallelizable]
         public async Task UpdateEntityIcon()
         {
-            var testEntity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
+            var testEntity = await HassWsApi.GetEntityAsync(_testEntityId);
 
             var newIcon = "mdi:fan";
             testEntity.Icon = newIcon;
-            var result = await this.hassWSApi.UpdateEntityAsync(testEntity);
+            var result = await HassWsApi.UpdateEntityAsync(testEntity);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(this.testEntityId, testEntity.EntityId);
+            Assert.AreEqual(_testEntityId, testEntity.EntityId);
             Assert.AreEqual(newIcon, testEntity.Icon);
             Assert.AreNotEqual(newIcon, testEntity.OriginalIcon);
         }
@@ -128,14 +129,14 @@ namespace HassClient.WS.Tests
         [Test, Order(1)]
         public async Task RefreshEntity()
         {
-            var testEntity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
+            var testEntity = await HassWsApi.GetEntityAsync(_testEntityId);
             var clonedEntity = testEntity.Clone();
             clonedEntity.Name = MockHelpers.GetRandomTestName();
-            var result = await this.hassWSApi.UpdateEntityAsync(clonedEntity);
+            var result = await HassWsApi.UpdateEntityAsync(clonedEntity);
             Assert.IsTrue(result, "SetUp failed");
             Assert.False(testEntity.HasPendingChanges, "SetUp failed");
 
-            result = await this.hassWSApi.RefreshEntityAsync(testEntity);
+            result = await HassWsApi.RefreshEntityAsync(testEntity);
             Assert.IsTrue(result);
             Assert.AreEqual(clonedEntity.Name, testEntity.Name);
         }
@@ -143,33 +144,33 @@ namespace HassClient.WS.Tests
         [Test, Order(2), NonParallelizable]
         public async Task UpdateEntityId()
         {
-            var testEntity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
-            var newEntityId = this.testEntityId + 1;
+            var testEntity = await HassWsApi.GetEntityAsync(_testEntityId);
+            var newEntityId = _testEntityId + 1;
 
-            var result = await this.hassWSApi.UpdateEntityAsync(testEntity, newEntityId);
+            var result = await HassWsApi.UpdateEntityAsync(testEntity, newEntityId);
 
             Assert.IsTrue(result);
             Assert.AreEqual(newEntityId, testEntity.EntityId);
-            Assert.AreNotEqual(this.testEntityId, newEntityId);
+            Assert.AreNotEqual(_testEntityId, newEntityId);
 
-            this.testEntityId = newEntityId; // This is needed for DeleteEntityTest
+            _testEntityId = newEntityId; // This is needed for DeleteEntityTest
         }
 
         [Test, Order(3)]
         public async Task UpdateWithForce()
         {
-            var testEntity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
+            var testEntity = await HassWsApi.GetEntityAsync(_testEntityId);
             var initialName = testEntity.Name;
             var initialIcon = testEntity.Icon;
             var initialDisabledBy = testEntity.DisabledBy;
             var clonedEntry = testEntity.Clone();
             clonedEntry.Name = $"{initialName}_cloned";
             clonedEntry.Icon = $"{initialIcon}_cloned";
-            var result = await this.hassWSApi.UpdateEntityAsync(clonedEntry, disable: true);
+            var result = await HassWsApi.UpdateEntityAsync(clonedEntry, disable: true);
             Assert.IsTrue(result, "SetUp failed");
             Assert.False(testEntity.HasPendingChanges, "SetUp failed");
 
-            result = await this.hassWSApi.UpdateEntityAsync(testEntity, disable: false, forceUpdate: true);
+            result = await HassWsApi.UpdateEntityAsync(testEntity, disable: false, forceUpdate: true);
             Assert.IsTrue(result);
             Assert.AreEqual(initialName, testEntity.Name);
             Assert.AreEqual(initialIcon, testEntity.Icon);
@@ -179,9 +180,9 @@ namespace HassClient.WS.Tests
         [Test, Order(4), NonParallelizable]
         public async Task DeleteEntity()
         {
-            var testEntity = await this.hassWSApi.GetEntityAsync(this.testEntityId);
-            var result = await this.hassWSApi.DeleteEntityAsync(testEntity);
-            var testEntity1 = await this.hassWSApi.GetEntityAsync(this.testEntityId);
+            var testEntity = await HassWsApi.GetEntityAsync(_testEntityId);
+            var result = await HassWsApi.DeleteEntityAsync(testEntity);
+            var testEntity1 = await HassWsApi.GetEntityAsync(_testEntityId);
 
             Assert.IsTrue(result);
             Assert.IsNull(testEntity1);

@@ -1,23 +1,27 @@
-﻿using HassClient.Helpers;
-using HassClient.Models;
-using HassClient.Serialization;
-using HassClient.WS.Messages;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using HassClient.Core.Helpers;
+using HassClient.Core.Models;
+using HassClient.Core.Models.Events;
+using HassClient.Core.Serialization;
+using HassClient.WS.Messages;
+using HassClient.WS.Messages.Authentication;
+using HassClient.WS.Messages.Commands;
+using HassClient.WS.Messages.Response;
+using Newtonsoft.Json.Linq;
 
 namespace HassClient.WS.Tests.Mocks.HassServer
 {
     public class MockHassServerWebSocket : MockServerWebSocket
     {
-        private readonly MockHassDB hassDB = new MockHassDB();
+        private readonly MockHassDb _hassDb = new();
 
-        private MockHassServerRequestContext activeRequestContext;
+        private MockHassServerRequestContext _activeRequestContext;
 
-        public CalVer HAVersion => CalVer.Create("2022.1.0");
+        public CalendarVersion HaVersion => CalendarVersion.Create("2022.1.0");
 
         public ConnectionParameters ConnectionParameters { get; private set; }
 
@@ -26,11 +30,10 @@ namespace HassClient.WS.Tests.Mocks.HassServer
         public TimeSpan ResponseSimulatedDelay { get; set; } = TimeSpan.Zero;
 
         public MockHassServerWebSocket()
-            : base()
         {
-            this.ConnectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(
-                $"http://{this.ServerUri.Host}:{this.ServerUri.Port}",
-                this.GenerateRandomToken());
+            ConnectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(
+                $"http://{ServerUri.Host}:{ServerUri.Port}",
+                GenerateRandomToken());
         }
 
         public Task<bool> RaiseStateChangedEventAsync(string entityId)
@@ -38,7 +41,7 @@ namespace HassClient.WS.Tests.Mocks.HassServer
             var data = MockHassModelFactory.StateChangedEventFaker
                                            .GenerateWithEntityId(entityId);
 
-            var eventResult = new EventResultInfo()
+            var eventResult = new EventResultInfo
             {
                 EventType = KnownEventTypes.StateChanged.ToEventTypeString(),
                 Origin = "mock_server",
@@ -48,17 +51,17 @@ namespace HassClient.WS.Tests.Mocks.HassServer
             };
 
             var eventResultObject = new JRaw(HassSerializer.SerializeObject(eventResult));
-            return this.RaiseEventAsync(KnownEventTypes.StateChanged, eventResultObject);
+            return RaiseEventAsync(KnownEventTypes.StateChanged, eventResultObject);
         }
 
         public async Task<bool> RaiseEventAsync(KnownEventTypes eventType, JRaw eventResultObject)
         {
-            var context = this.activeRequestContext;
+            var context = _activeRequestContext;
             if (context.EventSubscriptionsProcessor.TryGetSubscribers(eventType, out var subscribers))
             {
                 foreach (var id in subscribers)
                 {
-                    await context.SendMessageAsync(new EventResultMessage() { Event = eventResultObject, Id = id }, default);
+                    await context.SendMessageAsync(new EventResultMessage { Event = eventResultObject, Id = id }, default);
                 }
 
                 return true;
@@ -71,9 +74,9 @@ namespace HassClient.WS.Tests.Mocks.HassServer
 
         protected override async Task RespondToWebSocketRequestAsync(WebSocket webSocket, CancellationToken cancellationToken)
         {
-            var context = new MockHassServerRequestContext(this.hassDB, webSocket);
+            var context = new MockHassServerRequestContext(_hassDb, webSocket);
 
-            await context.SendMessageAsync(new AuthenticationRequiredMessage() { HAVersion = this.HAVersion.ToString() }, cancellationToken);
+            await context.SendMessageAsync(new AuthenticationRequiredMessage { HaVersion = HaVersion.ToString() }, cancellationToken);
 
             try
             {
@@ -82,16 +85,16 @@ namespace HassClient.WS.Tests.Mocks.HassServer
                     if (context.IsAuthenticating)
                     {
                         var incomingMessage = await context.ReceiveMessageAsync<BaseMessage>(cancellationToken);
-                        await Task.Delay(this.ResponseSimulatedDelay);
+                        await Task.Delay(ResponseSimulatedDelay);
 
-                        if (!this.IgnoreAuthenticationMessages &&
+                        if (!IgnoreAuthenticationMessages &&
                             incomingMessage is AuthenticationMessage authMessage)
                         {
-                            if (authMessage.AccessToken == this.ConnectionParameters.AccessToken)
+                            if (authMessage.AccessToken == ConnectionParameters.AccessToken)
                             {
-                                await context.SendMessageAsync(new AuthenticationOkMessage() { HAVersion = this.HAVersion.ToString() }, cancellationToken);
+                                await context.SendMessageAsync(new AuthenticationOkMessage { HaVersion = HaVersion.ToString() }, cancellationToken);
                                 context.IsAuthenticating = false;
-                                this.activeRequestContext = context;
+                                _activeRequestContext = context;
                             }
                             else
                             {
@@ -105,16 +108,16 @@ namespace HassClient.WS.Tests.Mocks.HassServer
                         var receivedMessage = await context.ReceiveMessageAsync<BaseOutgoingMessage>(cancellationToken);
                         var receivedMessageId = receivedMessage.Id;
 
-                        await Task.Delay(this.ResponseSimulatedDelay);
+                        await Task.Delay(ResponseSimulatedDelay);
 
                         BaseIdentifiableMessage response;
-                        if (context.LastReceivedID >= receivedMessageId)
+                        if (context.LastReceivedId >= receivedMessageId)
                         {
-                            response = new ResultMessage() { Error = new ErrorInfo(ErrorCodes.IdReuse) };
+                            response = new ResultMessage { Error = new ErrorInfo(ErrorCodes.IdReuse) };
                         }
                         else
                         {
-                            context.LastReceivedID = receivedMessageId;
+                            context.LastReceivedId = receivedMessageId;
 
                             if (receivedMessage is PingMessage)
                             {
@@ -122,7 +125,7 @@ namespace HassClient.WS.Tests.Mocks.HassServer
                             }
                             else if (!context.TryProccesMessage(receivedMessage, out response))
                             {
-                                response = new ResultMessage() { Error = new ErrorInfo(ErrorCodes.UnknownCommand) };
+                                response = new ResultMessage { Error = new ErrorInfo(ErrorCodes.UnknownCommand) };
                             }
                         }
 

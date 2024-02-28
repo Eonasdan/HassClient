@@ -1,7 +1,7 @@
-﻿using HassClient.Helpers;
+﻿using HassClient.Core.Helpers;
 using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models
 {
     /// <summary>
     /// Represents a state changed event.
@@ -18,7 +18,7 @@ namespace HassClient.Models
         /// Gets or sets the entity domain of the entity.
         /// </summary>
         [JsonIgnore]
-        public string Domain => EntityIdHelpers.GetDomain(this.EntityId);
+        public string Domain => EntityId.GetDomain();
 
         /// <summary>
         /// Gets the old state.

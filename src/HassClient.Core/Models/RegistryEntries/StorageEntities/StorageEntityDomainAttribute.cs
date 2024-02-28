@@ -1,6 +1,7 @@
 ﻿using System;
+using HassClient.Core.Models.KnownEnums;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries.StorageEntities
 {
     /// <summary>
     /// Attribute used to specify the domain of a <see cref="StorageEntityRegistryEntryBase"/>.
@@ -19,7 +20,7 @@ namespace HassClient.Models
         /// <param name="domain">The storage entity registry entry domain.</param>
         public StorageEntityDomainAttribute(KnownDomains domain)
         {
-            this.Domain = domain;
+            Domain = domain;
         }
     }
 }

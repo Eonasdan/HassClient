@@ -1,9 +1,10 @@
-﻿using HassClient.Models;
-using HassClient.WS.Messages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using HassClient.Core.Models;
+using HassClient.Core.Models.Events;
+using HassClient.WS.Messages.Response;
 
 namespace HassClient.WS
 {
@@ -12,18 +13,18 @@ namespace HassClient.WS
     /// </summary>
     public class StateChangedEventListener : IDisposable
     {
-        private readonly Dictionary<string, EventHandler<StateChangedEvent>> stateChangedSubscriptionsByEntityId = new Dictionary<string, EventHandler<StateChangedEvent>>();
-        private readonly Dictionary<string, EventHandler<StateChangedEvent>> stateChangedSubscriptionsByDomain = new Dictionary<string, EventHandler<StateChangedEvent>>();
+        private readonly Dictionary<string, EventHandler<StateChangedEvent>> _stateChangedSubscriptionsByEntityId = new Dictionary<string, EventHandler<StateChangedEvent>>();
+        private readonly Dictionary<string, EventHandler<StateChangedEvent>> _stateChangedSubscriptionsByDomain = new Dictionary<string, EventHandler<StateChangedEvent>>();
 
-        private bool isStateChangedSubscriptionActive;
+        private bool _isStateChangedSubscriptionActive;
 
-        private readonly SemaphoreSlim refreshSubscriptionsSemahore = new SemaphoreSlim(0);
+        private readonly SemaphoreSlim _refreshSubscriptionsSemaphore = new SemaphoreSlim(0);
 
-        private HassClientWebSocket clientWebSocket;
+        private HassClientWebSocket _clientWebSocket;
 
-        private Task refreshSubscriptionsTask;
+        private Task _refreshSubscriptionsTask;
 
-        private CancellationTokenSource cancellationTokenSource;
+        private CancellationTokenSource _cancellationTokenSource;
 
         /// <summary>
         /// Initialization method of the <see cref="StateChangedEventListener"/>.
@@ -31,26 +32,21 @@ namespace HassClient.WS
         /// <param name="clientWebSocket">The Home Assistant Web Socket client instance.</param>
         public void Initialize(HassClientWebSocket clientWebSocket)
         {
-            if (this.clientWebSocket != null)
+            if (_clientWebSocket != null)
             {
                 throw new InvalidOperationException($"{nameof(StateChangedEventListener)} is already initialized");
             }
 
-            if (clientWebSocket == null)
-            {
-                throw new ArgumentNullException(nameof(clientWebSocket));
-            }
+            _clientWebSocket = clientWebSocket ?? throw new ArgumentNullException(nameof(clientWebSocket));
+            _cancellationTokenSource = new CancellationTokenSource();
 
-            this.clientWebSocket = clientWebSocket;
-            this.cancellationTokenSource = new CancellationTokenSource();
-
-            this.refreshSubscriptionsTask = Task.Factory.StartNew(
+            _refreshSubscriptionsTask = Task.Factory.StartNew(
                 async () =>
                 {
                     while (true)
                     {
-                        await this.refreshSubscriptionsSemahore.WaitAsync(this.cancellationTokenSource.Token);
-                        await this.UpdateStateChangeSockedSubscription(this.cancellationTokenSource.Token);
+                        await _refreshSubscriptionsSemaphore.WaitAsync(_cancellationTokenSource.Token);
+                        await UpdateStateChangeSockedSubscription(_cancellationTokenSource.Token);
                     }
                 }, TaskCreationOptions.LongRunning);
         }
@@ -58,13 +54,13 @@ namespace HassClient.WS
         /// <inheritdoc />
         public void Dispose()
         {
-            if (this.cancellationTokenSource.IsCancellationRequested)
+            if (_cancellationTokenSource.IsCancellationRequested)
             {
                 return;
             }
 
-            this.cancellationTokenSource?.Cancel();
-            this.cancellationTokenSource.Dispose();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
         }
 
         /// <summary>
@@ -74,7 +70,7 @@ namespace HassClient.WS
         /// <param name="value">The <see cref="EventHandler{StateChangedEvent}"/> to be included.</param>
         public void SubscribeEntityStatusChanged(string entityId, EventHandler<StateChangedEvent> value)
         {
-            this.InternalSubscribeStatusChanged(this.stateChangedSubscriptionsByEntityId, entityId, value);
+            InternalSubscribeStatusChanged(_stateChangedSubscriptionsByEntityId, entityId, value);
         }
 
         /// <summary>
@@ -84,7 +80,7 @@ namespace HassClient.WS
         /// <param name="value">The <see cref="EventHandler{StateChangedEvent}"/> to be removed.</param>
         public void UnsubscribeEntityStatusChanged(string entityId, EventHandler<StateChangedEvent> value)
         {
-            this.InternalUnsubscribeStatusChanged(this.stateChangedSubscriptionsByEntityId, entityId, value);
+            InternalUnsubscribeStatusChanged(_stateChangedSubscriptionsByEntityId, entityId, value);
         }
 
         /// <summary>
@@ -94,7 +90,7 @@ namespace HassClient.WS
         /// <param name="value">The <see cref="EventHandler{StateChangedEvent}"/> to be included.</param>
         public void SubscribeDomainStatusChanged(string domain, EventHandler<StateChangedEvent> value)
         {
-            this.InternalSubscribeStatusChanged(this.stateChangedSubscriptionsByDomain, domain, value);
+            InternalSubscribeStatusChanged(_stateChangedSubscriptionsByDomain, domain, value);
         }
 
         /// <summary>
@@ -104,7 +100,7 @@ namespace HassClient.WS
         /// <param name="value">The <see cref="EventHandler{StateChangedEvent}"/> to be removed.</param>
         public void UnsubscribeDomainStatusChanged(string domain, EventHandler<StateChangedEvent> value)
         {
-            this.InternalUnsubscribeStatusChanged(this.stateChangedSubscriptionsByDomain, domain, value);
+            InternalUnsubscribeStatusChanged(_stateChangedSubscriptionsByDomain, domain, value);
         }
 
         private void InternalSubscribeStatusChanged(Dictionary<string, EventHandler<StateChangedEvent>> register, string key, EventHandler<StateChangedEvent> value)
@@ -115,7 +111,7 @@ namespace HassClient.WS
 
                 if (register.Count == 1)
                 {
-                    this.refreshSubscriptionsSemahore.Release();
+                    _refreshSubscriptionsSemaphore.Release();
                 }
             }
 
@@ -133,7 +129,7 @@ namespace HassClient.WS
 
                     if (register.Count == 0)
                     {
-                        this.refreshSubscriptionsSemahore.Release();
+                        _refreshSubscriptionsSemaphore.Release();
                     }
                 }
             }
@@ -141,29 +137,30 @@ namespace HassClient.WS
 
         private async Task UpdateStateChangeSockedSubscription(CancellationToken cancellationToken)
         {
-            var needsSubcription = this.stateChangedSubscriptionsByEntityId.Count > 0 || this.stateChangedSubscriptionsByDomain.Count > 0;
-            var toggleRequired = this.isStateChangedSubscriptionActive ^ needsSubcription;
+            var needsSubscription = _stateChangedSubscriptionsByEntityId.Count > 0 || _stateChangedSubscriptionsByDomain.Count > 0;
+            var toggleRequired = _isStateChangedSubscriptionActive ^ needsSubscription;
             if (toggleRequired)
             {
-                var succeed = false;
-                if (!this.isStateChangedSubscriptionActive)
+                bool succeed;
+                switch (_isStateChangedSubscriptionActive)
                 {
-                    succeed = await this.clientWebSocket.AddEventHandlerSubscriptionAsync(this.OnStateChangeEvent, KnownEventTypes.StateChanged, cancellationToken);
-                }
-                else if (this.isStateChangedSubscriptionActive)
-                {
-                    succeed = await this.clientWebSocket.RemoveEventHandlerSubscriptionAsync(this.OnStateChangeEvent, KnownEventTypes.StateChanged, cancellationToken);
+                    case false:
+                        succeed = await _clientWebSocket.AddEventHandlerSubscriptionAsync(OnStateChangeEvent, KnownEventTypes.StateChanged, cancellationToken);
+                        break;
+                    case true:
+                        succeed = await _clientWebSocket.RemoveEventHandlerSubscriptionAsync(OnStateChangeEvent, KnownEventTypes.StateChanged, cancellationToken);
+                        break;
                 }
 
                 if (succeed)
                 {
-                    this.isStateChangedSubscriptionActive = !this.isStateChangedSubscriptionActive;
+                    _isStateChangedSubscriptionActive = !_isStateChangedSubscriptionActive;
                 }
                 else
                 {
                     // Retry
-                    this.refreshSubscriptionsSemahore.Release();
-                    await Task.Delay(100);
+                    _refreshSubscriptionsSemaphore.Release();
+                    await Task.Delay(100, cancellationToken);
                 }
             }
         }
@@ -171,12 +168,12 @@ namespace HassClient.WS
         private void OnStateChangeEvent(object sender, EventResultInfo obj)
         {
             var stateChanged = obj.DeserializeData<StateChangedEvent>();
-            if (this.stateChangedSubscriptionsByEntityId.TryGetValue(stateChanged.EntityId, out var eventHandler))
+            if (_stateChangedSubscriptionsByEntityId.TryGetValue(stateChanged.EntityId, out var eventHandler))
             {
                 eventHandler.Invoke(this, stateChanged);
             }
 
-            if (this.stateChangedSubscriptionsByDomain.TryGetValue(stateChanged.Domain, out eventHandler))
+            if (_stateChangedSubscriptionsByDomain.TryGetValue(stateChanged.Domain, out eventHandler))
             {
                 eventHandler.Invoke(this, stateChanged);
             }

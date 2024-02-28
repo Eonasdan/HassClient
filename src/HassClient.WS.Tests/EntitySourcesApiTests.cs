@@ -1,14 +1,14 @@
-﻿using NUnit.Framework;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace HassClient.WS.Tests
 {
-    public class EntitySourcesApiTests : BaseHassWSApiTest
+    public class EntitySourcesApiTests : BaseHassWsApiTest
     {
         [Test]
         public async Task GetEntitySources()
         {
-            var entities = await this.hassWSApi.GetEntitySourcesAsync();
+            var entities = await HassWsApi.GetEntitySourcesAsync();
 
             Assert.IsNotNull(entities);
             Assert.IsNotEmpty(entities);
@@ -18,7 +18,7 @@ namespace HassClient.WS.Tests
         public async Task GetEntitySourceWithFilterAsync()
         {
             var entityId = "zone.home";
-            var result = await this.hassWSApi.GetEntitySourceAsync(entityId);
+            var result = await HassWsApi.GetEntitySourceAsync(entityId);
 
             Assert.AreEqual(result.EntityId, entityId);
             Assert.AreEqual(result.Domain, entityId.Split('.')[0]);

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.Search
 {
     /// <summary>
     /// Response object sent by Home Assistant server as a result for a search related operation.

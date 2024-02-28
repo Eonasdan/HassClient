@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.Color
 {
     /// <summary>
     /// Represents a temperature color expressed in mireds.
@@ -20,10 +20,10 @@ namespace HassClient.Models
         /// </param>
         public MiredsTemperatureColor(uint mireds)
         {
-            this.Mireds = Math.Min(Math.Max(mireds, 153), 500);
+            Mireds = Math.Min(Math.Max(mireds, 153), 500);
         }
 
         /// <inheritdoc />
-        public override string ToString() => this.Mireds.ToString();
+        public override string ToString() => Mireds.ToString();
     }
 }

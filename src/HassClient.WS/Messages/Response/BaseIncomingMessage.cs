@@ -1,4 +1,4 @@
-﻿namespace HassClient.WS.Messages
+﻿namespace HassClient.WS.Messages.Response
 {
     /// <summary>
     /// Represents an identifiable incoming message (any but authentication messages).
@@ -9,7 +9,7 @@
         /// Initializes a new instance of the <see cref="BaseIncomingMessage"/> class.
         /// </summary>
         /// <param name="type"><inheritdoc/></param>
-        public BaseIncomingMessage(string type)
+        protected BaseIncomingMessage(string type)
             : base(type)
         {
         }

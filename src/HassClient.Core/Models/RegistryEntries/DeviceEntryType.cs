@@ -1,8 +1,11 @@
-﻿namespace HassClient.Models
+﻿using JetBrains.Annotations;
+
+namespace HassClient.Core.Models.RegistryEntries
 {
     /// <summary>
     /// Defines the device entry type possible values.
     /// </summary>
+    [PublicAPI]
     public enum DeviceEntryTypes
     {
         /// <summary>

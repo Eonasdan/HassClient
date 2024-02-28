@@ -1,43 +1,43 @@
-﻿using HassClient.Models;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HassClient.Core.Models;
+using NUnit.Framework;
 
 namespace HassClient.WS.Tests
 {
-    public class PanelsApiTests : BaseHassWSApiTest
+    public class PanelsApiTests : BaseHassWsApiTest
     {
-        private IEnumerable<PanelInfo> panels;
+        private IEnumerable<PanelInfo> _panels;
 
         [OneTimeSetUp]
         [Test]
         public async Task GetPanels()
         {
-            if (this.panels != null)
+            if (_panels != null)
             {
                 return;
             }
 
-            this.panels = await this.hassWSApi.GetPanelsAsync();
+            _panels = await HassWsApi.GetPanelsAsync();
 
-            Assert.IsNotNull(this.panels);
-            Assert.IsNotEmpty(this.panels);
+            Assert.IsNotNull(_panels);
+            Assert.IsNotEmpty(_panels);
         }
 
         [Test]
         public async Task GetPanel()
         {
-            if (this.panels != null)
+            if (_panels != null)
             {
                 return;
             }
 
-            var firstPanel = this.panels?.FirstOrDefault();
+            var firstPanel = _panels?.FirstOrDefault();
             Assert.NotNull(firstPanel, "SetUp failed");
 
-            var result = await this.hassWSApi.GetPanelAsync(firstPanel.UrlPath);
+            var result = await HassWsApi.GetPanelAsync(firstPanel.UrlPath);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(firstPanel, result);
@@ -46,43 +46,43 @@ namespace HassClient.WS.Tests
         [Test]
         public void GetPanelWithNullUrlPathThrows()
         {
-            Assert.ThrowsAsync<ArgumentException>(() => this.hassWSApi.GetPanelAsync(null));
+            Assert.ThrowsAsync<ArgumentException>(() => HassWsApi.GetPanelAsync(null));
         }
 
         [Test]
         public void GetPanelsHasComponentName()
         {
-            Assert.IsTrue(this.panels.All(x => x.ComponentName != default));
+            Assert.IsTrue(_panels.All(x => x.ComponentName != default));
         }
 
         [Test]
         public void GetPanelsHasConfiguration()
         {
-            Assert.IsTrue(this.panels.All(x => x.Configuration != default));
+            Assert.IsTrue(_panels.All(x => x.Configuration != default));
         }
 
         [Test]
         public void GetPanelsHasIcon()
         {
-            Assert.IsTrue(this.panels.Any(x => x.Icon != default));
+            Assert.IsTrue(_panels.Any(x => x.Icon != default));
         }
 
         [Test]
         public void GetPanelsHasRequireAdmin()
         {
-            Assert.IsTrue(this.panels.Any(x => x.RequireAdmin == true));
+            Assert.IsTrue(_panels.Any(x => x.RequireAdmin));
         }
 
         [Test]
         public void GetPanelsHasTitle()
         {
-            Assert.IsTrue(this.panels.Any(x => x.Title != default));
+            Assert.IsTrue(_panels.Any(x => x.Title != default));
         }
 
         [Test]
         public void GetPanelsHasUrlPath()
         {
-            Assert.IsTrue(this.panels.All(x => x.UrlPath != default));
+            Assert.IsTrue(_panels.All(x => x.UrlPath != default));
         }
     }
 }

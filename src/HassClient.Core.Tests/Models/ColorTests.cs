@@ -1,7 +1,7 @@
-﻿using HassClient.Models;
+﻿using HassClient.Core.Models.Color;
 using NUnit.Framework;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(Color))]
     public class ColorTests
@@ -21,14 +21,14 @@ namespace HassClient.Core.Tests
         }
 
         [Test]
-        public void FromRGBW()
+        public void FromRgbw()
         {
             byte red = 10;
             byte green = 20;
             byte blue = 30;
             byte white = 255;
 
-            var color = Color.FromRGBW(red, green, blue, white);
+            var color = Color.FromRgbw(red, green, blue, white);
 
             Assert.AreEqual(red, color.R);
             Assert.AreEqual(green, color.G);
@@ -37,7 +37,7 @@ namespace HassClient.Core.Tests
         }
 
         [Test]
-        public void FromRGBWW()
+        public void FromRgbww()
         {
             byte red = 10;
             byte green = 20;
@@ -50,12 +50,12 @@ namespace HassClient.Core.Tests
             Assert.AreEqual(red, color.R);
             Assert.AreEqual(green, color.G);
             Assert.AreEqual(blue, color.B);
-            Assert.AreEqual(coldWhite, color.CW);
-            Assert.AreEqual(warmWhite, color.WW);
+            Assert.AreEqual(coldWhite, color.Cw);
+            Assert.AreEqual(warmWhite, color.Ww);
         }
 
         [Test]
-        public void FromHS()
+        public void FromHs()
         {
             uint hue = 10;
             uint saturation = 20;
@@ -67,10 +67,10 @@ namespace HassClient.Core.Tests
         }
 
         [Test]
-        public void FromXY()
+        public void FromXy()
         {
-            float x = 0.2f;
-            float y = 0.6f;
+            var x = 0.2f;
+            var y = 0.6f;
 
             var color = Color.FromXY(x, y);
 

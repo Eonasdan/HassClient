@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.Color
 {
     /// <summary>
     /// Represents a temperature color expressed in kelvins.
@@ -20,10 +20,10 @@ namespace HassClient.Models
         /// </param>
         public KelvinTemperatureColor(uint kelvins)
         {
-            this.Kelvins = Math.Min(Math.Max(kelvins, 1000), 40000);
+            Kelvins = Math.Min(Math.Max(kelvins, 1000), 40000);
         }
 
         /// <inheritdoc />
-        public override string ToString() => this.Kelvins.ToString();
+        public override string ToString() => Kelvins.ToString();
     }
 }

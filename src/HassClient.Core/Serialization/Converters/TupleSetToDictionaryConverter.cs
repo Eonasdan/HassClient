@@ -1,20 +1,19 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace HassClient.Serialization
+namespace HassClient.Core.Serialization.Converters
 {
     /// <summary>
-    /// Converter to convert Set[Tuple[str, str]] to <see cref="Dictionary{TKey, TValue}"/>.
+    /// Converter to convert Set[Tuple[str, str]] to <see cref="Dictionary{TKey,TValue}"/>.
     /// </summary>
     public class TupleSetToDictionaryConverter : JsonConverter<Dictionary<string, string>>
     {
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, Dictionary<string, string> value, JsonSerializer serializer)
         {
-            var valueDic = value;
-            var array = valueDic.Select(x => new[] { x.Key, x.Value }).ToArray();
+            var array = value.Select(x => new[] { x.Key, x.Value }).ToArray();
             serializer.Serialize(writer, array);
         }
 

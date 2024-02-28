@@ -1,8 +1,9 @@
-﻿using HassClient.Models;
+﻿using System.Linq;
+using HassClient.Core.Models.KnownEnums;
+using HassClient.Core.Models.RegistryEntries;
 using NUnit.Framework;
-using System.Linq;
 
-namespace HassClient.Core.Tests
+namespace HassClient.Core.Tests.Models
 {
     [TestFixture(TestOf = typeof(Device))]
     public class DeviceTests
@@ -18,7 +19,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewNameMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out _, out _);
+            var testEntry = CreateTestEntry(out _, out var initialName, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -30,7 +31,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void SetNewAreaIdMakesHasPendingChangesTrue()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out var initialAreaId, out _);
+            var testEntry = CreateTestEntry(out _, out _, out var initialAreaId, out _);
 
             testEntry.AreaId = MockHelpers.GetRandomTestName();
             Assert.IsTrue(testEntry.HasPendingChanges);
@@ -42,7 +43,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void DiscardPendingChanges()
         {
-            var testEntry = this.CreateTestEntry(out _, out var initialName, out var initialAreaId, out var initialDisabledBy);
+            var testEntry = CreateTestEntry(out _, out var initialName, out var initialAreaId, out var initialDisabledBy);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.AreaId = MockHelpers.GetRandomTestName();
@@ -59,7 +60,7 @@ namespace HassClient.Core.Tests
         [Test]
         public void NameIsNameByUserIfDefined()
         {
-            var testEntry = this.CreateTestEntry(out _, out _, out _, out _);
+            var testEntry = CreateTestEntry(out _, out _, out _, out _);
 
             Assert.AreEqual(testEntry.OriginalName, testEntry.Name);
 

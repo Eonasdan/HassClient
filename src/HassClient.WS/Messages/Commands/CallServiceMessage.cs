@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands
 {
     internal class CallServiceMessage : BaseOutgoingMessage
     {
@@ -21,9 +21,9 @@ namespace HassClient.WS.Messages
         public CallServiceMessage(string domain, string service, object serviceData)
             : this()
         {
-            this.Domain = domain;
-            this.Service = service;
-            this.ServiceData = serviceData;
+            Domain = domain;
+            Service = service;
+            ServiceData = serviceData;
         }
     }
 }

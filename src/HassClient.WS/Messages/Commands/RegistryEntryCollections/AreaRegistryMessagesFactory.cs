@@ -1,11 +1,10 @@
-﻿using HassClient.Models;
-using HassClient.WS.Messages.Commands;
+﻿using HassClient.Core.Models.RegistryEntries;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class AreaRegistryMessagesFactory : RegistryEntryCollectionMessagesFactory<Area>
     {
-        public static AreaRegistryMessagesFactory Instance = new AreaRegistryMessagesFactory();
+        public static readonly AreaRegistryMessagesFactory Instance = new AreaRegistryMessagesFactory();
 
         public AreaRegistryMessagesFactory()
             : base("config/area_registry", "area")

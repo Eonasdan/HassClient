@@ -8,37 +8,37 @@ namespace HassClient.WS.Tests.Mocks
 {
     public class MockEventSubscriber
     {
-        private ConcurrentQueue<object> receivedEventArgs = new ConcurrentQueue<object>();
+        private readonly ConcurrentQueue<object> _receivedEventArgs = new();
 
         public int HitCount { get; private set; }
 
-        public IEnumerable<object> ReceivedEventArgs => this.receivedEventArgs;
+        public IEnumerable<object> ReceivedEventArgs => _receivedEventArgs;
 
         public MockEventSubscriber()
         {
-            this.Reset();
+            Reset();
         }
 
         public void Reset()
         {
-            this.HitCount = 0;
-            this.receivedEventArgs.Clear();
+            HitCount = 0;
+            _receivedEventArgs.Clear();
         }
 
         public void Handle()
         {
-            this.HitCount++;
+            HitCount++;
         }
 
         public void Handle<T>(T _)
         {
-            this.Handle();
+            Handle();
         }
 
-        public void Handle<T, U>(T _, U u)
+        public void Handle<T, TU>(T _, TU u)
         {
-            this.receivedEventArgs.Enqueue(u);
-            this.Handle();
+            _receivedEventArgs.Enqueue(u);
+            Handle();
         }
 
         public async Task<bool> WaitConditionAsync(Func<bool> condition)
@@ -58,7 +58,7 @@ namespace HassClient.WS.Tests.Mocks
 
         public async Task<bool> WaitConditionWithTimeoutAsync(Func<bool> condition, int millisecondsTimeout)
         {
-            var checkTask = this.WaitConditionAsync(condition);
+            var checkTask = WaitConditionAsync(condition);
             var waitTask = Task.Delay(millisecondsTimeout);
             await Task.WhenAny(waitTask, checkTask);
             return checkTask.IsCompleted && await checkTask;
@@ -66,31 +66,31 @@ namespace HassClient.WS.Tests.Mocks
 
         public Task<bool> WaitHitAsync(int minHitsCount = 1)
         {
-            return this.WaitConditionAsync(() => this.HitCount >= minHitsCount);
+            return WaitConditionAsync(() => HitCount >= minHitsCount);
         }
 
         public Task<bool> WaitHitWithTimeoutAsync(int millisecondsTimeout, int minHitsCount = 1)
         {
-            return this.WaitConditionWithTimeoutAsync(() => this.HitCount >= minHitsCount, millisecondsTimeout);
+            return WaitConditionWithTimeoutAsync(() => HitCount >= minHitsCount, millisecondsTimeout);
         }
 
         public Task<bool> WaitEventArgAsync(object eventArg)
         {
-            return this.WaitConditionAsync(() => this.ReceivedEventArgs.Contains(eventArg));
+            return WaitConditionAsync(() => ReceivedEventArgs.Contains(eventArg));
         }
 
         public Task<bool> WaitEventArgWithTimeoutAsync(object eventArg, int millisecondsTimeout)
         {
-            return this.WaitConditionWithTimeoutAsync(() => this.ReceivedEventArgs.Contains(eventArg), millisecondsTimeout);
+            return WaitConditionWithTimeoutAsync(() => ReceivedEventArgs.Contains(eventArg), millisecondsTimeout);
         }
 
         public async Task<T> WaitFirstEventArgAsync<T>(Func<T, bool> predicate)
             where T : class
         {
             T result = default;
-            var aa = await this.WaitConditionAsync(() =>
+            var aa = await WaitConditionAsync(() =>
             {
-                result = this.ReceivedEventArgs.FirstOrDefault(x => x is T y && predicate(y)) as T;
+                result = ReceivedEventArgs.FirstOrDefault(x => x is T y && predicate(y)) as T;
                 return result != null;
             });
             return result;
@@ -100,9 +100,9 @@ namespace HassClient.WS.Tests.Mocks
             where T : class
         {
             T result = default;
-            var aa = await this.WaitConditionWithTimeoutAsync(() =>
+            var aa = await WaitConditionWithTimeoutAsync(() =>
             {
-                result = this.ReceivedEventArgs.FirstOrDefault(x => x is T y && predicate(y)) as T;
+                result = ReceivedEventArgs.FirstOrDefault(x => x is T y && predicate(y)) as T;
                 return result != null;
             }, millisecondsTimeout);
             return result;

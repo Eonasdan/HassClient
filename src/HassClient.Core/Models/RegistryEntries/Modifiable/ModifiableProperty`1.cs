@@ -1,33 +1,34 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.RegistryEntries.Modifiable
 {
     /// <summary>
     /// Represents a modifiable property from a model.
     /// </summary>
     /// <typeparam name="T">The property type.</typeparam>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1648:inheritdoc should be used with inheriting class", Justification = "Inherits document from base constructor")]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1648:inheritdoc should be used with inheriting class", Justification = "Inherits document from base constructor")]
     public class ModifiableProperty<T> : ModifiablePropertyBase<T>
     {
-        private T unmodifiedValue;
+        private T _unmodifiedValue;
 
-        private T currentValue;
+        private T _currentValue;
 
         /// <summary>
         /// Gets or sets a value for the property.
         /// </summary>
         public T Value
         {
-            get => this.currentValue;
+            get => _currentValue;
             set
             {
-                this.ValidateValue(value);
-                this.currentValue = value;
+                ValidateValue(value);
+                _currentValue = value;
             }
         }
 
         /// <inheritdoc />
-        public override bool HasPendingChanges => !Equals(this.currentValue, this.unmodifiedValue);
+        public override bool HasPendingChanges => !Equals(_currentValue, _unmodifiedValue);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifiableProperty{T}"/> class.
@@ -50,13 +51,13 @@ namespace HassClient.Models
         /// <inheritdoc />
         public override void SaveChanges()
         {
-            this.unmodifiedValue = this.currentValue;
+            _unmodifiedValue = _currentValue;
         }
 
         /// <inheritdoc />
         public override void DiscardPendingChanges()
         {
-            this.currentValue = this.unmodifiedValue;
+            _currentValue = _unmodifiedValue;
         }
     }
 }

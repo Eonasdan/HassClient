@@ -1,47 +1,46 @@
-﻿using HassClient.Core.Tests;
-using HassClient.Models;
-using NUnit.Framework;
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using HassClient.Core.Models.RegistryEntries;
+using HassClient.Core.Tests;
+using NUnit.Framework;
 
-namespace HassClient.WS.Tests
+namespace HassClient.WS.Tests.RegistryEntryApiTests
 {
-    public class UserRegistryApiTests : BaseHassWSApiTest
+    public class UserRegistryApiTests : BaseHassWsApiTest
     {
-        private User testUser;
+        private User _testUser;
 
         [OneTimeSetUp]
         [Test, Order(1)]
         public async Task CreateUser()
         {
-            if (this.testUser == null)
+            if (_testUser == null)
             {
-                this.testUser = new User(MockHelpers.GetRandomTestName());
-                var result = await this.hassWSApi.CreateUserAsync(this.testUser);
+                _testUser = new User(MockHelpers.GetRandomTestName());
+                var result = await HassWsApi.CreateUserAsync(_testUser);
 
                 Assert.IsTrue(result, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(this.testUser.Id);
-            Assert.NotNull(this.testUser.Name);
-            Assert.IsTrue(this.testUser.IsActive);
-            Assert.IsFalse(this.testUser.IsLocalOnly);
-            Assert.IsFalse(this.testUser.IsOwner);
-            Assert.IsFalse(this.testUser.IsAdministrator);
-            Assert.IsFalse(this.testUser.HasPendingChanges);
-            Assert.IsTrue(this.testUser.IsTracked);
+            Assert.NotNull(_testUser.Id);
+            Assert.NotNull(_testUser.Name);
+            Assert.IsTrue(_testUser.IsActive);
+            Assert.IsFalse(_testUser.IsLocalOnly);
+            Assert.IsFalse(_testUser.IsOwner);
+            Assert.IsFalse(_testUser.IsAdministrator);
+            Assert.IsFalse(_testUser.HasPendingChanges);
+            Assert.IsTrue(_testUser.IsTracked);
         }
 
         [Test, Order(2)]
         public async Task GetUsers()
         {
-            var users = await this.hassWSApi.GetUsersAsync();
+            var users = await HassWsApi.GetUsersAsync();
 
             Assert.NotNull(users);
             Assert.IsNotEmpty(users);
-            Assert.IsTrue(users.Contains(this.testUser));
+            Assert.IsTrue(users.Contains(_testUser));
             Assert.IsTrue(users.Any(u => u.IsOwner));
             Assert.IsTrue(users.Any(u => u.IsAdministrator));
         }
@@ -50,79 +49,79 @@ namespace HassClient.WS.Tests
         public async Task UpdateUserName()
         {
             var updatedName = MockHelpers.GetRandomTestName();
-            this.testUser.Name = updatedName;
-            var result = await this.hassWSApi.UpdateUserAsync(this.testUser);
+            _testUser.Name = updatedName;
+            var result = await HassWsApi.UpdateUserAsync(_testUser);
 
             Assert.IsTrue(result);
-            Assert.AreEqual(updatedName, this.testUser.Name);
+            Assert.AreEqual(updatedName, _testUser.Name);
         }
 
         [Test, Order(3)]
         public async Task UpdateUserIsActive()
         {
-            this.testUser.IsActive = false;
-            var result = await this.hassWSApi.UpdateUserAsync(this.testUser);
+            _testUser.IsActive = false;
+            var result = await HassWsApi.UpdateUserAsync(_testUser);
 
             Assert.IsTrue(result);
-            Assert.IsFalse(this.testUser.IsActive);
+            Assert.IsFalse(_testUser.IsActive);
         }
 
         [Test, Order(3)]
         public async Task UpdateUserIsLocalOnly()
         {
-            this.testUser.IsLocalOnly = true;
-            var result = await this.hassWSApi.UpdateUserAsync(this.testUser);
+            _testUser.IsLocalOnly = true;
+            var result = await HassWsApi.UpdateUserAsync(_testUser);
 
             Assert.IsTrue(result);
-            Assert.IsTrue(this.testUser.IsLocalOnly);
+            Assert.IsTrue(_testUser.IsLocalOnly);
         }
 
         [Test, Order(3)]
         public async Task UpdateUserIsAdministrator()
         {
-            this.testUser.IsAdministrator = true;
-            var result = await this.hassWSApi.UpdateUserAsync(this.testUser);
+            _testUser.IsAdministrator = true;
+            var result = await HassWsApi.UpdateUserAsync(_testUser);
 
             Assert.IsTrue(result);
-            Assert.IsTrue(this.testUser.IsAdministrator);
+            Assert.IsTrue(_testUser.IsAdministrator);
         }
 
         [Test, Order(4)]
         public async Task UpdateWithForce()
         {
-            var initialName = this.testUser.Name;
-            var initialGroupIds = this.testUser.GroupIds;
-            var initialIsActive = this.testUser.IsActive;
-            var initialIsLocalOnly = this.testUser.IsLocalOnly;
-            var clonedEntry = this.testUser.Clone();
+            var initialName = _testUser.Name;
+            var initialGroupIds = _testUser.GroupIds;
+            var initialIsActive = _testUser.IsActive;
+            var initialIsLocalOnly = _testUser.IsLocalOnly;
+            var clonedEntry = _testUser.Clone();
             clonedEntry.Name = $"{initialName}_cloned";
-            clonedEntry.IsAdministrator = !this.testUser.IsAdministrator;
+            clonedEntry.IsAdministrator = !_testUser.IsAdministrator;
             clonedEntry.IsActive = !initialIsActive;
             clonedEntry.IsLocalOnly = !initialIsLocalOnly;
-            var result = await this.hassWSApi.UpdateUserAsync(clonedEntry);
+            var result = await HassWsApi.UpdateUserAsync(clonedEntry);
             Assert.IsTrue(result, "SetUp failed");
-            Assert.False(this.testUser.HasPendingChanges, "SetUp failed");
+            Assert.False(_testUser.HasPendingChanges, "SetUp failed");
 
-            result = await this.hassWSApi.UpdateUserAsync(this.testUser, forceUpdate: true);
+            result = await HassWsApi.UpdateUserAsync(_testUser, forceUpdate: true);
             Assert.IsTrue(result);
-            Assert.AreEqual(initialName, this.testUser.Name);
-            Assert.AreEqual(initialGroupIds, this.testUser.GroupIds);
-            Assert.AreEqual(initialIsActive, this.testUser.IsActive);
-            Assert.AreEqual(initialIsLocalOnly, this.testUser.IsLocalOnly);
+            Assert.AreEqual(initialName, _testUser.Name);
+            Assert.AreEqual(initialGroupIds, _testUser.GroupIds);
+            Assert.AreEqual(initialIsActive, _testUser.IsActive);
+            Assert.AreEqual(initialIsLocalOnly, _testUser.IsLocalOnly);
         }
 
         [OneTimeTearDown]
         [Test, Order(5)]
         public async Task DeleteUser()
         {
-            if (this.testUser == null)
+            if (_testUser == null)
             {
                 return;
             }
 
-            var result = await this.hassWSApi.DeleteUserAsync(this.testUser);
-            var deletedUser = this.testUser;
-            this.testUser = null;
+            var result = await HassWsApi.DeleteUserAsync(_testUser);
+            var deletedUser = _testUser;
+            _testUser = null;
 
             Assert.IsTrue(result);
             Assert.IsFalse(deletedUser.IsTracked);

@@ -1,7 +1,7 @@
-﻿using HassClient.Models;
+﻿using HassClient.Core.Models.Events;
 using Newtonsoft.Json;
 
-namespace HassClient.WS.Messages
+namespace HassClient.WS.Messages.Commands.Subscriptions
 {
     internal class SubscribeEventsMessage : BaseOutgoingMessage
     {
@@ -16,9 +16,9 @@ namespace HassClient.WS.Messages
         public SubscribeEventsMessage(string eventType)
             : this()
         {
-            this.EventType = eventType;
+            EventType = eventType;
         }
 
-        private bool ShouldSerializeEventType() => this.EventType != Event.AnyEventFilter && this.EventType != null;
+        private bool ShouldSerializeEventType() => EventType != Event.AnyEventFilter && EventType != null;
     }
 }

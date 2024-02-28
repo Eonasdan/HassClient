@@ -1,11 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
+using Newtonsoft.Json;
 
-namespace HassClient.Models
+namespace HassClient.Core.Models.Color
 {
     /// <summary>
     /// Represents a color described by a known name.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Color names are self-documented")]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Color names are self-documented")]
+    [PublicAPI]
     public class NameColor : Color
     {
         public static NameColor AliceBlue => new NameColor("aliceblue");
@@ -64,7 +67,7 @@ namespace HassClient.Models
 
         public static NameColor DarkKhaki => new NameColor("darkkhaki");
 
-        public static NameColor DarkmMagenta => new NameColor("darkmagenta");
+        public static NameColor DarkMagenta => new NameColor("darkmagenta");
 
         public static NameColor DarkOliveGreen => new NameColor("darkolivegreen");
 
@@ -311,12 +314,11 @@ namespace HassClient.Models
         public string Name { get; internal set; }
 
         internal NameColor(string name)
-            : base()
         {
-            this.Name = name;
+            Name = name;
         }
 
         /// <inheritdoc />
-        public override string ToString() => this.Name;
+        public override string ToString() => Name;
     }
 }
