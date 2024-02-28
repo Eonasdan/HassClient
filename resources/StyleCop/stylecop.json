@@ -3,7 +3,6 @@
   "settings": {
     "documentationRules": {
       "xmlHeader": false,
-      "fileNamingConvention": "metadata",
       "documentInternalElements": false
     },
     "layoutRules": {

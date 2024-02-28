@@ -47,9 +47,12 @@ await hassWSApi.CallServiceAsync(KnownDomains.Light, KnownServices.TurnOn, data:
 
 // When only entity_id is needed for the invocation this overload can be used.
 await hassWSApi.CallServiceForEntitiesAsync(KnownDomains.Light, KnownServices.Toggle, "light.my_light1", "light.my_light2");
+
+// Send message to google tts.speak
+await hassWSApi.CallServiceAsync("tts", "speak", data: new { entity_id = "all", media_player_entity_id = "media_player.living_room_speaker", Message = "hello world" });
 ```
 
- ### Fetching states
+### Fetching states
  ```csharp
 # Gets a collection with the state of every registered entity in the Home Assistant instance.
 IEnumerable<StateModel> states = await hassWSApi.GetStatesAsync();
