@@ -55,7 +55,7 @@ namespace HassClient.WS.Tests
         [OneTimeTearDown]
         public async Task GlobalTeardown()
         {
-            await _hassContainer.DisposeAsync();
+            if (_hassContainer != null) await _hassContainer.DisposeAsync();
         }
     }
 }
