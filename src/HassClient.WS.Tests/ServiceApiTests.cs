@@ -11,8 +11,8 @@ namespace HassClient.WS.Tests
         {
             var services = await HassWsApi.GetServicesAsync();
 
-            Assert.NotNull(services);
-            Assert.IsNotEmpty(services);
+            Assert.That(services, Is.Not.Null);
+            Assert.That(services, Is.Not.Empty);
         }
 
         [Test]
@@ -20,7 +20,7 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.CallServiceAsync("homeassistant", "check_config");
 
-            Assert.NotNull(result);
+            Assert.That(result, Is.Not.Null);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.CallServiceForEntitiesAsync("homeassistant", "update_entity", "sun.sun");
 
-            Assert.NotNull(result);
+            Assert.That(result, Is.Not.Null);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.CallServiceAsync(KnownDomains.Homeassistant, KnownServices.CheckConfig);
 
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.CallServiceForEntitiesAsync(KnownDomains.Homeassistant, KnownServices.UpdateEntity, "sun.sun");
 
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
         }
     }
 }

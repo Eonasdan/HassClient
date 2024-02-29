@@ -19,18 +19,18 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
                 _testUser = new User(MockHelpers.GetRandomTestName());
                 var result = await HassWsApi.CreateUserAsync(_testUser);
 
-                Assert.IsTrue(result, "SetUp failed");
+                Assert.That(result, Is.True, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(_testUser.Id);
-            Assert.NotNull(_testUser.Name);
-            Assert.IsTrue(_testUser.IsActive);
-            Assert.IsFalse(_testUser.IsLocalOnly);
-            Assert.IsFalse(_testUser.IsOwner);
-            Assert.IsFalse(_testUser.IsAdministrator);
-            Assert.IsFalse(_testUser.HasPendingChanges);
-            Assert.IsTrue(_testUser.IsTracked);
+            Assert.That(_testUser.Id, Is.Not.Null);
+            Assert.That(_testUser.Name, Is.Not.Null);
+            Assert.That(_testUser.IsActive, Is.True);
+            Assert.That(_testUser.IsLocalOnly, Is.False);
+            Assert.That(_testUser.IsOwner, Is.False);
+            Assert.That(_testUser.IsAdministrator, Is.False);
+            Assert.That(_testUser.HasPendingChanges, Is.False);
+            Assert.That(_testUser.IsTracked, Is.True);
         }
 
         [Test, Order(2)]
@@ -38,11 +38,11 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
         {
             var users = await HassWsApi.GetUsersAsync();
 
-            Assert.NotNull(users);
-            Assert.IsNotEmpty(users);
-            Assert.IsTrue(users.Contains(_testUser));
-            Assert.IsTrue(users.Any(u => u.IsOwner));
-            Assert.IsTrue(users.Any(u => u.IsAdministrator));
+            Assert.That(users, Is.Not.Null);
+            Assert.That(users, Is.Not.Empty);
+            Assert.That(users.Contains(_testUser), Is.True);
+            Assert.That(users.Any(u => u.IsOwner), Is.True);
+            Assert.That(users.Any(u => u.IsAdministrator), Is.True);
         }
 
         [Test, Order(3)]
@@ -52,8 +52,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             _testUser.Name = updatedName;
             var result = await HassWsApi.UpdateUserAsync(_testUser);
 
-            Assert.IsTrue(result);
-            Assert.AreEqual(updatedName, _testUser.Name);
+            Assert.That(result, Is.True);
+            Assert.That(updatedName, Is.EqualTo(_testUser.Name));
         }
 
         [Test, Order(3)]
@@ -62,8 +62,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             _testUser.IsActive = false;
             var result = await HassWsApi.UpdateUserAsync(_testUser);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testUser.IsActive);
+            Assert.That(result, Is.True);
+            Assert.That(_testUser.IsActive, Is.False);
         }
 
         [Test, Order(3)]
@@ -72,8 +72,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             _testUser.IsLocalOnly = true;
             var result = await HassWsApi.UpdateUserAsync(_testUser);
 
-            Assert.IsTrue(result);
-            Assert.IsTrue(_testUser.IsLocalOnly);
+            Assert.That(result, Is.True);
+            Assert.That(_testUser.IsLocalOnly, Is.True);
         }
 
         [Test, Order(3)]
@@ -82,8 +82,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             _testUser.IsAdministrator = true;
             var result = await HassWsApi.UpdateUserAsync(_testUser);
 
-            Assert.IsTrue(result);
-            Assert.IsTrue(_testUser.IsAdministrator);
+            Assert.That(result, Is.True);
+            Assert.That(_testUser.IsAdministrator, Is.True);
         }
 
         [Test, Order(4)]
@@ -99,15 +99,15 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             clonedEntry.IsActive = !initialIsActive;
             clonedEntry.IsLocalOnly = !initialIsLocalOnly;
             var result = await HassWsApi.UpdateUserAsync(clonedEntry);
-            Assert.IsTrue(result, "SetUp failed");
-            Assert.False(_testUser.HasPendingChanges, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
+            Assert.That(_testUser.HasPendingChanges, Is.False, "SetUp failed");
 
             result = await HassWsApi.UpdateUserAsync(_testUser, forceUpdate: true);
-            Assert.IsTrue(result);
-            Assert.AreEqual(initialName, _testUser.Name);
-            Assert.AreEqual(initialGroupIds, _testUser.GroupIds);
-            Assert.AreEqual(initialIsActive, _testUser.IsActive);
-            Assert.AreEqual(initialIsLocalOnly, _testUser.IsLocalOnly);
+            Assert.That(result, Is.True);
+            Assert.That(initialName, Is.EqualTo(_testUser.Name));
+            Assert.That(initialGroupIds, Is.EqualTo(_testUser.GroupIds));
+            Assert.That(initialIsActive, Is.EqualTo(_testUser.IsActive));
+            Assert.That(initialIsLocalOnly, Is.EqualTo(_testUser.IsLocalOnly));
         }
 
         [OneTimeTearDown]
@@ -123,8 +123,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             var deletedUser = _testUser;
             _testUser = null;
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(deletedUser.IsTracked);
+            Assert.That(result, Is.True);
+            Assert.That(deletedUser.IsTracked, Is.False);
         }
     }
 }

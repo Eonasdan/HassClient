@@ -18,7 +18,7 @@ namespace HassClient.Core.Tests.Converters
         {
             var canConvert = _converter.CanConvert(typeof(CalendarVersion));
 
-            Assert.True(canConvert);
+            Assert.That(canConvert, Is.True);
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace HassClient.Core.Tests.Converters
 
             _converter.WriteJson(jsonWriter, _testVersion, serializer);
 
-            Assert.AreEqual($"\"{_testVersion}\"", textWriter.ToString());
+            Assert.That($"\"{_testVersion}\"", Is.EqualTo(textWriter.ToString()));
         }
 
         [Test]
@@ -41,9 +41,9 @@ namespace HassClient.Core.Tests.Converters
             var serializer = JsonSerializer.Create();
             var result = _converter.ReadJson(jsonReader, _testVersion.GetType(), null, serializer);
 
-            Assert.NotNull(result);
-            Assert.AreNotEqual(_testVersion, result);
-            Assert.AreEqual(_testVersion.ToString(), result.ToString());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(_testVersion, Is.Not.EqualTo(result));
+            Assert.That(_testVersion.ToString(), Is.EqualTo(result.ToString()));
         }
 
         public void ReadJsonWithExisingValue()
@@ -55,9 +55,9 @@ namespace HassClient.Core.Tests.Converters
             var serializer = JsonSerializer.Create();
             var result = _converter.ReadJson(jsonReader, _testVersion.GetType(), existingVersion, serializer);
 
-            Assert.NotNull(result);
-            Assert.AreEqual(existingVersion, result);
-            Assert.AreEqual(_testVersion.ToString(), result.ToString());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(existingVersion, Is.EqualTo(result));
+            Assert.That(_testVersion.ToString(), Is.EqualTo(result.ToString()));
         }
     }
 }

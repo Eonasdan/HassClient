@@ -70,7 +70,7 @@ namespace HassClient.WS.Tests.Mocks.HassServer.CommandProcessors
                 return "below_horizon";
             }
 
-            return (new Faker()).RandomEntityState();
+            return new Faker().RandomEntityState();
         }
     }
 }

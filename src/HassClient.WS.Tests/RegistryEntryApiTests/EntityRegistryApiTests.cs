@@ -21,7 +21,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             var result = await HassWsApi.CreateStorageEntityRegistryEntryAsync(_testInputBoolean);
             _testEntityId = _testInputBoolean.EntityId;
 
-            Assert.IsTrue(result, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
         }
 
         protected override async Task OneTimeTearDown()
@@ -35,11 +35,11 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
         {
             var entities = await HassWsApi.GetEntitiesAsync();
 
-            Assert.IsNotNull(entities);
-            Assert.IsNotEmpty(entities);
-            Assert.IsTrue(entities.All(e => e.EntityId != null));
-            Assert.IsTrue(entities.All(e => e.Platform != null), entities.FirstOrDefault(e => e.Platform == null)?.EntityId);
-            Assert.IsTrue(entities.Any(e => e.ConfigEntryId != null));
+            Assert.That(entities, Is.Not.Null);
+            Assert.That(entities, Is.Not.Empty);
+            Assert.That(entities.All(e => e.EntityId != null), Is.True);
+            Assert.That(entities.All(e => e.Platform != null), Is.True, entities.FirstOrDefault(e => e.Platform == null)?.EntityId);
+            Assert.That(entities.Any(e => e.ConfigEntryId != null), Is.True);
         }
 
         [Test]
@@ -62,11 +62,11 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             var entityId = "light.bed_light";
             var entity = await HassWsApi.GetEntityAsync(entityId);
 
-            Assert.IsNotNull(entity);
-            Assert.IsNotNull(entity.ConfigEntryId);
-            Assert.IsNotNull(entity.OriginalName);
-            Assert.IsNotNull(entity.Name);
-            Assert.AreEqual(entityId, entity.EntityId);
+            Assert.That(entity, Is.Not.Null);;
+            Assert.That(entity.ConfigEntryId, Is.Not.Null);;
+            Assert.That(entity.OriginalName, Is.Not.Null);
+            Assert.That(entity.Name, Is.Not.Null);
+            Assert.That(entityId, Is.EqualTo(entity.EntityId));
         }
 
         [Test, Order(1), NonParallelizable]
@@ -74,12 +74,12 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
         {
             var entity = await HassWsApi.GetEntityAsync(_testEntityId);
 
-            Assert.IsNotNull(entity);
-            Assert.IsNotNull(entity.OriginalName);
-            Assert.IsNotNull(entity.OriginalIcon);
-            Assert.IsNotNull(entity.Name);
-            Assert.IsNotNull(entity.Icon);
-            Assert.AreEqual(_testEntityId, entity.EntityId);
+            Assert.That(entity, Is.Not.Null);
+            Assert.That(entity.OriginalName, Is.Not.Null);
+            Assert.That(entity.OriginalIcon, Is.Not.Null);
+            Assert.That(entity.Name, Is.Not.Null);
+            Assert.That(entity.Icon, Is.Not.Null);
+            Assert.That(_testEntityId, Is.EqualTo(entity.EntityId));
         }
 
         [Order(1), NonParallelizable]
@@ -91,9 +91,9 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
 
             var result = await HassWsApi.UpdateEntityAsync(testEntity, disable: disable);
 
-            Assert.IsTrue(result);
-            Assert.AreEqual(_testEntityId, testEntity.EntityId);
-            Assert.AreEqual(disable, testEntity.IsDisabled);
+            Assert.That(result, Is.True);
+            Assert.That(_testEntityId, Is.EqualTo(testEntity.EntityId));
+            Assert.That(disable, Is.EqualTo(testEntity.IsDisabled));
         }
 
         [Test, Order(1), NonParallelizable]
@@ -105,10 +105,11 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             testEntity.Name = newName;
             var result = await HassWsApi.UpdateEntityAsync(testEntity);
 
-            Assert.IsTrue(result);
-            Assert.AreEqual(_testEntityId, testEntity.EntityId);
-            Assert.AreEqual(newName, testEntity.Name);
-            Assert.AreNotEqual(newName, testEntity.OriginalName);
+            Assert.That(result, Is.True);
+            Assert.That(_testEntityId, Is.EqualTo(testEntity.EntityId));
+            Assert.That(newName, Is.EqualTo(testEntity.Name));
+            Assert.That(newName, Is.Not.EqualTo(testEntity.Name));
+            Assert.That(newName, Is.Not.EqualTo(testEntity.OriginalName));
         }
 
         [Test, Order(1), NonParallelizable]
@@ -120,10 +121,10 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             testEntity.Icon = newIcon;
             var result = await HassWsApi.UpdateEntityAsync(testEntity);
 
-            Assert.IsTrue(result);
-            Assert.AreEqual(_testEntityId, testEntity.EntityId);
-            Assert.AreEqual(newIcon, testEntity.Icon);
-            Assert.AreNotEqual(newIcon, testEntity.OriginalIcon);
+            Assert.That(result, Is.True);
+            Assert.That(_testEntityId, Is.EqualTo(testEntity.EntityId));
+            Assert.That(newIcon, Is.EqualTo(testEntity.Icon));
+            Assert.That(newIcon, Is.Not.EqualTo(testEntity.OriginalIcon));
         }
 
         [Test, Order(1)]
@@ -133,12 +134,12 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             var clonedEntity = testEntity.Clone();
             clonedEntity.Name = MockHelpers.GetRandomTestName();
             var result = await HassWsApi.UpdateEntityAsync(clonedEntity);
-            Assert.IsTrue(result, "SetUp failed");
-            Assert.False(testEntity.HasPendingChanges, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
+            Assert.That(testEntity.HasPendingChanges, Is.False, "SetUp failed");
 
             result = await HassWsApi.RefreshEntityAsync(testEntity);
-            Assert.IsTrue(result);
-            Assert.AreEqual(clonedEntity.Name, testEntity.Name);
+            Assert.That(result, Is.True);
+            Assert.That(clonedEntity.Name, Is.EqualTo(testEntity.Name));
         }
 
         [Test, Order(2), NonParallelizable]
@@ -149,9 +150,9 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
 
             var result = await HassWsApi.UpdateEntityAsync(testEntity, newEntityId);
 
-            Assert.IsTrue(result);
-            Assert.AreEqual(newEntityId, testEntity.EntityId);
-            Assert.AreNotEqual(_testEntityId, newEntityId);
+            Assert.That(result, Is.True);
+            Assert.That(newEntityId, Is.EqualTo(testEntity.EntityId));
+            Assert.That(_testEntityId, Is.Not.EqualTo(newEntityId));
 
             _testEntityId = newEntityId; // This is needed for DeleteEntityTest
         }
@@ -167,14 +168,14 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             clonedEntry.Name = $"{initialName}_cloned";
             clonedEntry.Icon = $"{initialIcon}_cloned";
             var result = await HassWsApi.UpdateEntityAsync(clonedEntry, disable: true);
-            Assert.IsTrue(result, "SetUp failed");
-            Assert.False(testEntity.HasPendingChanges, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
+            Assert.That(testEntity.HasPendingChanges, Is.False, "SetUp failed");
 
             result = await HassWsApi.UpdateEntityAsync(testEntity, disable: false, forceUpdate: true);
-            Assert.IsTrue(result);
-            Assert.AreEqual(initialName, testEntity.Name);
-            Assert.AreEqual(initialIcon, testEntity.Icon);
-            Assert.AreEqual(initialDisabledBy, testEntity.DisabledBy);
+            Assert.That(result, Is.True);
+            Assert.That(initialName, Is.EqualTo(testEntity.Name));
+            Assert.That(initialIcon, Is.EqualTo(testEntity.Icon));
+            Assert.That(initialDisabledBy, Is.EqualTo(testEntity.DisabledBy));
         }
 
         [Test, Order(4), NonParallelizable]
@@ -184,9 +185,9 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             var result = await HassWsApi.DeleteEntityAsync(testEntity);
             var testEntity1 = await HassWsApi.GetEntityAsync(_testEntityId);
 
-            Assert.IsTrue(result);
-            Assert.IsNull(testEntity1);
-            Assert.IsFalse(testEntity.IsTracked);
+            Assert.That(result, Is.True);
+            Assert.That(testEntity1, Is.Null);
+            Assert.That(testEntity.IsTracked, Is.False);
         }
     }
 }

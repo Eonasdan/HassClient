@@ -18,35 +18,35 @@ namespace HassClient.Core.Tests.Models
         {
             var constructor = typeof(Person).GetConstructors()
                                             .FirstOrDefault(x => x.IsPublic && x.GetParameters().Length > 0);
-            Assert.NotNull(constructor);
+            Assert.That(constructor, Is.Not.Null);
         }
 
         [Test]
         public void NewPersonHasPendingChanges()
         {
             var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void NewPersonIsStorageEntry()
         {
             var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
-            Assert.IsTrue(testEntry.IsStorageEntry);
+            Assert.That(testEntry.IsStorageEntry, Is.True);
         }
 
         [Test]
         public void NewPersonIsUntracked()
         {
             var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
-            Assert.False(testEntry.IsTracked);
+            Assert.That(testEntry.IsTracked, Is.False);
         }
 
         [Test]
         public void NewPersonHasUserId()
         {
             var testEntry = new Person(MockHelpers.GetRandomTestName(), _testUser);
-            Assert.AreEqual(testEntry.UserId, _testUser.Id);
+            Assert.That(testEntry.UserId, Is.EqualTo(_testUser.Id));
         }
 
         private static IEnumerable<string> NullOrWhiteSpaceStringValues() => RegistryEntryBaseTests.NullOrWhiteSpaceStringValues();
@@ -81,10 +81,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out var initialName, out _, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Name = initialName;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -93,10 +93,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out _, out var picture, out _);
 
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Picture = picture;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -105,10 +105,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out var user, out _, out _);
 
             testEntry.ChangeUser(_testUser);
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.ChangeUser(user);
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -118,10 +118,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out _, out _, out var deviceTrackers);
 
             testEntry.DeviceTrackers.Add(testDeviceTracker);
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.DeviceTrackers.Remove(testDeviceTracker);
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -133,14 +133,14 @@ namespace HassClient.Core.Tests.Models
             testEntry.ChangeUser(_testUser);
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";
             testEntry.DeviceTrackers.Add(MockHelpers.GetRandomEntityId(KnownDomains.DeviceTracker));
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.DiscardPendingChanges();
-            Assert.False(testEntry.HasPendingChanges);
-            Assert.AreEqual(initialName, testEntry.Name);
-            Assert.AreEqual(initialUser.Id, testEntry.UserId);
-            Assert.AreEqual(initialPicture, testEntry.Picture);
-            Assert.AreEqual(initialDeviceTrackers, testEntry.DeviceTrackers);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
+            Assert.That(initialName, Is.EqualTo(testEntry.Name));
+            Assert.That(initialUser.Id, Is.EqualTo(testEntry.UserId));
+            Assert.That(initialPicture, Is.EqualTo(testEntry.Picture));
+            Assert.That(initialDeviceTrackers, Is.EqualTo(testEntry.DeviceTrackers));
         }
 
         private Person CreateTestEntry(out string entityId, out string name, out User user, out string picture, out IEnumerable<string> deviceTrackers)

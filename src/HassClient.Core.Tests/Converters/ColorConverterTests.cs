@@ -26,7 +26,7 @@ namespace HassClient.Core.Tests.Converters
         {
             var canConvert = _converter.CanConvert(colorType);
 
-            Assert.True(canConvert);
+            Assert.That(canConvert, Is.True);
         }
 
         public static IEnumerable<TestCaseData> WriteReadJsonTestCases()
@@ -53,7 +53,7 @@ namespace HassClient.Core.Tests.Converters
             var serializer = JsonSerializer.Create();
             _converter.WriteJson(jsonWriter, color, serializer);
 
-            Assert.AreEqual(GetJsonRepresentation(color), textWriter.ToString());
+            Assert.That(GetJsonRepresentation(color), Is.EqualTo(textWriter.ToString()));
         }
 
         [Test]
@@ -65,9 +65,9 @@ namespace HassClient.Core.Tests.Converters
             var serializer = JsonSerializer.Create();
             var result = _converter.ReadJson(jsonReader, color.GetType(), null, serializer);
 
-            Assert.NotNull(result);
-            Assert.AreNotEqual(color, result);
-            Assert.AreEqual(color.ToString(), result.ToString());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(color, Is.Not.EqualTo(result));
+            Assert.That(color.ToString(), Is.EqualTo(result.ToString()));
         }
 
         public static IEnumerable<TestCaseData> ReadJsonWithExisingValueTestCases()
@@ -94,9 +94,9 @@ namespace HassClient.Core.Tests.Converters
             var serializer = JsonSerializer.Create();
             var result = _converter.ReadJson(jsonReader, color.GetType(), existing, serializer);
 
-            Assert.NotNull(result);
-            Assert.AreEqual(existing, result);
-            Assert.AreEqual(color.ToString(), result.ToString());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(existing, Is.EqualTo(result));
+            Assert.That(color.ToString(), Is.EqualTo(result.ToString()));
         }
 
         private string GetJsonRepresentation(Color color)

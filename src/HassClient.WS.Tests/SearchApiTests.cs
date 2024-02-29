@@ -17,12 +17,12 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.SearchRelatedAsync(itemTypes, $"Unknown_{DateTime.Now.Ticks}");
 
-            Assert.NotNull(result);
-            Assert.IsNull(result.AreaIds);
-            Assert.IsNull(result.AutomationIds);
-            Assert.IsNull(result.ConfigEntryIds);
-            Assert.IsNull(result.DeviceIds);
-            Assert.IsNull(result.EntityIds);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.AreaIds, Is.Null);
+            Assert.That(result.AutomationIds, Is.Null);
+            Assert.That(result.ConfigEntryIds, Is.Null);
+            Assert.That(result.DeviceIds, Is.Null);
+            Assert.That(result.EntityIds, Is.Null);
         }
 
         [Test]
@@ -30,11 +30,11 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.SearchRelatedAsync(ItemTypes.Entity, "light.bed_light");
 
-            Assert.NotNull(result);
-            Assert.NotNull(result.ConfigEntryIds);
-            Assert.NotNull(result.DeviceIds);
-            Assert.NotZero(result.ConfigEntryIds.Length);
-            Assert.NotZero(result.DeviceIds.Length);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ConfigEntryIds, Is.Not.Null);
+            Assert.That(result.DeviceIds, Is.Not.Null);
+            Assert.That(result.ConfigEntryIds.Length, Is.Not.Zero);
+            Assert.That(result.DeviceIds.Length, Is.Not.Zero);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using HassClient.Core.Models.KnownEnums;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace HassClient.Core.Tests.Models
 {
@@ -43,20 +44,20 @@ namespace HassClient.Core.Tests.Models
         public void SaveChangesMakesHasPendingChangesFalse()
         {
             var collectionProperty = CreateCollectionProperty(hasChanges: true);
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
 
             collectionProperty.SaveChanges();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
         }
 
         [Test]
         public void DiscardPendingChangesMakesHasPendingChangesFalse()
         {
             var collectionProperty = CreateCollectionProperty(hasChanges: true);
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
 
             collectionProperty.DiscardPendingChanges();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -67,54 +68,53 @@ namespace HassClient.Core.Tests.Models
 
             collectionProperty.Value.Add("Test");
             collectionProperty.DiscardPendingChanges();
-
-            CollectionAssert.AreEqual(initialValues, collectionProperty.Value);
+            Assert.That(initialValues, Is.EqualTo(collectionProperty.Value).AsCollection);
         }
 
         [Test]
         public void AddNewValueMakesHasPendingChangesTrue()
         {
             var collectionProperty = CreateCollectionProperty();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
 
             collectionProperty.Value.Add("Test");
 
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void RemoveValueMakesHasPendingChangesTrue()
         {
             var collectionProperty = CreateCollectionProperty();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
 
             collectionProperty.Value.Remove(collectionProperty.Value.First());
 
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void ClearValuesMakesHasPendingChangesTrue()
         {
             var collectionProperty = CreateCollectionProperty();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
 
             collectionProperty.Value.Clear();
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void AddAndRemoveValueMakesHasPendingChangesFalse()
         {
             var collectionProperty = CreateCollectionProperty();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
 
             const string item = "Test";
             collectionProperty.Value.Add(item);
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
 
             collectionProperty.Value.Remove(item);
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -122,13 +122,13 @@ namespace HassClient.Core.Tests.Models
         {
             var collectionProperty = CreateCollectionProperty();
             var existingValue = collectionProperty.Value.First();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
 
             collectionProperty.Value.Remove(existingValue);
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
 
             collectionProperty.Value.Add(existingValue);
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -136,19 +136,22 @@ namespace HassClient.Core.Tests.Models
         {
             var collectionProperty = CreateCollectionProperty();
             var initialValues = collectionProperty.Value.ToArray();
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
 
             collectionProperty.Value.Clear();
-            Assert.IsTrue(collectionProperty.HasPendingChanges);
+            Assert.That(collectionProperty.HasPendingChanges, Is.True);
 
             foreach (var item in initialValues)
             {
                 collectionProperty.Value.Add(item);
             }
-            Assert.IsFalse(collectionProperty.HasPendingChanges);
+
+            Assert.That(collectionProperty.HasPendingChanges, Is.False);
         }
 
-        private ModifiablePropertyCollection<string> CreateCollectionProperty(int elementCount = 2, Func<string, bool> validationFunc = null, bool hasChanges = false, [CallerMemberName] string collectionName = null)
+        private ModifiablePropertyCollection<string> CreateCollectionProperty(int elementCount = 2,
+            Func<string, bool> validationFunc = null, bool hasChanges = false,
+            [CallerMemberName] string collectionName = null)
         {
             var collection = new ModifiablePropertyCollection<string>(collectionName, validationFunc);
             for (var i = 0; i < elementCount; i++)

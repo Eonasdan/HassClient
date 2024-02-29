@@ -10,8 +10,8 @@ namespace HassClient.WS.Tests
         {
             var entities = await HassWsApi.GetEntitySourcesAsync();
 
-            Assert.IsNotNull(entities);
-            Assert.IsNotEmpty(entities);
+            Assert.That(entities, Is.Not.Null);
+            Assert.That(entities, Is.Not.Empty);
         }
 
         [Test]
@@ -20,9 +20,9 @@ namespace HassClient.WS.Tests
             var entityId = "zone.home";
             var result = await HassWsApi.GetEntitySourceAsync(entityId);
 
-            Assert.AreEqual(result.EntityId, entityId);
-            Assert.AreEqual(result.Domain, entityId.Split('.')[0]);
-            Assert.NotNull(result.Source);
+            Assert.That(result.EntityId, Is.EqualTo(entityId));
+            Assert.That(result.Domain, Is.EqualTo(entityId.Split('.')[0]));
+            Assert.That(result.Source, Is.Not.Null);
         }
     }
 }

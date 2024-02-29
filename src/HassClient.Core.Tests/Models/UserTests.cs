@@ -14,21 +14,21 @@ namespace HassClient.Core.Tests.Models
         {
             var constructor = typeof(User).GetConstructors()
                                           .FirstOrDefault(x => x.IsPublic && x.GetParameters().Length > 0);
-            Assert.NotNull(constructor);
+            Assert.That(constructor, Is.Not.Null);
         }
 
         [Test]
         public void NewUserHasPendingChanges()
         {
             var testEntry = new User(MockHelpers.GetRandomTestName());
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void NewUserIsUntracked()
         {
             var testEntry = new User(MockHelpers.GetRandomTestName());
-            Assert.IsFalse(testEntry.IsTracked);
+            Assert.That(testEntry.IsTracked, Is.False);
         }
 
         private static IEnumerable<string> NullOrWhiteSpaceStringValues() => RegistryEntryBaseTests.NullOrWhiteSpaceStringValues();
@@ -46,10 +46,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out var initialName);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Name = initialName;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -58,10 +58,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _);
 
             testEntry.IsAdministrator = true;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.IsAdministrator = false;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -71,10 +71,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _);
 
             testEntry.GroupIds.Add(testGroupId);
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.GroupIds.Remove(testGroupId);
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         private User CreateTestEntry(out string name)

@@ -40,10 +40,10 @@ namespace HassClient.Core.Tests.Models
         {
             var version = CalendarVersion.Create("2022.02");
 
-            Assert.AreEqual(2022, version.Year);
-            Assert.AreEqual(2, version.Month);
-            Assert.AreEqual(0, version.Micro);
-            Assert.AreEqual(string.Empty, version.Modifier);
+            Assert.That(2022, Is.EqualTo(version.Year));
+            Assert.That(2, Is.EqualTo(version.Month));
+            Assert.That(0, Is.EqualTo(version.Micro));
+            Assert.That(string.Empty, Is.EqualTo(version.Modifier));
         }
 
         [Test]
@@ -51,10 +51,10 @@ namespace HassClient.Core.Tests.Models
         {
             var version = CalendarVersion.Create("2022.02.13");
 
-            Assert.AreEqual(2022, version.Year);
-            Assert.AreEqual(2, version.Month);
-            Assert.AreEqual(13, version.Micro);
-            Assert.AreEqual(string.Empty, version.Modifier);
+            Assert.That(2022, Is.EqualTo(version.Year));
+            Assert.That(2, Is.EqualTo(version.Month));
+            Assert.That(13, Is.EqualTo(version.Micro));
+            Assert.That(string.Empty, Is.EqualTo(version.Modifier));
         }
 
         [Test]
@@ -62,10 +62,10 @@ namespace HassClient.Core.Tests.Models
         {
             var version = CalendarVersion.Create("2022.02.b3");
 
-            Assert.AreEqual(2022, version.Year);
-            Assert.AreEqual(2, version.Month);
-            Assert.AreEqual(0, version.Micro);
-            Assert.AreEqual("b3", version.Modifier);
+            Assert.That(2022, Is.EqualTo(version.Year));
+            Assert.That(2, Is.EqualTo(version.Month));
+            Assert.That(0, Is.EqualTo(version.Micro));
+            Assert.That("b3", Is.EqualTo(version.Modifier));
         }
 
         [Test]
@@ -73,10 +73,10 @@ namespace HassClient.Core.Tests.Models
         {
             var version = CalendarVersion.Create("2022.02.4b3");
 
-            Assert.AreEqual(2022, version.Year);
-            Assert.AreEqual(2, version.Month);
-            Assert.AreEqual(4, version.Micro);
-            Assert.AreEqual("b3", version.Modifier);
+            Assert.That(2022, Is.EqualTo(version.Year));
+            Assert.That(2, Is.EqualTo(version.Month));
+            Assert.That(4, Is.EqualTo(version.Micro));
+            Assert.That("b3", Is.EqualTo(version.Modifier));
         }
 
         [Test]
@@ -84,8 +84,8 @@ namespace HassClient.Core.Tests.Models
         {
             var version = CalendarVersion.Create("2022.02.4b3");
 
-            Assert.AreEqual(2022, version.ReleaseDate.Year);
-            Assert.AreEqual(2, version.ReleaseDate.Month);
+            Assert.That(2022, Is.EqualTo(version.ReleaseDate.Year));
+            Assert.That(2, Is.EqualTo(version.ReleaseDate.Month));
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace HassClient.Core.Tests.Models
             var expectedVersionString = "2022.2.4b3";
             var version = CalendarVersion.Create(expectedVersionString);
 
-            Assert.AreEqual(expectedVersionString, version.ToString());
+            Assert.That(expectedVersionString, Is.EqualTo(version.ToString()));
         }
     }
 }

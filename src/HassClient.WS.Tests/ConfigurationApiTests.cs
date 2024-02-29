@@ -20,76 +20,76 @@ namespace HassClient.WS.Tests
 
             _configuration = await HassWsApi.GetConfigurationAsync();
 
-            Assert.IsNotNull(_configuration);
+            Assert.That(_configuration, Is.Not.Null);
         }
 
         [Test]
         public void ConfigurationHasAllowedExternalDirs()
         {
-            Assert.NotNull(_configuration.AllowedExternalDirs);
-            Assert.IsNotEmpty(_configuration.AllowedExternalDirs);
+            Assert.That(_configuration.AllowedExternalDirs, Is.Not.Null);
+            Assert.That(_configuration.AllowedExternalDirs, Is.Not.Empty);
         }
 
         [Test]
         public void ConfigurationHasAllowedExternalUrls()
         {
-            Assert.NotNull(_configuration.AllowedExternalUrls);
+            Assert.That(_configuration.AllowedExternalUrls, Is.Not.Null);
         }
 
         [Test]
         public void ConfigurationHasComponents()
         {
-            Assert.NotNull(_configuration.Components);
-            Assert.IsNotEmpty(_configuration.Components);
+            Assert.That(_configuration.Components, Is.Not.Null);
+            Assert.That(_configuration.Components, Is.Not.Empty);
         }
 
         [Test]
         public void ConfigurationHasConfigDirectory()
         {
-            Assert.NotNull(_configuration.ConfigDirectory);
+            Assert.That(_configuration.ConfigDirectory, Is.Not.Null);
         }
 
         [Test]
         public void ConfigurationHasConfigSource()
         {
-            Assert.NotNull(_configuration.ConfigSource);
+            Assert.That(_configuration.ConfigSource, Is.Not.Null);
         }
 
         [Test]
         public void ConfigurationHasLocation()
         {
-            Assert.NotNull(_configuration.LocationName);
-            Assert.NotZero(_configuration.Latitude);
-            Assert.NotZero(_configuration.Longitude);
+            Assert.That(_configuration.LocationName, Is.Not.Null);
+            Assert.That(_configuration.Latitude, Is.Not.Zero);
+            Assert.That(_configuration.Longitude, Is.Not.Zero);
         }
 
         [Test]
         public void ConfigurationHasState()
         {
-            Assert.NotNull(_configuration.State);
+            Assert.That(_configuration.State, Is.Not.Null);
         }
 
         [Test]
         public void ConfigurationHasTimeZone()
         {
-            Assert.NotNull(_configuration.TimeZone);
+            Assert.That(_configuration.TimeZone, Is.Not.Null);
         }
 
         [Test]
         public void ConfigurationHasUnitSystem()
         {
-            Assert.NotNull(_configuration.UnitSystem);
-            Assert.NotNull(_configuration.UnitSystem.Length);
-            Assert.NotNull(_configuration.UnitSystem.Mass);
-            Assert.NotNull(_configuration.UnitSystem.Pressure);
-            Assert.NotNull(_configuration.UnitSystem.Temperature);
-            Assert.NotNull(_configuration.UnitSystem.Volume);
+            Assert.That(_configuration.UnitSystem, Is.Not.Null);
+            Assert.That(_configuration.UnitSystem.Length, Is.Not.Null);
+            Assert.That(_configuration.UnitSystem.Mass, Is.Not.Null);
+            Assert.That(_configuration.UnitSystem.Pressure, Is.Not.Null);
+            Assert.That(_configuration.UnitSystem.Temperature, Is.Not.Null);
+            Assert.That(_configuration.UnitSystem.Volume, Is.Not.Null);
         }
 
         [Test]
         public void ConfigurationHasVersion()
         {
-            Assert.NotNull(_configuration.Version);
+            Assert.That(_configuration.Version, Is.Not.Null);
         }
     }
 }

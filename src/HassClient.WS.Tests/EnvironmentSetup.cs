@@ -12,7 +12,7 @@ namespace HassClient.WS.Tests
     [SetUpFixture]
     public class EnvironmentSetup
     {
-        private IContainer _hassContainer;
+        private IContainer? _hassContainer;
 
         [OneTimeSetUp]
         public async Task GlobalSetupAsync()
@@ -29,7 +29,7 @@ namespace HassClient.WS.Tests
                 const int hassPort = 8123;
                 const string hassVersion = "latest";
                 const string tokenFilename = "TOKEN";
-                var testcontainersBuilder = new ContainerBuilder()
+                var testContainersBuilder = new ContainerBuilder()
                       .WithImage($"homeassistant/home-assistant:{hassVersion}")
                       .WithPortBinding(hassPort, assignRandomHostPort: true)
                       .WithExposedPort(hassPort)
@@ -40,7 +40,7 @@ namespace HassClient.WS.Tests
                       .WithEntrypoint("/bin/bash", "-c")
                       .WithCommand($"python3 /app/create_token.py >/app/{tokenFilename} && /init");
 
-                _hassContainer = testcontainersBuilder.Build();
+                _hassContainer = testContainersBuilder.Build();
                 await _hassContainer.StartAsync();
 
                 var mappedPort = _hassContainer.GetMappedPublicPort(hassPort);
@@ -55,10 +55,7 @@ namespace HassClient.WS.Tests
         [OneTimeTearDown]
         public async Task GlobalTeardown()
         {
-            if (_hassContainer != null)
-            {
-                await _hassContainer.DisposeAsync();
-            }
+            await _hassContainer.DisposeAsync();
         }
     }
 }

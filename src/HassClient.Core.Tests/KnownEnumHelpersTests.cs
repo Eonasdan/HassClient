@@ -39,7 +39,7 @@ namespace HassClient.Core.Tests
         public void AllKnownEventTypesCanBeParsed(string snakeCaseValue)
         {
             var result = snakeCaseValue.AsKnownEventType();
-            Assert.AreNotEqual(KnownEventTypes.Any, result);
+            Assert.That(KnownEventTypes.Any, Is.Not.EqualTo(result));
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace HassClient.Core.Tests
         public void AllKnownDomainsCanBeParsed(string snakeCaseValue)
         {
             var result = snakeCaseValue.AsKnownDomain();
-            Assert.AreNotEqual(KnownDomains.Undefined, result);
+            Assert.That(KnownDomains.Undefined, Is.Not.EqualTo(result));
         }
 
         [Test]
@@ -284,7 +284,7 @@ namespace HassClient.Core.Tests
         public void AllKnownServicesCanBeParsed(string snakeCaseValue)
         {
             var result = snakeCaseValue.AsKnownService();
-            Assert.AreNotEqual(KnownServices.Undefined, result);
+            Assert.That(KnownServices.Undefined, Is.Not.EqualTo(result));
         }
 
         [Test]
@@ -378,21 +378,21 @@ namespace HassClient.Core.Tests
         public void AllKnownStatesCanBeParsed(string snakeCaseValue)
         {
             var result = snakeCaseValue.AsKnownState();
-            Assert.AreNotEqual(KnownStates.Undefined, result);
+            Assert.That(KnownStates.Undefined, Is.Not.EqualTo(result));
         }
 
         [Test]
         public void NullStringAsKnownStateReturnsUnknown()
         {
             var result = ((string)null).AsKnownState();
-            Assert.AreEqual(KnownStates.Unknown, result);
+            Assert.That(KnownStates.Unknown, Is.EqualTo(result));
         }
 
         [Test]
         public void EmptyStringAsKnownStateReturnsUnknown()
         {
             var result = string.Empty.AsKnownState();
-            Assert.AreEqual(KnownStates.Unknown, result);
+            Assert.That(KnownStates.Unknown, Is.EqualTo(result));
         }
     }
 }

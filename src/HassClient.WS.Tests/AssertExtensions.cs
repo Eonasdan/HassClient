@@ -19,7 +19,7 @@ namespace HassClient.WS.Tests
                 caughtException = e;
             }
 
-            Assert.IsInstanceOf<T>(caughtException);
+            Assert.That(caughtException, Is.InstanceOf<T>());
 
             return caughtException as T;
         }

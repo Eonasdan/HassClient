@@ -58,11 +58,11 @@ namespace HassClient.WS.Tests.Mocks.HassServer.CommandProcessors
 
         protected override object ProcessUpdateCommand(MockHassServerRequestContext context, JToken merged)
         {
-            var newEntityIdProperty = merged.FirstOrDefault(x => (x is JProperty property) && property.Name == "new_entity_id");
+            var newEntityIdProperty = merged.FirstOrDefault(x => x is JProperty property && property.Name == "new_entity_id");
             var newEntityId = (string)newEntityIdProperty;
             newEntityIdProperty?.Remove();
 
-            var entityIdProperty = merged.FirstOrDefault(x => (x is JProperty property) && property.Name == "entity_id");
+            var entityIdProperty = merged.FirstOrDefault(x => x is JProperty property && property.Name == "entity_id");
             var entityId = (string)entityIdProperty;
             var result = FindRegistryEntry(context, entityId, createIfNotFound: true);
             if (result == null)

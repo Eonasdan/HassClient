@@ -12,9 +12,9 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.SendRawCommandWithResultAsync(new RawCommandMessage("get_config"));
 
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Success);
-            Assert.IsNotNull(result.Result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Result, Is.Not.Null);
         }
 
         [Test]
@@ -22,7 +22,7 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.SendRawCommandWithSuccessAsync(new RawCommandMessage("get_config"));
 
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
         }
 
         [Test]
@@ -30,11 +30,11 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.SendRawCommandWithResultAsync(new RawCommandMessage("invalid_command"));
 
-            Assert.IsNotNull(result);
-            Assert.IsFalse(result.Success);
-            Assert.IsNull(result.Result);
-            Assert.IsNotNull(result.Error);
-            Assert.AreEqual(ErrorCodes.UnknownCommand, result.Error.Code);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Result, Is.Null);
+            Assert.That(result.Error, Is.Not.Null);
+            Assert.That(ErrorCodes.UnknownCommand, Is.EqualTo(result.Error.Code));
         }
 
         [Test]
@@ -42,8 +42,8 @@ namespace HassClient.WS.Tests
         {
             var result = await HassWsApi.SendRawCommandWithResultAsync(new RawCommandMessage("ping"));
 
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Success);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
         }
     }
 }

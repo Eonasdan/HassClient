@@ -31,7 +31,7 @@ namespace HassClient.WS.Tests
         {
             await _mockServer.StartAsync();
 
-            Assert.IsTrue(_mockServer.IsStarted, "SetUp Failed: Mock server not started.");
+            Assert.That(_mockServer.IsStarted, Is.True, "SetUp Failed: Mock server not started.");
         }
 
         private Task ConnectClientAsync(int retries = 0)
@@ -50,8 +50,8 @@ namespace HassClient.WS.Tests
         {
             await StartMockServerAndConnectClientAsync();
 
-            Assert.AreEqual(3, _connectionChangedSubscriber.HitCount);
-            Assert.AreEqual(new[] { ConnectionStates.Connecting, ConnectionStates.Authenticating, ConnectionStates.Connected }, _connectionChangedSubscriber.ReceivedEventArgs);
+            Assert.That(3, Is.EqualTo(_connectionChangedSubscriber.HitCount));
+            Assert.That(new[] { ConnectionStates.Connecting, ConnectionStates.Authenticating, ConnectionStates.Connected }, Is.EqualTo(_connectionChangedSubscriber.ReceivedEventArgs));
         }
 
         [Test]
@@ -61,8 +61,8 @@ namespace HassClient.WS.Tests
             _connectionChangedSubscriber.Reset();
             await _wsClient.CloseAsync();
 
-            Assert.AreEqual(1, _connectionChangedSubscriber.HitCount);
-            Assert.AreEqual(new[] { ConnectionStates.Disconnected }, _connectionChangedSubscriber.ReceivedEventArgs);
+            Assert.That(1, Is.EqualTo(_connectionChangedSubscriber.HitCount));
+            Assert.That(new[] { ConnectionStates.Disconnected }, Is.EqualTo(_connectionChangedSubscriber.ReceivedEventArgs));
         }
 
         [Test]
@@ -72,8 +72,8 @@ namespace HassClient.WS.Tests
             _connectionChangedSubscriber.Reset();
             await _mockServer.CloseActiveClientsAsync();
 
-            Assert.GreaterOrEqual(_connectionChangedSubscriber.HitCount, 1);
-            Assert.AreEqual(ConnectionStates.Disconnected, _connectionChangedSubscriber.ReceivedEventArgs.FirstOrDefault());
+            Assert.That(_connectionChangedSubscriber, Is.GreaterThanOrEqualTo(1));
+            Assert.That(ConnectionStates.Disconnected, Is.EqualTo(_connectionChangedSubscriber.ReceivedEventArgs.FirstOrDefault()));
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace HassClient.WS.Tests
 
             _connectionCts.Cancel();
 
-            Assert.AreEqual(ConnectionStates.Connected, _wsClient.ConnectionState);
+            Assert.That(ConnectionStates.Connected, Is.EqualTo(_wsClient.ConnectionState));
         }
 
         [Test]
@@ -101,13 +101,13 @@ namespace HassClient.WS.Tests
             var connectTask = ConnectClientAsync();
             await _connectionChangedSubscriber.WaitEventArgWithTimeoutAsync(ConnectionStates.Authenticating, 1000);
 
-            Assert.AreEqual(ConnectionStates.Authenticating, _wsClient.ConnectionState, "SetUp Failed");
+            Assert.That(ConnectionStates.Authenticating, Is.EqualTo(_wsClient.ConnectionState), "SetUp Failed");
 
             _connectionCts.Cancel();
 
             Assert.CatchAsync<OperationCanceledException>(() => connectTask);
-            Assert.AreEqual(ConnectionStates.Disconnected, _wsClient.ConnectionState);
-            Assert.AreEqual(TaskStatus.Canceled, connectTask.Status);
+            Assert.That(ConnectionStates.Disconnected, Is.EqualTo(_wsClient.ConnectionState));
+            Assert.That(TaskStatus.Canceled, Is.EqualTo(connectTask.Status));
         }
 
         [Test]
@@ -120,7 +120,7 @@ namespace HassClient.WS.Tests
             await _wsClient.CloseAsync();
 
             Assert.CatchAsync<OperationCanceledException>(async () => await connectTask);
-            Assert.AreEqual(ConnectionStates.Disconnected, _wsClient.ConnectionState);
+            Assert.That(ConnectionStates.Disconnected, Is.EqualTo(_wsClient.ConnectionState));
         }
 
         [Test]
@@ -162,7 +162,7 @@ namespace HassClient.WS.Tests
         {
             await StartMockServerAndConnectClientAsync();
 
-            Assert.AreNotEqual(ConnectionStates.Disconnected, _wsClient.ConnectionState);
+            Assert.That(ConnectionStates.Disconnected, Is.Not.EqualTo(_wsClient.ConnectionState));
             Assert.ThrowsAsync<InvalidOperationException>(() => ConnectClientAsync());
         }
 
@@ -171,7 +171,7 @@ namespace HassClient.WS.Tests
         {
             _wsClient.Dispose();
 
-            Assert.IsTrue(_wsClient.IsDisposed);
+            Assert.That(_wsClient.IsDisposed, Is.True);
             Assert.ThrowsAsync<ObjectDisposedException>(() => StartMockServerAndConnectClientAsync());
         }
 
@@ -180,7 +180,7 @@ namespace HassClient.WS.Tests
         {
             _wsClient.Dispose();
 
-            Assert.IsTrue(_wsClient.IsDisposed);
+            Assert.That(_wsClient.IsDisposed, Is.True);
             Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.CloseAsync());
         }
 
@@ -189,7 +189,7 @@ namespace HassClient.WS.Tests
         {
             _wsClient.Dispose();
 
-            Assert.IsTrue(_wsClient.IsDisposed);
+            Assert.That(_wsClient.IsDisposed, Is.True);
             Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.SendCommandWithSuccessAsync(default, default));
         }
 
@@ -198,7 +198,7 @@ namespace HassClient.WS.Tests
         {
             _wsClient.Dispose();
 
-            Assert.IsTrue(_wsClient.IsDisposed);
+            Assert.That(_wsClient.IsDisposed, Is.True);
             Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.AddEventHandlerSubscriptionAsync(default, default));
         }
 
@@ -207,7 +207,7 @@ namespace HassClient.WS.Tests
         {
             _wsClient.Dispose();
 
-            Assert.IsTrue(_wsClient.IsDisposed);
+            Assert.That(_wsClient.IsDisposed, Is.True);
             Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.RemoveEventHandlerSubscriptionAsync(default, default));
         }
 
@@ -221,8 +221,8 @@ namespace HassClient.WS.Tests
             var eventSubscriber = new MockEventSubscriber();
             var subscriptionTask = _wsClient.AddEventHandlerSubscriptionAsync(eventSubscriber.Handle, cancellationTokenSource.Token);
 
-            Assert.Zero(_wsClient.SubscriptionsCount);
-            Assert.Zero(_wsClient.PendingRequestsCount);
+            Assert.That(_wsClient.SubscriptionsCount, Is.Not.Zero);
+            Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
             Assert.CatchAsync<OperationCanceledException>(() => subscriptionTask);
         }
 
@@ -234,12 +234,12 @@ namespace HassClient.WS.Tests
             var cancellationTokenSource = new CancellationTokenSource();
             var eventSubscriber = new MockEventSubscriber();
             var subscriptionTask = _wsClient.AddEventHandlerSubscriptionAsync(eventSubscriber.Handle, cancellationTokenSource.Token);
-            Assert.NotZero(_wsClient.PendingRequestsCount);
+            Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
 
             cancellationTokenSource.Cancel();
 
-            Assert.Zero(_wsClient.SubscriptionsCount);
-            Assert.Zero(_wsClient.PendingRequestsCount);
+            Assert.That(_wsClient.SubscriptionsCount, Is.Not.Zero);
+            Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
             Assert.CatchAsync<OperationCanceledException>(() => subscriptionTask);
         }
 
@@ -252,7 +252,7 @@ namespace HassClient.WS.Tests
             cancellationTokenSource.Cancel();
             var sendTask = _wsClient.SendCommandWithSuccessAsync(new PingMessage(), cancellationTokenSource.Token);
 
-            Assert.Zero(_wsClient.PendingRequestsCount);
+            Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
             Assert.CatchAsync<OperationCanceledException>(() => sendTask);
         }
 
@@ -264,11 +264,11 @@ namespace HassClient.WS.Tests
 
             var cancellationTokenSource = new CancellationTokenSource();
             var sendTask = _wsClient.SendCommandWithSuccessAsync(new PingMessage(), cancellationTokenSource.Token);
-            Assert.NotZero(_wsClient.PendingRequestsCount);
+            Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
 
             cancellationTokenSource.Cancel();
 
-            Assert.Zero(_wsClient.PendingRequestsCount);
+            Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
 
             Assert.CatchAsync<OperationCanceledException>(() => sendTask);
         }
@@ -281,7 +281,7 @@ namespace HassClient.WS.Tests
             await _mockServer.CloseActiveClientsAsync();
             await _wsClient.WaitForConnectionAsync(TimeSpan.FromMilliseconds(200));
 
-            Assert.AreEqual(ConnectionStates.Connected, _wsClient.ConnectionState);
+            Assert.That(ConnectionStates.Connected, Is.EqualTo(_wsClient.ConnectionState));
         }
 
         [Test]
@@ -290,7 +290,7 @@ namespace HassClient.WS.Tests
             var eventSubscriber = new MockEventSubscriber();
             await StartMockServerAndConnectClientAsync();
             var result = await _wsClient.AddEventHandlerSubscriptionAsync(eventSubscriber.Handle, default);
-            Assert.IsTrue(result, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
 
             await _mockServer.CloseActiveClientsAsync();
             await _wsClient.WaitForConnectionAsync(TimeSpan.FromMilliseconds(200));
@@ -299,9 +299,9 @@ namespace HassClient.WS.Tests
             await _mockServer.RaiseStateChangedEventAsync(entityId);
             var eventResult = await eventSubscriber.WaitFirstEventArgWithTimeoutAsync<EventResultInfo>(500);
 
-            Assert.AreEqual(1, eventSubscriber.HitCount);
-            Assert.AreEqual(1, eventSubscriber.ReceivedEventArgs.Count());
-            Assert.NotNull(eventResult);
+            Assert.That(1, Is.EqualTo(eventSubscriber.HitCount));
+            Assert.That(1, Is.EqualTo(eventSubscriber.ReceivedEventArgs.Count()));
+            Assert.That(eventResult, Is.Not.Null);
         }
     }
 }

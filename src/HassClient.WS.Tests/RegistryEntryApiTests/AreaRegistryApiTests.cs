@@ -18,14 +18,14 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             {
                 _testArea = new Area(MockHelpers.GetRandomTestName());
                 var result = await HassWsApi.CreateAreaAsync(_testArea);
-                Assert.IsTrue(result, "SetUp failed");
+                Assert.That(result, Is.True, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(_testArea.Id);
-            Assert.NotNull(_testArea.Name);
-            Assert.IsFalse(_testArea.HasPendingChanges);
-            Assert.IsTrue(_testArea.IsTracked);
+            Assert.That(_testArea.Id, Is.Not.Null);
+            Assert.That(_testArea.Name, Is.Not.Null);
+            Assert.That(_testArea.HasPendingChanges, Is.False);
+            Assert.That(_testArea.IsTracked, Is.True);
         }
 
         [Test, Order(2)]
@@ -33,9 +33,9 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
         {
             var areas = await HassWsApi.GetAreasAsync();
 
-            Assert.NotNull(areas);
-            Assert.IsNotEmpty(areas);
-            Assert.IsTrue(areas.Contains(_testArea));
+            Assert.That(areas, Is.Not.Null);
+            Assert.That(areas, Is.Not.Empty);
+            Assert.That(areas.Contains(_testArea), Is.True);
         }
 
         [Test, Order(3)]
@@ -44,8 +44,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             _testArea.Name = MockHelpers.GetRandomTestName();
             var result = await HassWsApi.UpdateAreaAsync(_testArea);
 
-            Assert.IsTrue(result);
-            Assert.False(_testArea.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testArea.HasPendingChanges, Is.False);
         }
 
         [Test, Order(4)]
@@ -55,12 +55,12 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             var clonedArea = _testArea.Clone();
             clonedArea.Name = $"{initialName}_cloned";
             var result = await HassWsApi.UpdateAreaAsync(clonedArea);
-            Assert.IsTrue(result, "SetUp failed");
-            Assert.False(_testArea.HasPendingChanges, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
+            Assert.That(_testArea.HasPendingChanges, Is.False, "SetUp failed");
 
             result = await HassWsApi.UpdateAreaAsync(_testArea, forceUpdate: true);
-            Assert.IsTrue(result);
-            Assert.AreEqual(initialName, _testArea.Name);
+            Assert.That(result, Is.True);
+            Assert.That(initialName, Is.EqualTo(_testArea.Name));
         }
 
         [OneTimeTearDown]
@@ -76,8 +76,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
             var deletedArea = _testArea;
             _testArea = null;
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(deletedArea.IsTracked);
+            Assert.That(result, Is.True);
+            Assert.That(deletedArea.IsTracked, Is.False);
         }
     }
 }

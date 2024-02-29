@@ -12,8 +12,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
         {
             var devices = await HassWsApi.GetDevicesAsync();
 
-            Assert.NotNull(devices);
-            Assert.IsNotEmpty(devices);
+            Assert.That(devices, Is.Not.Null);
+            Assert.That(devices, Is.Not.Empty);
         }
 
         [Test]
@@ -21,15 +21,15 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
         {
             var devices = await HassWsApi.GetDevicesAsync();
             var testDevice = devices.FirstOrDefault();
-            Assert.NotNull(testDevice, "SetUp failed");
+            Assert.That(testDevice, Is.Not.Null, "SetUp failed");
 
             var newName = $"TestDevice_{DateTime.Now.Ticks}";
             testDevice.Name = newName;
             var result = await HassWsApi.UpdateDeviceAsync(testDevice);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(testDevice.HasPendingChanges);
-            Assert.AreEqual(newName, testDevice.Name);
+            Assert.That(result, Is.True);
+            Assert.That(testDevice.HasPendingChanges, Is.False);
+            Assert.That(newName, Is.EqualTo(testDevice.Name));
         }
 
         [Test]
@@ -37,15 +37,15 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
         {
             var devices = await HassWsApi.GetDevicesAsync();
             var testDevice = devices.FirstOrDefault();
-            Assert.NotNull(testDevice, "SetUp failed");
+            Assert.That(testDevice, Is.Not.Null, "SetUp failed");
 
             var newAreaId = $"{DateTime.Now.Ticks}";
             testDevice.AreaId = newAreaId;
             var result = await HassWsApi.UpdateDeviceAsync(testDevice);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(testDevice.HasPendingChanges);
-            Assert.AreEqual(newAreaId, testDevice.AreaId);
+            Assert.That(result, Is.True);
+            Assert.That(testDevice.HasPendingChanges, Is.False);
+            Assert.That(newAreaId, Is.EqualTo(testDevice.AreaId));
         }
     }
 }

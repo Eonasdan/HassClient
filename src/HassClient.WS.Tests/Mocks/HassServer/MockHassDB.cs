@@ -109,7 +109,7 @@ namespace HassClient.WS.Tests.Mocks.HassServer
 
         public IEnumerable<EntityRegistryEntryBase> GetAllEntityEntries(string domain)
         {
-            var domainCollection = _collectionsByType.Values.FirstOrDefault(x => (x.FirstOrDefault() is EntityRegistryEntryBase entry) &&
+            var domainCollection = _collectionsByType.Values.FirstOrDefault(x => x.FirstOrDefault() is EntityRegistryEntryBase entry &&
                                                                                      entry.EntityId.GetDomain() == domain)?
                                          .Cast<EntityRegistryEntryBase>();
             return domainCollection ?? Enumerable.Empty<EntityRegistryEntryBase>();

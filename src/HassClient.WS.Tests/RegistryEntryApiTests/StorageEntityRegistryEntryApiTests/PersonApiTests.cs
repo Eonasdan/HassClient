@@ -20,19 +20,19 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             {
                 var testUser = new User(MockHelpers.GetRandomTestName(), false);
                 var result = await HassWsApi.CreateUserAsync(testUser);
-                Assert.IsTrue(result, "SetUp failed");
+                Assert.That(result, Is.True, "SetUp failed");
 
                 _testPerson = new Person(testUser.Name, testUser);
                 result = await HassWsApi.CreateStorageEntityRegistryEntryAsync(_testPerson);
-                Assert.IsTrue(result, "SetUp failed");
+                Assert.That(result, Is.True, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(_testPerson);
-            Assert.NotNull(_testPerson.UniqueId);
-            Assert.NotNull(_testPerson.Name);
-            Assert.IsFalse(_testPerson.HasPendingChanges);
-            Assert.IsTrue(_testPerson.IsTracked);
+            Assert.That(_testPerson, Is.Not.Null);
+            Assert.That(_testPerson.UniqueId, Is.Not.Null);
+            Assert.That(_testPerson.Name, Is.Not.Null);
+            Assert.That(_testPerson.HasPendingChanges, Is.False);
+            Assert.That(_testPerson.IsTracked, Is.True);
         }
 
         [Test, Order(2)]
@@ -40,14 +40,14 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
         {
             var result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<Person>();
 
-            Assert.NotNull(result);
-            Assert.IsNotEmpty(result);
-            Assert.IsTrue(result.Contains(_testPerson));
-            Assert.IsTrue(result.All(x => x.Id != null));
-            Assert.IsTrue(result.All(x => x.UniqueId != null));
-            Assert.IsTrue(result.All(x => x.EntityId.StartsWith("person.")));
-            Assert.IsTrue(result.Any(x => x.Name != null));
-            Assert.IsFalse(_testPerson.HasPendingChanges);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.Not.Empty);
+            Assert.That(result.Contains(_testPerson), Is.True);
+            Assert.That(result.All(x => x.Id != null), Is.True);
+            Assert.That(result.All(x => x.UniqueId != null), Is.True);
+            Assert.That(result.All(x => x.EntityId.StartsWith("person.")), Is.True);
+            Assert.That(result.Any(x => x.Name != null), Is.True);
+            Assert.That(_testPerson.HasPendingChanges, Is.False);
         }
 
         [Test, Order(3)]
@@ -56,8 +56,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testPerson.Name = $"{nameof(PersonApiTests)}_{DateTime.Now.Ticks}";
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testPerson);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testPerson.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testPerson.HasPendingChanges, Is.False);
         }
 
         [Test, Order(3)]
@@ -66,8 +66,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testPerson.Picture = "test/Picture.png";
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testPerson);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testPerson.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testPerson.HasPendingChanges, Is.False);
         }
 
         [Test, Order(3)]
@@ -76,8 +76,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testPerson.DeviceTrackers.Add($"device_tracker.{MockHelpers.GetRandomTestName()}");
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testPerson);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testPerson.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testPerson.HasPendingChanges, Is.False);
         }
 
         [Test, Order(3)]
@@ -85,13 +85,13 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
         {
             var testUser = new User(MockHelpers.GetRandomTestName(), false);
             var result = await HassWsApi.CreateUserAsync(testUser);
-            Assert.IsTrue(result, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
 
             _testPerson.ChangeUser(testUser);
             result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testPerson);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testPerson.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testPerson.HasPendingChanges, Is.False);
         }
 
         [Test, Order(4)]
@@ -101,13 +101,13 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             var clonedEntry = _testPerson.Clone();
             clonedEntry.Name = $"{initialName}_cloned";
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(clonedEntry);
-            Assert.IsTrue(result, "SetUp failed");
-            Assert.False(_testPerson.HasPendingChanges, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
+            Assert.That(_testPerson.HasPendingChanges, Is.False, "SetUp failed");
 
             result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testPerson, forceUpdate: true);
-            Assert.IsTrue(result);
-            Assert.AreEqual(initialName, _testPerson.Name);
-            Assert.IsFalse(_testPerson.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(initialName, Is.EqualTo(_testPerson.Name));
+            Assert.That(_testPerson.HasPendingChanges, Is.False);
         }
 
         [OneTimeTearDown]
@@ -123,8 +123,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             var deletedPerson = _testPerson;
             _testPerson = null;
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(deletedPerson.IsTracked);
+            Assert.That(result, Is.True);
+            Assert.That(deletedPerson.IsTracked, Is.False);
         }
     }
 }

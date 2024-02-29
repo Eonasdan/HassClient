@@ -14,21 +14,21 @@ namespace HassClient.Core.Tests.Models
         {
             var constructor = typeof(Area).GetConstructors()
                                           .FirstOrDefault(x => x.IsPublic && x.GetParameters().Length > 0);
-            Assert.NotNull(constructor);
+            Assert.That(constructor, Is.Not.Null);
         }
 
         [Test]
         public void NewAreaHasPendingChanges()
         {
             var testEntry = new Area(MockHelpers.GetRandomTestName());
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void NewAreaIsUntracked()
         {
             var testEntry = new Area(MockHelpers.GetRandomTestName());
-            Assert.False(testEntry.IsTracked);
+            Assert.That(testEntry.IsTracked, Is.False);
         }
 
         private static IEnumerable<string> NullOrWhiteSpaceStringValues() => RegistryEntryBaseTests.NullOrWhiteSpaceStringValues();
@@ -46,10 +46,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out var initialName, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Name = initialName;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -58,10 +58,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out var picture);
 
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Picture = picture;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -71,12 +71,12 @@ namespace HassClient.Core.Tests.Models
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.Picture = $"/test/{MockHelpers.GetRandomTestName()}.png";
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.DiscardPendingChanges();
-            Assert.False(testEntry.HasPendingChanges);
-            Assert.AreEqual(initialName, testEntry.Name);
-            Assert.AreEqual(initialPicture, testEntry.Picture);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
+            Assert.That(initialName, Is.EqualTo(testEntry.Name));
+            Assert.That(initialPicture, Is.EqualTo(testEntry.Picture));
         }
 
         private Area CreateTestEntry(out string name, out string picture)

@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Version>1.0.14</Version>
     <Authors>VFerrer</Authors>
     <Description>A Home Assistant WebSocket client to communicate with Home Assistant instances.</Description>
     <RepositoryUrl>https://github.com/vicfergar/HassClient</RepositoryUrl>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageTags>Hass, Home Assistant, Web Sockets</PackageTags>
+    <LangVersion>latestmajor</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,9 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
-    <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+    <PackageReference Include="System.Threading.Channels" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,8 +34,4 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\resources\StyleCop\stylecop.props" Condition="$(DisableStyleCop) != 'true'" />
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\resources\StyleCop\stylecop.targets" Condition="$(DisableStyleCop) != 'true'" />
-
 </Project>

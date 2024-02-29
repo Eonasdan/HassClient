@@ -20,15 +20,15 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
                 _testInputBoolean = new InputBoolean(MockHelpers.GetRandomTestName(), "mdi:fan", true);
                 var result = await HassWsApi.CreateStorageEntityRegistryEntryAsync(_testInputBoolean);
 
-                Assert.IsTrue(result, "SetUp failed");
+                Assert.That(result, Is.True, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(_testInputBoolean);
-            Assert.NotNull(_testInputBoolean.UniqueId);
-            Assert.NotNull(_testInputBoolean.Name);
-            Assert.IsFalse(_testInputBoolean.HasPendingChanges);
-            Assert.IsTrue(_testInputBoolean.IsTracked);
+            Assert.That(_testInputBoolean, Is.Not.Null);
+            Assert.That(_testInputBoolean.UniqueId, Is.Not.Null);
+            Assert.That(_testInputBoolean.Name, Is.Not.Null);
+            Assert.That(_testInputBoolean.HasPendingChanges, Is.False);
+            Assert.That(_testInputBoolean.IsTracked, Is.True);
         }
 
         [Test, Order(2)]
@@ -36,16 +36,16 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
         {
             var result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<InputBoolean>();
 
-            Assert.NotNull(result);
-            Assert.IsNotEmpty(result);
-            Assert.IsTrue(result.Contains(_testInputBoolean));
-            Assert.IsTrue(result.All(x => x.Id != null));
-            Assert.IsTrue(result.All(x => x.UniqueId != null));
-            Assert.IsTrue(result.All(x => x.EntityId.StartsWith("input_boolean.")));
-            Assert.IsTrue(result.Any(x => x.Name != null));
-            Assert.IsTrue(result.Any(x => x.Initial));
-            Assert.IsTrue(result.Any(x => x.Icon != null));
-            Assert.IsFalse(_testInputBoolean.HasPendingChanges);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.Not.Empty);
+            Assert.That(result.Contains(_testInputBoolean), Is.True);
+            Assert.That(result.All(x => x.Id != null), Is.True);
+            Assert.That(result.All(x => x.UniqueId != null), Is.True);
+            Assert.That(result.All(x => x.EntityId.StartsWith("input_boolean.")), Is.True);
+            Assert.That(result.Any(x => x.Name != null), Is.True);
+            Assert.That(result.Any(x => x.Initial), Is.True);
+            Assert.That(result.Any(x => x.Icon != null), Is.True);
+            Assert.That(_testInputBoolean.HasPendingChanges, Is.False);
         }
 
         [Test, Order(3)]
@@ -54,8 +54,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testInputBoolean.Name = $"{nameof(InputBooleanApiTests)}_{DateTime.Now.Ticks}";
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testInputBoolean);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testInputBoolean.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testInputBoolean.HasPendingChanges, Is.False);
         }
 
         [Test, Order(4)]
@@ -64,8 +64,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testInputBoolean.Initial = false;
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testInputBoolean);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testInputBoolean.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testInputBoolean.HasPendingChanges, Is.False);
         }
 
         [Test, Order(5)]
@@ -74,8 +74,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testInputBoolean.Icon = "mdi:lightbulb";
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testInputBoolean);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testInputBoolean.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testInputBoolean.HasPendingChanges, Is.False);
         }
 
         [Test, Order(6)]
@@ -89,15 +89,15 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             clonedEntry.Icon = $"{initialIcon}_cloned";
             clonedEntry.Initial = !initialInitial;
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(clonedEntry);
-            Assert.IsTrue(result, "SetUp failed");
-            Assert.False(_testInputBoolean.HasPendingChanges, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
+            Assert.That(_testInputBoolean.HasPendingChanges, Is.False, "SetUp failed");
 
             result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testInputBoolean, forceUpdate: true);
-            Assert.IsTrue(result);
-            Assert.AreEqual(initialName, _testInputBoolean.Name);
-            Assert.AreEqual(initialIcon, _testInputBoolean.Icon);
-            Assert.AreEqual(initialInitial, _testInputBoolean.Initial);
-            Assert.IsFalse(_testInputBoolean.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(initialName, Is.EqualTo(_testInputBoolean.Name));
+            Assert.That(initialIcon, Is.EqualTo(_testInputBoolean.Icon));
+            Assert.That(initialInitial, Is.EqualTo(_testInputBoolean.Initial));
+            Assert.That(_testInputBoolean.HasPendingChanges, Is.False);
         }
 
         [OneTimeTearDown]
@@ -113,8 +113,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             var deletedInputBoolean = _testInputBoolean;
             _testInputBoolean = null;
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(deletedInputBoolean.IsTracked);
+            Assert.That(result, Is.True);
+            Assert.That(deletedInputBoolean.IsTracked, Is.False);
         }
     }
 }

@@ -20,15 +20,15 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
                 _testZone = new Zone(MockHelpers.GetRandomTestName(), 20.1f, 34.6f, 10.5f, "mdi:fan", true);
                 var result = await HassWsApi.CreateStorageEntityRegistryEntryAsync(_testZone);
 
-                Assert.IsTrue(result, "SetUp failed");
+                Assert.That(result, Is.True, "SetUp failed");
                 return;
             }
 
-            Assert.NotNull(_testZone);
-            Assert.NotNull(_testZone.UniqueId);
-            Assert.NotNull(_testZone.Name);
-            Assert.IsFalse(_testZone.HasPendingChanges);
-            Assert.IsTrue(_testZone.IsTracked);
+            Assert.That(_testZone, Is.Not.Null);
+            Assert.That(_testZone.UniqueId, Is.Not.Null);
+            Assert.That(_testZone.Name, Is.Not.Null);
+            Assert.That(_testZone.HasPendingChanges, Is.False);
+            Assert.That(_testZone.IsTracked, Is.True);
         }
 
         [Test, Order(2)]
@@ -36,19 +36,19 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
         {
             var result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<Zone>();
 
-            Assert.NotNull(result);
-            Assert.IsNotEmpty(result);
-            Assert.IsTrue(result.Contains(_testZone));
-            Assert.IsTrue(result.All(x => x.Id != null));
-            Assert.IsTrue(result.All(x => x.UniqueId != null));
-            Assert.IsTrue(result.All(x => x.EntityId.StartsWith("zone.")));
-            Assert.IsTrue(result.Any(x => x.Name != null));
-            Assert.IsTrue(result.Any(x => x.Longitude > 0));
-            Assert.IsTrue(result.Any(x => x.Latitude > 0));
-            Assert.IsTrue(result.Any(x => x.Longitude != x.Latitude));
-            Assert.IsTrue(result.Any(x => x.Radius > 0));
-            Assert.IsTrue(result.Any(x => x.IsPassive));
-            Assert.IsTrue(result.Any(x => x.Icon != null));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.Not.Empty);
+            Assert.That(result.Contains(_testZone), Is.True);
+            Assert.That(result.All(x => x.Id != null), Is.True);
+            Assert.That(result.All(x => x.UniqueId != null), Is.True);
+            Assert.That(result.All(x => x.EntityId.StartsWith("zone.")), Is.True);
+            Assert.That(result.Any(x => x.Name != null), Is.True);
+            Assert.That(result.Any(x => x.Longitude > 0), Is.True);
+            Assert.That(result.Any(x => x.Latitude > 0), Is.True);
+            Assert.That(result.Any(x => x.Longitude != x.Latitude), Is.True);
+            Assert.That(result.Any(x => x.Radius > 0), Is.True);
+            Assert.That(result.Any(x => x.IsPassive), Is.True);
+            Assert.That(result.Any(x => x.Icon != null), Is.True);
         }
 
         [Test, Order(3)]
@@ -57,8 +57,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testZone.Name = $"{nameof(ZoneApiTests)}_{DateTime.Now.Ticks}";
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testZone.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testZone.HasPendingChanges, Is.False);
         }
 
         [Test, Order(4)]
@@ -67,8 +67,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testZone.IsPassive = false;
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testZone.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testZone.HasPendingChanges, Is.False);
         }
 
         [Test, Order(5)]
@@ -77,8 +77,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             _testZone.Icon = "mdi:lightbulb";
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone);
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(_testZone.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(_testZone.HasPendingChanges, Is.False);
         }
 
         [Test, Order(6)]
@@ -98,18 +98,18 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             clonedEntry.Radius = initialRadius + 15f;
             clonedEntry.IsPassive = !initialIsPassive;
             var result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(clonedEntry);
-            Assert.IsTrue(result, "SetUp failed");
-            Assert.False(_testZone.HasPendingChanges, "SetUp failed");
+            Assert.That(result, Is.True, "SetUp failed");
+            Assert.That(_testZone.HasPendingChanges, Is.False, "SetUp failed");
 
             result = await HassWsApi.UpdateStorageEntityRegistryEntryAsync(_testZone, forceUpdate: true);
-            Assert.IsTrue(result);
-            Assert.AreEqual(initialName, _testZone.Name);
-            Assert.AreEqual(initialIcon, _testZone.Icon);
-            Assert.AreEqual(initialLongitude, _testZone.Longitude);
-            Assert.AreEqual(initialLatitude, _testZone.Latitude);
-            Assert.AreEqual(initialRadius, _testZone.Radius);
-            Assert.AreEqual(initialIsPassive, _testZone.IsPassive);
-            Assert.IsFalse(_testZone.HasPendingChanges);
+            Assert.That(result, Is.True);
+            Assert.That(initialName, Is.EqualTo(_testZone.Name));
+            Assert.That(initialIcon, Is.EqualTo(_testZone.Icon));
+            Assert.That(initialLongitude, Is.EqualTo(_testZone.Longitude));
+            Assert.That(initialLatitude, Is.EqualTo(_testZone.Latitude));
+            Assert.That(initialRadius, Is.EqualTo(_testZone.Radius));
+            Assert.That(initialIsPassive, Is.EqualTo(_testZone.IsPassive));
+            Assert.That(_testZone.HasPendingChanges, Is.False);
         }
 
         [OneTimeTearDown]
@@ -125,8 +125,8 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
             var deletedZone = _testZone;
             _testZone = null;
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(deletedZone.IsTracked);
+            Assert.That(result, Is.True);
+            Assert.That(deletedZone.IsTracked, Is.False);
         }
     }
 }

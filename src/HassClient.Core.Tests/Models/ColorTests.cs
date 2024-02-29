@@ -15,9 +15,9 @@ namespace HassClient.Core.Tests.Models
 
             var color = Color.FromRGB(red, green, blue);
 
-            Assert.AreEqual(red, color.R);
-            Assert.AreEqual(green, color.G);
-            Assert.AreEqual(blue , color.B);
+            Assert.That(red, Is.EqualTo(color.R));
+            Assert.That(green, Is.EqualTo(color.G));
+            Assert.That(blue , Is.EqualTo(color.B));
         }
 
         [Test]
@@ -30,10 +30,10 @@ namespace HassClient.Core.Tests.Models
 
             var color = Color.FromRgbw(red, green, blue, white);
 
-            Assert.AreEqual(red, color.R);
-            Assert.AreEqual(green, color.G);
-            Assert.AreEqual(blue, color.B);
-            Assert.AreEqual(white, color.W);
+            Assert.That(red, Is.EqualTo(color.R));
+            Assert.That(green, Is.EqualTo(color.G));
+            Assert.That(blue, Is.EqualTo(color.B));
+            Assert.That(white, Is.EqualTo(color.W));
         }
 
         [Test]
@@ -47,11 +47,11 @@ namespace HassClient.Core.Tests.Models
 
             var color = Color.FromRGBWW(red, green, blue, coldWhite, warmWhite);
 
-            Assert.AreEqual(red, color.R);
-            Assert.AreEqual(green, color.G);
-            Assert.AreEqual(blue, color.B);
-            Assert.AreEqual(coldWhite, color.Cw);
-            Assert.AreEqual(warmWhite, color.Ww);
+            Assert.That(red, Is.EqualTo(color.R));
+            Assert.That(green, Is.EqualTo(color.G));
+            Assert.That(blue, Is.EqualTo(color.B));
+            Assert.That(coldWhite, Is.EqualTo(color.Cw));
+            Assert.That(warmWhite, Is.EqualTo(color.Ww));
         }
 
         [Test]
@@ -62,8 +62,8 @@ namespace HassClient.Core.Tests.Models
 
             var color = Color.FromHS(hue, saturation);
 
-            Assert.AreEqual(hue, color.Hue);
-            Assert.AreEqual(saturation, color.Saturation);
+            Assert.That(hue, Is.EqualTo(color.Hue));
+            Assert.That(saturation, Is.EqualTo(color.Saturation));
         }
 
         [Test]
@@ -74,8 +74,8 @@ namespace HassClient.Core.Tests.Models
 
             var color = Color.FromXY(x, y);
 
-            Assert.AreEqual(x, color.X);
-            Assert.AreEqual(y, color.Y);
+            Assert.That(x, Is.EqualTo(color.X));
+            Assert.That(y, Is.EqualTo(color.Y));
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace HassClient.Core.Tests.Models
 
             var color = Color.FromKelvinTemperature(kelvins);
 
-            Assert.AreEqual(kelvins, color.Kelvins);
+            Assert.That(kelvins, Is.EqualTo(color.Kelvins));
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace HassClient.Core.Tests.Models
 
             var color = Color.FromMireds(mireds);
 
-            Assert.AreEqual(mireds, color.Mireds);
+            Assert.That(mireds, Is.EqualTo(color.Mireds));
         }
     }
 }

@@ -13,7 +13,7 @@ namespace HassClient.Core.Tests.Models
         {
             var constructor = typeof(Device).GetConstructors()
                                             .FirstOrDefault(x => x.IsPublic);
-            Assert.Null(constructor);
+            Assert.That(constructor, Is.Null);
         }
 
         [Test]
@@ -22,10 +22,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out var initialName, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Name = initialName;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -34,10 +34,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out var initialAreaId, out _);
 
             testEntry.AreaId = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.AreaId = initialAreaId;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -48,13 +48,13 @@ namespace HassClient.Core.Tests.Models
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.AreaId = MockHelpers.GetRandomTestName();
             //testEntry.DisabledBy = DisabledByEnum.User;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.DiscardPendingChanges();
-            Assert.False(testEntry.HasPendingChanges);
-            Assert.AreEqual(initialName, testEntry.Name);
-            Assert.AreEqual(initialAreaId, testEntry.AreaId);
-            Assert.AreEqual(initialDisabledBy, testEntry.DisabledBy);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
+            Assert.That(initialName, Is.EqualTo(testEntry.Name));
+            Assert.That(initialAreaId, Is.EqualTo(testEntry.AreaId));
+            Assert.That(initialDisabledBy, Is.EqualTo(testEntry.DisabledBy));
         }
 
         [Test]
@@ -62,14 +62,14 @@ namespace HassClient.Core.Tests.Models
         {
             var testEntry = CreateTestEntry(out _, out _, out _, out _);
 
-            Assert.AreEqual(testEntry.OriginalName, testEntry.Name);
+            Assert.That(testEntry.OriginalName, Is.EqualTo(testEntry.Name));
 
             var testName = MockHelpers.GetRandomTestName();
             testEntry.Name = testName;
-            Assert.AreEqual(testName, testEntry.Name);
+            Assert.That(testName, Is.EqualTo(testEntry.Name));
 
             testEntry.Name = null;
-            Assert.AreEqual(testEntry.OriginalName, testEntry.Name);
+            Assert.That(testEntry.OriginalName, Is.EqualTo(testEntry.Name));
         }
 
         private Device CreateTestEntry(out string entityId, out string name, out string areaId, out DisabledByEnum disabledBy)

@@ -21,44 +21,44 @@ namespace HassClient.WS.Tests
 
             _states = await HassWsApi.GetStatesAsync();
 
-            Assert.IsNotNull(_states);
-            Assert.IsNotEmpty(_states);
+            Assert.That(_states, Is.Not.Null);
+            Assert.That(_states, Is.Not.Empty);
         }
 
         [Test]
         public void GetStatesHasAttributes()
         {
-            Assert.IsTrue(_states.All(x => x.Attributes.Count > 0));
+            Assert.That(_states.All(x => x.Attributes.Count > 0), Is.True);
         }
 
         [Test]
         public void GetStatesHasLastChanged()
         {
-            Assert.IsTrue(_states.All(x => x.LastChanged != default));
+            Assert.That(_states.All(x => x.LastChanged != default), Is.True);
         }
 
         [Test]
         public void GetStatesHasLastUpdated()
         {
-            Assert.IsTrue(_states.All(x => x.LastUpdated != default));
+            Assert.That(_states.All(x => x.LastUpdated != default), Is.True);
         }
 
         [Test]
         public void GetStatesHasState()
         {
-            Assert.IsTrue(_states.All(x => x.State != default));
+            Assert.That(_states.All(x => x.State != default), Is.True);
         }
 
         [Test]
         public void GetStatesHasEntityId()
         {
-            Assert.IsTrue(_states.All(x => x.EntityId != default));
+            Assert.That(_states.All(x => x.EntityId != default), Is.True);
         }
 
         [Test]
         public void GetStatesHasContext()
         {
-            Assert.IsTrue(_states.All(x => x.Context != default));
+            Assert.That(_states.All(x => x.Context != default), Is.True);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace HassClient.WS.Tests
             HassSerializer.DefaultSettings.MissingMemberHandling = MissingMemberHandling.Error;
             HassSerializer.DefaultSettings.Error += HassSerializerError;
 
-            Assert.AreEqual(HassWsApi.ConnectionState, ConnectionStates.Connected, "SetUp failed");
+            Assert.That(HassWsApi.ConnectionState, Is.EqualTo(ConnectionStates.Connected), "SetUp failed");
         }
 
         private void HassSerializerError(object sender, ErrorEventArgs args)

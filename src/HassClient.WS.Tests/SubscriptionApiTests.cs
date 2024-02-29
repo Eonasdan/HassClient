@@ -17,14 +17,14 @@ namespace HassClient.WS.Tests
         {
             var domain = TestEntitytId.GetDomain();
             var update = await HassWsApi.CallServiceForEntitiesAsync(domain, "toggle", TestEntitytId);
-            Assert.NotNull(update, "SetUp failed");
+            Assert.That(update, Is.Not.Null, "SetUp failed");
 
             var eventResultInfo = await subscriber.WaitFirstEventArgWithTimeoutAsync<EventResultInfo>(
                                             x => HassSerializer.TryGetEnumFromSnakeCase<KnownEventTypes>(x.EventType, out var knownEventType) &&
                                                    knownEventType == KnownEventTypes.StateChanged,
                                             500);
 
-            Assert.NotNull(eventResultInfo, "SetUp failed");
+            Assert.That(eventResultInfo, Is.Not.Null, "SetUp failed");
 
             return eventResultInfo.DeserializeData<StateChangedEvent>();
         }
@@ -41,14 +41,14 @@ namespace HassClient.WS.Tests
             var result1 = await HassWsApi.AddEventHandlerSubscriptionAsync(testEventHandler1.EventHandler);
             var result2 = await HassWsApi.AddEventHandlerSubscriptionAsync(testEventHandler2.EventHandler);
 
-            Assert.IsTrue(result1);
-            Assert.IsTrue(result2);
+            Assert.That(result1, Is.True);
+            Assert.That(result2, Is.True);
 
             var eventData = await ForceStateChangedAndGetEventData(subscriber1);
 
-            Assert.NotZero(subscriber1.HitCount);
-            Assert.AreEqual(subscriber1.HitCount, subscriber2.HitCount);
-            Assert.IsTrue(eventData.EntityId == TestEntitytId);
+            Assert.That(subscriber1.HitCount, Is.Not.Zero);
+            Assert.That(subscriber1.HitCount, Is.EqualTo(subscriber2.HitCount));
+            Assert.That(eventData.EntityId == TestEntitytId, Is.True);
         }
 
         [Test]
@@ -59,11 +59,11 @@ namespace HassClient.WS.Tests
             testEventHandler.Event += subscriber.Handle;
             var result = await HassWsApi.AddEventHandlerSubscriptionAsync(testEventHandler.EventHandler);
 
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
 
             await ForceStateChangedAndGetEventData(subscriber);
 
-            Assert.NotZero(subscriber.HitCount);
+            Assert.That(subscriber.HitCount, Is.Not.Zero);
         }
 
         [Test]
@@ -74,13 +74,13 @@ namespace HassClient.WS.Tests
             testEventHandler.Event += subscriber.Handle;
             var result = await HassWsApi.AddEventHandlerSubscriptionAsync(testEventHandler.EventHandler, KnownEventTypes.StateChanged);
 
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
 
             var eventData = await ForceStateChangedAndGetEventData(subscriber);
 
-            Assert.NotZero(subscriber.HitCount);
-            Assert.IsTrue(eventData.EntityId == TestEntitytId);
-            Assert.NotNull(eventData.NewState.State);
+            Assert.That(subscriber.HitCount, Is.Not.Zero);
+            Assert.That(eventData.EntityId == TestEntitytId, Is.True);
+            Assert.That(eventData.NewState.State, Is.Not.Null);
         }
     }
 }

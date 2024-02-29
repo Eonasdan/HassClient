@@ -38,8 +38,8 @@ namespace HassClient.Core.Tests
         {
             var result = TestEnum.TestValue.ToSnakeCase();
 
-            Assert.NotNull(result);
-            Assert.AreEqual(ExpectedTestValueEnumResult, result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(ExpectedTestValueEnumResult, Is.EqualTo(result));
         }
 
         [Test]
@@ -50,8 +50,8 @@ namespace HassClient.Core.Tests
             var attribValue = memInfo[0].GetCustomAttribute<EnumMemberAttribute>().Value;
             var result = value.ToSnakeCase();
 
-            Assert.NotNull(result);
-            Assert.AreEqual(attribValue, result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(attribValue, Is.EqualTo(result));
         }
 
         [Test]
@@ -69,8 +69,8 @@ namespace HassClient.Core.Tests
         {
             var success = HassSerializer.TryGetEnumFromSnakeCase<TestEnum>(ExpectedTestValueEnumResult, out var result);
 
-            Assert.IsTrue(success);
-            Assert.AreEqual(TestEnum.TestValue, result);
+            Assert.That(success, Is.True);
+            Assert.That(TestEnum.TestValue, Is.EqualTo(result));
         }
 
         [Test]
@@ -78,8 +78,8 @@ namespace HassClient.Core.Tests
         {
             var success = HassSerializer.TryGetEnumFromSnakeCase<TestEnum>("invalid_value", out var result);
 
-            Assert.IsFalse(success);
-            Assert.AreEqual(default(TestEnum), result);
+            Assert.That(success, Is.False);
+            Assert.That(default(TestEnum), Is.EqualTo(result));
         }
 
         [Test]
@@ -88,8 +88,8 @@ namespace HassClient.Core.Tests
             var value = TestEnum.TestValue;
             var result = HassSerializer.SerializeObject(value);
 
-            Assert.NotNull(result);
-            Assert.AreEqual($"\"{ExpectedTestValueEnumResult}\"", result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That($"\"{ExpectedTestValueEnumResult}\"", Is.EqualTo(result));
         }
 
         [Test]
@@ -101,8 +101,8 @@ namespace HassClient.Core.Tests
             var attribValue = memInfo[0].GetCustomAttribute<EnumMemberAttribute>().Value;
             var result = HassSerializer.SerializeObject(value);
 
-            Assert.NotNull(result);
-            Assert.AreEqual($"\"{attribValue}\"", result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That($"\"{attribValue}\"", Is.EqualTo(result));
         }
 
         [Test]
@@ -110,8 +110,8 @@ namespace HassClient.Core.Tests
         {
             var result = HassSerializer.DeserializeObject<TestEnum>($"\"{ExpectedTestValueEnumResult}\"");
 
-            Assert.NotNull(result);
-            Assert.AreEqual(TestEnum.TestValue, result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(TestEnum.TestValue, Is.EqualTo(result));
         }
 
         [Test]
@@ -123,8 +123,8 @@ namespace HassClient.Core.Tests
             var attribValue = memInfo[0].GetCustomAttribute<EnumMemberAttribute>().Value;
             var result = HassSerializer.DeserializeObject<TestEnum>($"\"{attribValue}\"");
 
-            Assert.NotNull(result);
-            Assert.AreEqual(value, result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(value, Is.EqualTo(result));
         }
 
         [Test]
@@ -133,8 +133,8 @@ namespace HassClient.Core.Tests
             var value = new TestClass { TestProperty = nameof(TestClass.TestProperty) };
             var result = HassSerializer.SerializeObject(value);
 
-            Assert.NotNull(result);
-            Assert.IsTrue(result.Contains($"\"{ExpectedTestPropertyResult}\":\"{value.TestProperty}\""));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Contains($"\"{ExpectedTestPropertyResult}\":\"{value.TestProperty}\""), Is.True);
         }
 
         [Test]
@@ -142,8 +142,8 @@ namespace HassClient.Core.Tests
         {
             var result = HassSerializer.DeserializeObject<TestClass>($"{{\"{ExpectedTestPropertyResult}\":\"{nameof(TestClass.TestProperty)}\"}}");
 
-            Assert.NotNull(result);
-            Assert.AreEqual(nameof(TestClass.TestProperty), result.TestProperty);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(nameof(TestClass.TestProperty), Is.EqualTo(result.TestProperty));
         }
 
         [Test]
@@ -152,8 +152,8 @@ namespace HassClient.Core.Tests
             var value = new TestClass { TestField = nameof(TestClass.TestField) };
             var result = HassSerializer.SerializeObject(value);
 
-            Assert.NotNull(result);
-            Assert.IsTrue(result.Contains($"\"{ExpectedTestFieldResult}\":\"{value.TestField}\""));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Contains($"\"{ExpectedTestFieldResult}\":\"{value.TestField}\""), Is.True);
         }
 
         [Test]
@@ -161,8 +161,8 @@ namespace HassClient.Core.Tests
         {
             var result = HassSerializer.DeserializeObject<TestClass>($"{{\"{ExpectedTestFieldResult}\":\"{nameof(TestClass.TestField)}\"}}");
 
-            Assert.NotNull(result);
-            Assert.AreEqual(nameof(TestClass.TestField), result.TestField);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(nameof(TestClass.TestField), Is.EqualTo(result.TestField));
         }
 
         [Test]
@@ -171,8 +171,8 @@ namespace HassClient.Core.Tests
             var value = new TestClass { TestProperty = nameof(TestClass.TestProperty) };
             var result = HassSerializer.CreateJObject(value);
 
-            Assert.NotNull(result);
-            Assert.AreEqual(value.TestProperty, result.GetValue(ExpectedTestPropertyResult).ToString());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(value.TestProperty, Is.EqualTo(result.GetValue(ExpectedTestPropertyResult).ToString()));
         }
 
         [Test]
@@ -181,8 +181,8 @@ namespace HassClient.Core.Tests
             var value = new TestClass { TestField = nameof(TestClass.TestField) };
             var result = HassSerializer.CreateJObject(value);
 
-            Assert.NotNull(result);
-            Assert.AreEqual(value.TestField, result.GetValue(ExpectedTestFieldResult).ToString());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(value.TestField, Is.EqualTo(result.GetValue(ExpectedTestFieldResult).ToString()));
         }
 
         [Test]
@@ -191,10 +191,10 @@ namespace HassClient.Core.Tests
             var selectedProperties = new[] { nameof(TestClass.TestProperty) };
             var result = HassSerializer.CreateJObject(new TestClass(), selectedProperties);
 
-            Assert.NotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsTrue(result.ContainsKey(ExpectedTestPropertyResult));
-            Assert.IsFalse(result.ContainsKey(ExpectedTestFieldResult));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(1, Is.EqualTo(result.Count));
+            Assert.That(result.ContainsKey(ExpectedTestPropertyResult), Is.True);
+            Assert.That(result.ContainsKey(ExpectedTestFieldResult), Is.False);
         }
 
         [Test]

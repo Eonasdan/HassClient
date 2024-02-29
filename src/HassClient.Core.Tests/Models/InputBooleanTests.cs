@@ -15,21 +15,21 @@ namespace HassClient.Core.Tests.Models
         {
             var constructor = typeof(InputBoolean).GetConstructors()
                                                   .FirstOrDefault(x => x.IsPublic && x.GetParameters().Length > 0);
-            Assert.NotNull(constructor);
+            Assert.That(constructor, Is.Not.Null);
         }
 
         [Test]
         public void NewInputBooleanHasPendingChanges()
         {
             var testEntry = new InputBoolean(MockHelpers.GetRandomTestName());
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void NewInputBooleanIsUntracked()
         {
             var testEntry = new InputBoolean(MockHelpers.GetRandomTestName());
-            Assert.False(testEntry.IsTracked);
+            Assert.That(testEntry.IsTracked, Is.False);
         }
 
         private static IEnumerable<string> NullOrWhiteSpaceStringValues() => RegistryEntryBaseTests.NullOrWhiteSpaceStringValues();
@@ -47,10 +47,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out var initialName, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Name = initialName;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -59,10 +59,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out var initialIcon, out _);
 
             testEntry.Icon = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Icon = initialIcon;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -71,10 +71,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out _, out var initial);
 
             testEntry.Initial = !initial;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Initial = initial;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -85,13 +85,13 @@ namespace HassClient.Core.Tests.Models
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.Icon = MockHelpers.GetRandomTestName();
             testEntry.Initial = !initial;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.DiscardPendingChanges();
-            Assert.False(testEntry.HasPendingChanges);
-            Assert.AreEqual(initialName, testEntry.Name);
-            Assert.AreEqual(initialIcon, testEntry.Icon);
-            Assert.AreEqual(initial, testEntry.Initial);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
+            Assert.That(initialName, Is.EqualTo(testEntry.Name));
+            Assert.That(initialIcon, Is.EqualTo(testEntry.Icon));
+            Assert.That(initial, Is.EqualTo(testEntry.Initial));
         }
 
         private InputBoolean CreateTestEntry(out string entityId, out string name, out string icon, out bool initial)

@@ -21,9 +21,9 @@ namespace HassClient.WS.Tests
             }
 
             _panels = await HassWsApi.GetPanelsAsync();
-
-            Assert.IsNotNull(_panels);
-            Assert.IsNotEmpty(_panels);
+            Assert.That(_panels, Is.Not.Null);
+            Assert.That(_panels, Is.Not.Empty);
+            Assert.That(_panels, Is.Not.Empty);
         }
 
         [Test]
@@ -35,12 +35,14 @@ namespace HassClient.WS.Tests
             }
 
             var firstPanel = _panels?.FirstOrDefault();
-            Assert.NotNull(firstPanel, "SetUp failed");
+            Assert.That(firstPanel, Is.Not.Null, "SetUp failed");
 
             var result = await HassWsApi.GetPanelAsync(firstPanel.UrlPath);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(firstPanel, result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(firstPanel, Is.EqualTo(result));
+            
+            Assert.That(firstPanel, Is.EqualTo(result));
         }
 
         [Test]
@@ -52,37 +54,37 @@ namespace HassClient.WS.Tests
         [Test]
         public void GetPanelsHasComponentName()
         {
-            Assert.IsTrue(_panels.All(x => x.ComponentName != default));
+            Assert.That(_panels.All(x => x.ComponentName != default), Is.True);
         }
 
         [Test]
         public void GetPanelsHasConfiguration()
         {
-            Assert.IsTrue(_panels.All(x => x.Configuration != default));
+            Assert.That(_panels.All(x => x.Configuration != default), Is.True);
         }
 
         [Test]
         public void GetPanelsHasIcon()
         {
-            Assert.IsTrue(_panels.Any(x => x.Icon != default));
+            Assert.That(_panels.Any(x => x.Icon != default), Is.True);
         }
 
         [Test]
         public void GetPanelsHasRequireAdmin()
         {
-            Assert.IsTrue(_panels.Any(x => x.RequireAdmin));
+            Assert.That(_panels.Any(x => x.RequireAdmin), Is.True);
         }
 
         [Test]
         public void GetPanelsHasTitle()
         {
-            Assert.IsTrue(_panels.Any(x => x.Title != default));
+            Assert.That(_panels.Any(x => x.Title != default), Is.True);
         }
 
         [Test]
         public void GetPanelsHasUrlPath()
         {
-            Assert.IsTrue(_panels.All(x => x.UrlPath != default));
+            Assert.That(_panels.All(x => x.UrlPath != default), Is.True);
         }
     }
 }

@@ -14,21 +14,21 @@ namespace HassClient.Core.Tests.Models
         {
             var constructor = typeof(Zone).GetConstructors()
                                           .FirstOrDefault(x => x.IsPublic && x.GetParameters().Length > 0);
-            Assert.NotNull(constructor);
+            Assert.That(constructor, Is.Not.Null);
         }
 
         [Test]
         public void NewZoneHasPendingChanges()
         {
             var testEntry = new Zone(MockHelpers.GetRandomTestName(), 20, 30, 5);
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void NewZoneIsUntracked()
         {
             var testEntry = new Zone(MockHelpers.GetRandomTestName(), 20, 30, 5);
-            Assert.IsFalse(testEntry.IsTracked);
+            Assert.That(testEntry.IsTracked, Is.False);
         }
 
         private static IEnumerable<string> NullOrWhiteSpaceStringValues() => RegistryEntryBaseTests.NullOrWhiteSpaceStringValues();
@@ -46,10 +46,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out var initialName, out _, out _, out _, out _, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Name = initialName;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -58,10 +58,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out var initialIcon, out _, out _, out _, out _);
 
             testEntry.Icon = "mdi:test";
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Icon = initialIcon;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -70,10 +70,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out var initialLongitude, out _, out _, out _);
 
             testEntry.Longitude += 10;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Longitude = initialLongitude;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -82,10 +82,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out _, out var initialLatitude, out _, out _);
 
             testEntry.Latitude += 10;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Latitude = initialLatitude;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -94,10 +94,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out _, out _, out var initialRadius, out _);
 
             testEntry.Radius += 10;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Radius = initialRadius;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -106,10 +106,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = CreateTestEntry(out _, out _, out _, out _, out _, out var initialIsPassive);
 
             testEntry.IsPassive = !initialIsPassive;
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.IsPassive = initialIsPassive;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         private Zone CreateTestEntry(out string name, out string icon, out float longitude, out float latitude, out float radius, out bool isPassive)

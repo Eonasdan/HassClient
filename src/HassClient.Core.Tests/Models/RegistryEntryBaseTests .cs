@@ -50,21 +50,21 @@ namespace HassClient.Core.Tests.Models
         public void DeserializedEntityRegistryEntryHasNoPendingChanges()
         {
             var testEntry = HassSerializer.DeserializeObject<TestRegistryEntry>("{}");
-            Assert.IsFalse(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
         public void NewEntityRegistryEntryHasPendingChanges()
         {
             var testEntry = new TestRegistryEntry();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
         }
 
         [Test]
         public void NewEntityRegistryEntryIsUntracked()
         {
             var testEntry = new TestRegistryEntry();
-            Assert.False(testEntry.IsTracked);
+            Assert.That(testEntry.IsTracked, Is.False);
         }
 
         public static IEnumerable<string> NullOrWhiteSpaceStringValues()
@@ -110,10 +110,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = TestRegistryEntry.CreateUnmodified(out var initialName, out _);
 
             testEntry.Name = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Name = initialName;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -122,10 +122,10 @@ namespace HassClient.Core.Tests.Models
             var testEntry = TestRegistryEntry.CreateUnmodified(out _, out var initialIcon);
 
             testEntry.Icon = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.Icon = initialIcon;
-            Assert.False(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
         [Test]
@@ -135,12 +135,12 @@ namespace HassClient.Core.Tests.Models
 
             testEntry.Name = MockHelpers.GetRandomTestName();
             testEntry.Icon = MockHelpers.GetRandomTestName();
-            Assert.IsTrue(testEntry.HasPendingChanges);
+            Assert.That(testEntry.HasPendingChanges, Is.True);
 
             testEntry.DiscardPendingChanges();
-            Assert.False(testEntry.HasPendingChanges);
-            Assert.AreEqual(initialName, testEntry.Name);
-            Assert.AreEqual(initialIcon, testEntry.Icon);
+            Assert.That(testEntry.HasPendingChanges, Is.False);
+            Assert.That(initialName, Is.EqualTo(testEntry.Name));
+            Assert.That(initialIcon, Is.EqualTo(testEntry.Icon));
         }
     }
 }
