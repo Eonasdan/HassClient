@@ -15,14 +15,14 @@ namespace HassClient.WS.Messages.Response
         /// <summary>
         /// Gets or sets the result object of the command operation.
         /// </summary>
-        public JRaw Result { get; set; }
+        public JRaw? Result { get; set; }
 
         /// <summary>
         /// Gets or sets error information when the operation failed.
         /// </summary>
-        public ErrorInfo Error { get; set; }
+        public ErrorInfo? Error { get; set; }
 
-        internal static RawCommandResult FromResultMessage(ResultMessage message)
+        internal static RawCommandResult FromResultMessage(ResultMessage? message)
         {
             return new RawCommandResult
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HassClient.Core.Models.RegistryEntries;
@@ -10,7 +11,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
 {
     public class PersonApiTests : BaseHassWsApiTest
     {
-        private Person _testPerson;
+        private Person? _testPerson;
 
         [OneTimeSetUp]
         [Test, Order(1)]
@@ -38,7 +39,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
         [Test, Order(2)]
         public async Task GetPersons()
         {
-            var result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<Person>();
+            IEnumerable<Person?> result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<Person>();
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.Empty);

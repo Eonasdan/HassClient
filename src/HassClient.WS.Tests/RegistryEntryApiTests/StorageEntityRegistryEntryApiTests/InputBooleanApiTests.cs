@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HassClient.Core.Models.RegistryEntries.StorageEntities;
@@ -9,7 +10,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
 {
     public class InputBooleanApiTests : BaseHassWsApiTest
     {
-        private InputBoolean _testInputBoolean;
+        private InputBoolean? _testInputBoolean;
 
         [OneTimeSetUp]
         [Test, Order(1)]
@@ -34,7 +35,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryAp
         [Test, Order(2)]
         public async Task GetInputBooleans()
         {
-            var result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<InputBoolean>();
+            IEnumerable<InputBoolean?> result = await HassWsApi.GetStorageEntityRegistryEntriesAsync<InputBoolean>();
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.Empty);

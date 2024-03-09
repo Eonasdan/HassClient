@@ -5,14 +5,14 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class DeviceRegistryMessagesFactory : RegistryEntryCollectionMessagesFactory<Device>
     {
-        public static readonly DeviceRegistryMessagesFactory Instance = new DeviceRegistryMessagesFactory();
+        public static readonly DeviceRegistryMessagesFactory Instance = new();
 
         public DeviceRegistryMessagesFactory()
             : base("config/device_registry", "device")
         {
         }
 
-        public BaseOutgoingMessage CreateUpdateMessage(Device device, bool? disable, bool forceUpdate)
+        public BaseOutgoingMessage CreateUpdateMessage(Device? device, bool? disable, bool forceUpdate)
         {
             var model = CreateDefaultUpdateObject(device, forceUpdate);
 

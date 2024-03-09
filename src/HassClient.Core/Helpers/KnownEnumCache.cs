@@ -10,7 +10,7 @@ namespace HassClient.Core.Helpers
     internal class KnownEnumCache<TEnum>
             where TEnum : struct, Enum
     {
-        private readonly Map<string, TEnum> _cache = new Map<string, TEnum>();
+        private readonly Map<string, TEnum> _cache = new();
 
         private readonly TEnum? _valueForNullString;
 

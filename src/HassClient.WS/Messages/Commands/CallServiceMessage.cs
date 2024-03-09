@@ -2,23 +2,18 @@
 
 namespace HassClient.WS.Messages.Commands
 {
-    internal class CallServiceMessage : BaseOutgoingMessage
+    internal class CallServiceMessage() : BaseOutgoingMessage("call_service")
     {
         [JsonProperty(Required = Required.Always)]
-        public string Domain { get; set; }
+        public string Domain { get; set; } = null!;
 
         [JsonProperty(Required = Required.Always)]
-        public string Service { get; set; }
+        public string Service { get; set; } = null!;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public object ServiceData { get; set; }
+        public object? ServiceData { get; set; }
 
-        public CallServiceMessage()
-            : base("call_service")
-        {
-        }
-
-        public CallServiceMessage(string domain, string service, object serviceData)
+        public CallServiceMessage(string domain, string service, object? serviceData)
             : this()
         {
             Domain = domain;

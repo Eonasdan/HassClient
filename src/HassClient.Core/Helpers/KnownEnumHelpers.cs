@@ -15,7 +15,7 @@ namespace HassClient.Core.Helpers
     /// </summary>
     public static class KnownEnumHelpers
     {
-        private static readonly KnownEnumCache<KnownDomains> KnownDomainsCache = new KnownEnumCache<KnownDomains>();
+        private static readonly KnownEnumCache<KnownDomains> KnownDomainsCache = new();
 
         /// <summary>
         /// Converts a given <paramref name="domain"/> to <see cref="KnownDomains"/>.
@@ -46,7 +46,7 @@ namespace HassClient.Core.Helpers
             return KnownDomainsCache.AsString(domain);
         }
 
-        private static readonly KnownEnumCache<KnownEventTypes> KnownEventTypesCache = new KnownEnumCache<KnownEventTypes>();
+        private static readonly KnownEnumCache<KnownEventTypes> KnownEventTypesCache = new();
 
         /// <summary>
         /// Converts a given snake case <paramref name="eventType"/> to <see cref="KnownDomains"/>.
@@ -79,7 +79,7 @@ namespace HassClient.Core.Helpers
             return KnownEventTypesCache.AsString(eventType);
         }
 
-        private static readonly KnownEnumCache<KnownServices> KnownServicesCache = new KnownEnumCache<KnownServices>();
+        private static readonly KnownEnumCache<KnownServices> KnownServicesCache = new();
 
         /// <summary>
         /// Converts a given snake case <paramref name="service"/> to <see cref="KnownServices"/>.
@@ -112,7 +112,7 @@ namespace HassClient.Core.Helpers
             return KnownServicesCache.AsString(service);
         }
 
-        private static readonly KnownEnumCache<KnownStates> KnownStatesCache = new KnownEnumCache<KnownStates>(KnownStates.Unknown);
+        private static readonly KnownEnumCache<KnownStates> KnownStatesCache = new(KnownStates.Unknown);
 
         /// <summary>
         /// Converts a given snake case <paramref name="state"/> to <see cref="KnownStates"/>.

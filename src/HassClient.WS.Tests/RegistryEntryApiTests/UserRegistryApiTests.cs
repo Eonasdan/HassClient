@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HassClient.Core.Models.RegistryEntries;
 using HassClient.Core.Tests;
@@ -8,7 +9,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
 {
     public class UserRegistryApiTests : BaseHassWsApiTest
     {
-        private User _testUser;
+        private User? _testUser;
 
         [OneTimeSetUp]
         [Test, Order(1)]

@@ -31,7 +31,7 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the release date extracted from <see cref="Year"/> and <see cref="Month"/>.
         /// </summary>
-        public DateTime ReleaseDate => new DateTime(Year, Month, 1);
+        public DateTime ReleaseDate => new(Year, Month, 1);
 
         /// <inheritdoc />
         public override string ToString() => $"{Year}.{Month}.{Micro}{Modifier}";

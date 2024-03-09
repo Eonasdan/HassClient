@@ -36,7 +36,7 @@ namespace HassClient.WS.Tests
 
         private Task ConnectClientAsync(int retries = 0)
         {
-            return _wsClient.ConnectAsync(_mockServer.ConnectionParameters, retries, _connectionCts.Token);
+            return _wsClient.ConnectAsync(_mockServer.ConnectionParameters, retries, null, _connectionCts.Token);
         }
 
         private async Task StartMockServerAndConnectClientAsync()
@@ -154,7 +154,7 @@ namespace HassClient.WS.Tests
                 AccessToken = "Invalid_Access_Token"
             };
 
-            await AssertExtensions.ThrowsAsync<AuthenticationException>(_wsClient.ConnectAsync(invalidParameters, -1, _connectionCts.Token));
+            await AssertExtensions.ThrowsAsync<AuthenticationException>(_wsClient.ConnectAsync(invalidParameters, -1, null, _connectionCts.Token));
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace HassClient.WS.Tests
             _wsClient.Dispose();
 
             Assert.That(_wsClient.IsDisposed, Is.True);
-            Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.AddEventHandlerSubscriptionAsync(default, default));
+            Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.AddEventHandlerSubscriptionAsync<EventHandler<EventResultInfo>>(default, default));
         }
 
         [Test]
@@ -208,7 +208,7 @@ namespace HassClient.WS.Tests
             _wsClient.Dispose();
 
             Assert.That(_wsClient.IsDisposed, Is.True);
-            Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.RemoveEventHandlerSubscriptionAsync(default, default));
+            Assert.ThrowsAsync<ObjectDisposedException>(() => _wsClient.RemoveEventHandlerSubscriptionAsync<EventHandler<EventResultInfo>>(default, default));
         }
 
         [Test]
@@ -219,7 +219,7 @@ namespace HassClient.WS.Tests
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
             var eventSubscriber = new MockEventSubscriber();
-            var subscriptionTask = _wsClient.AddEventHandlerSubscriptionAsync(eventSubscriber.Handle, cancellationTokenSource.Token);
+            var subscriptionTask = _wsClient.AddEventHandlerSubscriptionAsync<EventHandler<EventResultInfo>>(eventSubscriber.Handle, cancellationTokenSource.Token);
 
             Assert.That(_wsClient.SubscriptionsCount, Is.Not.Zero);
             Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
@@ -233,7 +233,7 @@ namespace HassClient.WS.Tests
             _mockServer.ResponseSimulatedDelay = TimeSpan.MaxValue;
             var cancellationTokenSource = new CancellationTokenSource();
             var eventSubscriber = new MockEventSubscriber();
-            var subscriptionTask = _wsClient.AddEventHandlerSubscriptionAsync(eventSubscriber.Handle, cancellationTokenSource.Token);
+            var subscriptionTask = _wsClient.AddEventHandlerSubscriptionAsync<EventHandler<EventResultInfo>>(eventSubscriber.Handle, cancellationTokenSource.Token);
             Assert.That(_wsClient.PendingRequestsCount, Is.Not.Zero);
 
             cancellationTokenSource.Cancel();
@@ -289,7 +289,7 @@ namespace HassClient.WS.Tests
         {
             var eventSubscriber = new MockEventSubscriber();
             await StartMockServerAndConnectClientAsync();
-            var result = await _wsClient.AddEventHandlerSubscriptionAsync(eventSubscriber.Handle, default);
+            var result = await _wsClient.AddEventHandlerSubscriptionAsync<EventHandler<EventResultInfo>>(eventSubscriber.Handle, default);
             Assert.That(result, Is.True, "SetUp failed");
 
             await _mockServer.CloseActiveClientsAsync();

@@ -34,25 +34,24 @@ namespace HassClient.WS
 
         private readonly TimeSpan _retryingInterval = TimeSpan.FromSeconds(5);
 
-        private readonly SemaphoreSlim _connectionSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _connectionSemaphore = new(1, 1);
 
-        private readonly SemaphoreSlim _sendingSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _sendingSemaphore = new(1, 1);
 
-        private readonly Dictionary<string, SocketEventSubscription> _socketEventSubscriptionIdByEventType = new Dictionary<string, SocketEventSubscription>();
-        private readonly Dictionary<uint, Action<EventResultMessage>> _socketEventCallbacksBySubscriptionId = new Dictionary<uint, Action<EventResultMessage>>();
-        private readonly ConcurrentDictionary<uint, TaskCompletionSource<BaseIncomingMessage>> _incomingMessageAwaitersById = new ConcurrentDictionary<uint, TaskCompletionSource<BaseIncomingMessage>>();
+        private readonly Dictionary<string, SocketEventSubscription> _socketEventSubscriptionIdByEventType = new();
+        private readonly Dictionary<uint, Action<EventResultMessage>> _socketEventCallbacksBySubscriptionId = new();
 
-        private ConnectionParameters _connectionParameters;
+        private readonly ConcurrentDictionary<uint, TaskCompletionSource<BaseIncomingMessage>?> _incomingMessageAwaitersById = new();
+
+        private ConnectionParameters? _connectionParameters;
         private ArraySegment<byte> _receivingBuffer;
 
-        private Channel<EventResultMessage> _receivedEventsChannel;
+        private Channel<EventResultMessage>? _receivedEventsChannel;
 
-        private ClientWebSocket _socket;
-        private TaskCompletionSource<bool> _connectionTcs;
-        private CancellationTokenSource _closeConnectionCts;
+        private ClientWebSocket? _socket;
+        private TaskCompletionSource<bool>? _connectionTcs;
+        private CancellationTokenSource? _closeConnectionCts;
         private uint _lastSentId;
-        private Task _socketListenerTask;
-        private Task _eventListenerTask;
         private ConnectionStates _connectionState;
 
         /// <summary>
@@ -72,13 +71,13 @@ namespace HassClient.WS
         public ConnectionStates ConnectionState
         {
             get => _connectionState;
-            private set
+            internal set
             {
                 if (_connectionState == value) return;
                 _connectionState = value;
                 if (value == ConnectionStates.Connected)
                 {
-                    _connectionTcs.TrySetResult(true);
+                    _connectionTcs?.TrySetResult(true);
                 }
 
                 ConnectionStateChanged?.Invoke(this, value);
@@ -94,7 +93,7 @@ namespace HassClient.WS
         /// <summary>
         /// Gets the connected Home Assistant instance version.
         /// </summary>
-        public CalendarVersion HaVersion { get; private set; }
+        public CalendarVersion? HaVersion { get; private set; }
 
         /// <summary>
         /// Gets the number of requests that are pending to be attended by the server.
@@ -104,12 +103,13 @@ namespace HassClient.WS
         /// <summary>
         /// Gets the number of event handler subscriptions.
         /// </summary>
-        public int SubscriptionsCount => (int)_socketEventSubscriptionIdByEventType.Values.Sum(x => x.SubscriptionCount);
+        public int SubscriptionsCount =>
+            (int)_socketEventSubscriptionIdByEventType.Values.Sum(x => x.SubscriptionCount);
 
         /// <summary>
         /// Occurs when the <see cref="ConnectionState"/> is changed.
         /// </summary>
-        public event EventHandler<ConnectionStates> ConnectionStateChanged;
+        public event EventHandler<ConnectionStates>? ConnectionStateChanged;
 
         static HassClientWebSocket()
         {
@@ -138,20 +138,20 @@ namespace HassClient.WS
         /// to a value different to <see cref="CancellationToken.None"/> in that case.
         /// </para>
         /// </param>
+        /// <param name="onConnected">Action to run after connection</param>
         /// <param name="cancellationToken">
         /// A cancellation token used to propagate notification that this operation should be canceled.
         /// </param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public async Task ConnectAsync(ConnectionParameters connectionParameters, int retries = 0, CancellationToken cancellationToken = default)
+        public async Task ConnectAsync(ConnectionParameters connectionParameters, int retries = 0,
+            Action? onConnected = null, CancellationToken cancellationToken = default)
         {
             CheckIsDisposed();
 
             if (retries < 0 &&
                 cancellationToken == CancellationToken.None)
             {
-                throw new ArgumentException(
-                    nameof(cancellationToken),
-                    $"{nameof(cancellationToken)} must be set to a value different to {nameof(CancellationToken.None)} when retrying indefinitely");
+                throw new ArgumentException($"{nameof(cancellationToken)} must be set to a value different to {nameof(CancellationToken.None)} when retrying indefinitely", nameof(cancellationToken));
             }
 
             if (ConnectionState != ConnectionStates.Disconnected)
@@ -162,11 +162,12 @@ namespace HassClient.WS
             _closeConnectionCts = new CancellationTokenSource();
 
             _receivingBuffer = new ArraySegment<byte>(new byte[IncomingBufferSize]);
-            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_closeConnectionCts.Token, cancellationToken);
-            await InternalConnect(connectionParameters, retries, linkedCts.Token).ConfigureAwait(false);
+            var linkedCts =
+                CancellationTokenSource.CreateLinkedTokenSource(_closeConnectionCts.Token, cancellationToken);
+            await InternalConnect(connectionParameters, retries, onConnected, linkedCts.Token).ConfigureAwait(false);
             _connectionParameters = connectionParameters;
             _receivedEventsChannel = Channel.CreateUnbounded<EventResultMessage>();
-            _eventListenerTask = Task.Factory.StartNew(CreateEventListenerTask, TaskCreationOptions.LongRunning);
+            await Task.Factory.StartNew(CreateEventListenerTask, TaskCreationOptions.LongRunning);
         }
 
         /// <summary>
@@ -187,7 +188,7 @@ namespace HassClient.WS
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _closeConnectionCts?.Cancel();
+            if (_closeConnectionCts != null) await _closeConnectionCts.CancelAsync();
             await _connectionSemaphore.WaitAsync(cancellationToken);
 
             ClearSocketResources();
@@ -250,7 +251,8 @@ namespace HassClient.WS
         {
             if (timeout <= TimeSpan.Zero && cancellationToken == CancellationToken.None)
             {
-                throw new ArgumentException($"Either {nameof(timeout)} or {nameof(cancellationToken)} must be set to avoid never ending wait.");
+                throw new ArgumentException(
+                    $"Either {nameof(timeout)} or {nameof(cancellationToken)} must be set to avoid never ending wait.");
             }
 
             if (_connectionState == ConnectionStates.Connected)
@@ -284,7 +286,8 @@ namespace HassClient.WS
             }
         }
 
-        private async Task InternalConnect(ConnectionParameters connectionParameters, int retries, CancellationToken cancellationToken)
+        private async Task InternalConnect(ConnectionParameters connectionParameters, int retries, Action? onConnected,
+            CancellationToken cancellationToken)
         {
             ConnectionState = ConnectionStates.Connecting;
 
@@ -318,7 +321,8 @@ namespace HassClient.WS
                         switch (incomingMsg)
                         {
                             case AuthenticationInvalidMessage authenticationInvalid:
-                                throw new AuthenticationException($"{Tag} Invalid authentication: {authenticationInvalid.Message}");
+                                throw new AuthenticationException(
+                                    $"{Tag} Invalid authentication: {authenticationInvalid.Message}");
                             case AuthenticationOkMessage authenticationOk:
                             {
                                 HaVersion = CalendarVersion.Create(authenticationOk.HaVersion);
@@ -329,9 +333,11 @@ namespace HassClient.WS
                                 }
 
                                 IsReconnecting = false;
+                                onConnected?.Invoke();
                                 ConnectionState = ConnectionStates.Connected;
 
-                                Trace.WriteLine($"{Tag} Authentication succeed. Client connected {nameof(HaVersion)}: {HaVersion}");
+                                Trace.WriteLine(
+                                    $"{Tag} Authentication succeed. Client connected {nameof(HaVersion)}: {HaVersion}");
                                 break;
                             }
                         }
@@ -341,7 +347,8 @@ namespace HassClient.WS
                         throw new AuthenticationException("Unexpected message received during authentication.");
                     }
 
-                    _socketListenerTask = Task.Factory.StartNew(CreateSocketListenerTask, TaskCreationOptions.LongRunning);
+                    await Task.Factory.StartNew(() => CreateSocketListenerTask(onConnected),
+                        TaskCreationOptions.LongRunning);
                 }
                 catch (Exception ex)
                 {
@@ -349,7 +356,8 @@ namespace HassClient.WS
 
                     if (retry)
                     {
-                        Trace.WriteLine($"{Tag} Connecting attempt failed. Retrying in {_retryingInterval.TotalSeconds} seconds...");
+                        Trace.WriteLine(
+                            $"{Tag} Connecting attempt failed. Retrying in {_retryingInterval.TotalSeconds} seconds...");
                         await Task.Delay(_retryingInterval, cancellationToken);
                     }
                     else
@@ -369,116 +377,122 @@ namespace HassClient.WS
                         _connectionSemaphore.Release();
                     }
                 }
-            }
-            while (retry);
+            } while (retry);
         }
 
         private async Task RestoreEventsSubscriptionsAsync(CancellationToken closeCancellationToken)
         {
             _socketEventCallbacksBySubscriptionId.Clear();
 
-            foreach (var item in _socketEventSubscriptionIdByEventType)
+            foreach (var (eventType, socketSubscription) in _socketEventSubscriptionIdByEventType)
             {
                 ConnectionState = ConnectionStates.Restoring;
 
-                var eventType = item.Key;
                 while (true)
                 {
                     var subscribeMessage = new SubscribeEventsMessage(eventType);
                     await SendMessage(subscribeMessage, closeCancellationToken);
                     var result = await ReceiveMessage<ResultMessage>(_receivingBuffer, closeCancellationToken);
-                    if (result.Success)
-                    {
-                        var socketSubscription = item.Value;
-                        socketSubscription.SubscriptionId = result.Id;
-                        break;
-                    }
+                    if (!result.Success) continue;
+                    socketSubscription.SubscriptionId = result.Id;
+                    break;
                 }
             }
         }
 
-        private async Task CreateSocketListenerTask()
+        private async Task CreateSocketListenerTask(Action? onConnected)
         {
-            var closeCancellationToken = _closeConnectionCts.Token;
-
-            try
+            if (_closeConnectionCts != null)
             {
-                while (_socket.State.HasFlag(WebSocketState.Open))
+                var closeCancellationToken = _closeConnectionCts.Token;
+
+                try
                 {
-                    var incomingMessage = await ReceiveMessage<BaseIncomingMessage>(_receivingBuffer, closeCancellationToken);
-                    closeCancellationToken.ThrowIfCancellationRequested();
-
-                    switch (incomingMessage)
+                    while (_socket != null && _socket.State.HasFlag(WebSocketState.Open))
                     {
-                        case EventResultMessage eventResultMessage:
-                        {
-                            if (!_receivedEventsChannel.Writer.TryWrite(eventResultMessage))
-                            {
-                                Trace.TraceWarning($"{Tag} {nameof(_receivedEventsChannel)} is full. One event message will discarded.");
-                            }
+                        var incomingMessage =
+                            await ReceiveMessage<BaseIncomingMessage>(_receivingBuffer, closeCancellationToken);
+                        closeCancellationToken.ThrowIfCancellationRequested();
 
-                            break;
-                        }
-                        case PongMessage _:
-                        case ResultMessage _:
+                        switch (incomingMessage)
                         {
-                            Debug.WriteLine($"{Tag} Command message received {incomingMessage}");
-                            if (_incomingMessageAwaitersById.TryRemove(incomingMessage.Id, out var responseTcs))
+                            case EventResultMessage eventResultMessage:
                             {
-                                responseTcs.SetResult(incomingMessage);
-                            }
-                            else
-                            {
-                                Trace.TraceError($"{Tag} No awaiter found for incoming message {incomingMessage}. Message will be discarded.");
-                            }
+                                if (_receivedEventsChannel != null && !_receivedEventsChannel.Writer.TryWrite(eventResultMessage))
+                                {
+                                    Trace.TraceWarning(
+                                        $"{Tag} {nameof(_receivedEventsChannel)} is full. One event message will discarded.");
+                                }
 
-                            break;
-                        }
-                        default:
-                        {
-                            if (_socket.State.HasFlag(WebSocketState.Open))
-                            {
-                                Trace.TraceError($"{Tag} Unexpected message type received: {incomingMessage}");
+                                break;
                             }
+                            case PongMessage _:
+                            case ResultMessage _:
+                            {
+                                Debug.WriteLine($"{Tag} Command message received {incomingMessage}");
+                                if (_incomingMessageAwaitersById.TryRemove(incomingMessage.Id, out var responseTcs))
+                                {
+                                    responseTcs?.SetResult(incomingMessage);
+                                }
+                                else
+                                {
+                                    Trace.TraceError(
+                                        $"{Tag} No awaiter found for incoming message {incomingMessage}. Message will be discarded.");
+                                }
 
-                            break;
+                                break;
+                            }
+                            default:
+                            {
+                                if (_socket.State.HasFlag(WebSocketState.Open))
+                                {
+                                    Trace.TraceError($"{Tag} Unexpected message type received: {incomingMessage}");
+                                }
+
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                Trace.WriteLine($"{Tag} Connection stopped for cancellation.");
-                return;
-            }
-            catch (WebSocketException)
-            {
-            }
+                catch (OperationCanceledException)
+                {
+                    Trace.WriteLine($"{Tag} Connection stopped for cancellation.");
+                    return;
+                }
+                catch (WebSocketException)
+                {
+                }
 
-            ConnectionState = ConnectionStates.Disconnected;
-            Trace.WriteLine($"{Tag} Connection ended {_socket.CloseStatus?.ToString() ?? _socket.State.ToString()}");
+                ConnectionState = ConnectionStates.Disconnected;
+                if (_socket != null)
+                    Trace.WriteLine(
+                        $"{Tag} Connection ended {_socket.CloseStatus?.ToString() ?? _socket.State.ToString()}");
 
-            if (closeCancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
+                if (closeCancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
 
-            if (AutomaticReconnection &&
-                _connectionParameters != null)
-            {
-                IsReconnecting = true;
-                _socketListenerTask = Task.Run(() => InternalConnect(_connectionParameters, -1, closeCancellationToken), closeCancellationToken);
-            }
-            else
-            {
-                ClearSocketResources();
+                if (AutomaticReconnection &&
+                    _connectionParameters != null)
+                {
+                    IsReconnecting = true;
+                    await Task.Run(() => InternalConnect(_connectionParameters, -1,
+                            onConnected,
+                            closeCancellationToken),
+                        closeCancellationToken);
+                }
+                else
+                {
+                    ClearSocketResources();
+                }
             }
         }
 
         private async Task CreateEventListenerTask()
         {
-            var channelReader = _receivedEventsChannel.Reader;
-            while (await channelReader.WaitToReadAsync(_closeConnectionCts.Token))
+            var channelReader = _receivedEventsChannel?.Reader;
+            while (_closeConnectionCts != null && channelReader != null && await channelReader.WaitToReadAsync(_closeConnectionCts.Token))
             {
                 while (channelReader.TryRead(out var incomingMessage))
                 {
@@ -512,8 +526,8 @@ namespace HassClient.WS
                     _connectionTcs = null;
                 }
 
-                _socket.Abort();
-                _socket.Dispose();
+                _socket?.Abort();
+                _socket?.Dispose();
 
                 _socketEventCallbacksBySubscriptionId.Clear();
                 _incomingMessageAwaitersById.Clear();
@@ -521,18 +535,18 @@ namespace HassClient.WS
             }
         }
 
-        private async Task<TMessage> ReceiveMessage<TMessage>(ArraySegment<byte> buffer, CancellationToken cancellationToken)
-                where TMessage : BaseMessage
+        private async Task<TMessage> ReceiveMessage<TMessage>(ArraySegment<byte> buffer,
+            CancellationToken cancellationToken)
+            where TMessage : BaseMessage
         {
             var receivedString = new StringBuilder();
             WebSocketReceiveResult rcvResult;
             do
             {
-                rcvResult = await _socket.ReceiveAsync(buffer, cancellationToken);
+                rcvResult = await _socket?.ReceiveAsync(buffer, cancellationToken)!;
                 var msgBytes = buffer.Skip(buffer.Offset).Take(rcvResult.Count).ToArray();
                 receivedString.Append(Encoding.UTF8.GetString(msgBytes));
-            }
-            while (!rcvResult.EndOfMessage);
+            } while (!rcvResult.EndOfMessage);
 
             var rcvMsg = receivedString.ToString();
             return HassSerializer.DeserializeObject<TMessage>(rcvMsg);
@@ -543,7 +557,8 @@ namespace HassClient.WS
             return SendMessage(message, null, cancellationToken);
         }
 
-        private async Task SendMessage(BaseMessage message, TaskCompletionSource<BaseIncomingMessage> responseTcs, CancellationToken cancellationToken)
+        private async Task SendMessage(BaseMessage message, TaskCompletionSource<BaseIncomingMessage>? responseTcs,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -555,17 +570,19 @@ namespace HassClient.WS
 
                     if (message is SubscribeEventsMessage)
                     {
-                        _socketEventCallbacksBySubscriptionId.Add(identifiableMessage.Id, ProcessReceivedEventSubscriptionMessage);
+                        _socketEventCallbacksBySubscriptionId.Add(identifiableMessage.Id,
+                            ProcessReceivedEventSubscriptionMessage);
                     }
                     else if (message is RenderTemplateMessage renderTemplateMessage)
                     {
-                        _socketEventCallbacksBySubscriptionId.Add(identifiableMessage.Id, renderTemplateMessage.ProcessEventReceivedMessage);
+                        _socketEventCallbacksBySubscriptionId.Add(identifiableMessage.Id,
+                            renderTemplateMessage.ProcessEventReceivedMessage);
                     }
-                    else if (message is RawCommandMessage rawCommand &&
-                             rawCommand.MergedObject != null)
+                    else if (message is RawCommandMessage rawCommand)
                     {
                         var mergedMessage = HassSerializer.CreateJObject(message);
-                        var mergedObject = rawCommand.MergedObject as JObject ?? HassSerializer.CreateJObject(rawCommand.MergedObject);
+                        var mergedObject = rawCommand.MergedObject as JObject ??
+                                           HassSerializer.CreateJObject(rawCommand.MergedObject);
                         mergedMessage.Merge(mergedObject);
                         toSerialize = mergedMessage;
                     }
@@ -579,7 +596,7 @@ namespace HassClient.WS
                 var sendMsg = HassSerializer.SerializeObject(toSerialize);
                 var sendBytes = Encoding.UTF8.GetBytes(sendMsg);
                 var sendBuffer = new ArraySegment<byte>(sendBytes);
-                await _socket.SendAsync(sendBuffer, WebSocketMessageType.Text, endOfMessage: true, cancellationToken);
+                await _socket?.SendAsync(sendBuffer, WebSocketMessageType.Text, endOfMessage: true, cancellationToken)!;
                 Trace.WriteLine($"{Tag} Message sent: {toSerialize}");
             }
             finally
@@ -594,7 +611,8 @@ namespace HassClient.WS
         private void ProcessReceivedEventSubscriptionMessage(EventResultMessage eventResultMessage)
         {
             var eventResultInfo = eventResultMessage.DeserializeEvent<EventResultInfo>();
-            if (_socketEventSubscriptionIdByEventType.TryGetValue(eventResultInfo.EventType, out var socketEventSubscription) &&
+            if (_socketEventSubscriptionIdByEventType.TryGetValue(eventResultInfo.EventType,
+                    out var socketEventSubscription) &&
                 socketEventSubscription.SubscriptionId == eventResultMessage.Id)
             {
                 socketEventSubscription.Invoke(eventResultInfo);
@@ -607,7 +625,8 @@ namespace HassClient.WS
             }
         }
 
-        private async Task<ResultMessage> SendCommandAsync(BaseOutgoingMessage commandMessage, CancellationToken cancellationToken)
+        private async Task<ResultMessage?> SendCommandAsync(BaseOutgoingMessage commandMessage,
+            CancellationToken cancellationToken)
         {
             if (ConnectionState != ConnectionStates.Connected)
             {
@@ -616,47 +635,45 @@ namespace HassClient.WS
 
             try
             {
-                var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_closeConnectionCts.Token, cancellationToken);
+                if (_closeConnectionCts == null) return null;
+                var linkedCts =
+                    CancellationTokenSource.CreateLinkedTokenSource(_closeConnectionCts.Token, cancellationToken);
                 var responseTcs = new TaskCompletionSource<BaseIncomingMessage>(linkedCts.Token);
                 await SendMessage(commandMessage, responseTcs, linkedCts.Token);
 
                 BaseIncomingMessage incomingMessage;
-                using (cancellationToken.Register(() => responseTcs.TrySetCanceled()))
+                await using (cancellationToken.Register(() => responseTcs.TrySetCanceled()))
                 {
                     incomingMessage = await responseTcs.Task;
                 }
 
-                if (incomingMessage is ResultMessage resultMessage)
+                return incomingMessage switch
                 {
-                    return resultMessage;
-                }
-
-                if (incomingMessage is PongMessage)
-                {
-                    return new ResultMessage { Success = true };
-                }
-                throw new InvalidOperationException($"Unexpected incoming message type '{incomingMessage.Type}' for command type '{commandMessage.Type}'.");
+                    ResultMessage resultMessage => resultMessage,
+                    PongMessage => new ResultMessage { Success = true },
+                    _ => throw new InvalidOperationException(
+                        $"Unexpected incoming message type '{incomingMessage.Type}' for command type '{commandMessage.Type}'.")
+                };
             }
             catch (OperationCanceledException)
             {
-                if (commandMessage.Id > 0)
-                {
-                    _incomingMessageAwaitersById.TryRemove(commandMessage.Id, out var _);
-                    _socketEventCallbacksBySubscriptionId.Remove(commandMessage.Id);
-                }
+                if (commandMessage.Id <= 0) throw;
+                _incomingMessageAwaitersById.TryRemove(commandMessage.Id, out var _);
+                _socketEventCallbacksBySubscriptionId.Remove(commandMessage.Id);
 
                 throw;
             }
         }
 
-        private void CheckResultMessageError(BaseOutgoingMessage commandMessage, ResultMessage resultMessage)
+        private void CheckResultMessageError(BaseOutgoingMessage commandMessage, ResultMessage? resultMessage)
         {
-            var errorInfo = resultMessage.Error;
+            var errorInfo = resultMessage?.Error;
             if (errorInfo == null)
             {
                 return;
             }
 
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (errorInfo.Code)
             {
                 case ErrorCodes.Undefined:
@@ -669,7 +686,7 @@ namespace HassClient.WS
                 case ErrorCodes.Timeout: throw new TimeoutException(errorInfo.Message);
             }
 
-            Trace.TraceWarning($"Error response received for command [{commandMessage}] => {resultMessage.Error}");
+            Trace.TraceWarning($"Error response received for command [{commandMessage}] => {resultMessage!.Error}");
             Debugger.Break();
         }
 
@@ -681,7 +698,8 @@ namespace HassClient.WS
         /// <returns>
         /// A task representing the asynchronous operation. The result of the task is the message returned by the server.
         /// </returns>
-        internal async Task<ResultMessage> SendCommandWithResultAsync(BaseOutgoingMessage commandMessage, CancellationToken cancellationToken)
+        internal async Task<ResultMessage?> SendCommandWithResultAsync(BaseOutgoingMessage commandMessage,
+            CancellationToken cancellationToken)
         {
             CheckIsDisposed();
 
@@ -701,10 +719,13 @@ namespace HassClient.WS
         /// <returns>
         /// A task representing the asynchronous operation. The result of the task is the message returned by the server.
         /// </returns>
-        internal async Task<TResult> SendCommandWithResultAsync<TResult>(BaseOutgoingMessage commandMessage, CancellationToken cancellationToken)
+        internal async Task<TResult?> SendCommandWithResultAsync<TResult>(BaseOutgoingMessage commandMessage,
+            CancellationToken cancellationToken)
         {
             var resultMessage = await SendCommandWithResultAsync(commandMessage, cancellationToken);
-            return !resultMessage.Success ? default : resultMessage.DeserializeResult<TResult>();
+            if (resultMessage != null)
+                return resultMessage is { Success: false } ? default : resultMessage.DeserializeResult<TResult>();
+            return default;
         }
 
         /// <summary>
@@ -716,23 +737,25 @@ namespace HassClient.WS
         /// A task representing the asynchronous operation.
         /// The result of the task is a value indicating whether response from the server is success.
         /// </returns>
-        internal async Task<bool> SendCommandWithSuccessAsync(BaseOutgoingMessage commandMessage, CancellationToken cancellationToken)
+        internal async Task<bool> SendCommandWithSuccessAsync(BaseOutgoingMessage commandMessage,
+            CancellationToken cancellationToken)
         {
             var resultMessage = await SendCommandWithResultAsync(commandMessage, cancellationToken);
-            return resultMessage.Success;
+            return resultMessage is { Success: true };
         }
 
         /// <summary>
         /// Adds an <see cref="EventHandler{TEventArgs}"/> to an event subscription.
         /// </summary>
-        /// <param name="value">The event handler to subscribe.</param>
+        /// <param name="eventDelegate">The event handler to subscribe.</param>
         /// <param name="eventType">The event type to subscribe to.</param>
         /// <param name="cancellationToken">The cancellation token for the asynchronous operation.</param>
         /// <returns>
         /// A task representing the asynchronous operation.
         /// The result of the task is a value indicating whether the subscription was successful.
         /// </returns>
-        internal async Task<bool> AddEventHandlerSubscriptionAsync(EventHandler<EventResultInfo> value, string eventType, CancellationToken cancellationToken)
+        internal async Task<bool> AddEventHandlerSubscriptionAsync<T>(T eventDelegate,
+            string eventType, CancellationToken cancellationToken) where T : Delegate
         {
             if (string.IsNullOrWhiteSpace(eventType))
             {
@@ -742,7 +765,7 @@ namespace HassClient.WS
             CheckIsDisposed();
 
             // TODO: Make AddEventHandlerSubscriptionAsync and RemoveEventHandlerSubscriptionAsync thread-safe
-            if (!_socketEventSubscriptionIdByEventType.ContainsKey(eventType))
+            if (!_socketEventSubscriptionIdByEventType.TryGetValue(eventType, out var value))
             {
                 var subscribeMessage = new SubscribeEventsMessage(eventType);
                 if (!await SendCommandWithSuccessAsync(subscribeMessage, cancellationToken))
@@ -750,14 +773,17 @@ namespace HassClient.WS
                     return false;
                 }
 
-                _socketEventSubscriptionIdByEventType.Add(eventType, new SocketEventSubscription(subscribeMessage.Id));
+                value = new SocketEventSubscription(subscribeMessage.Id);
+                _socketEventSubscriptionIdByEventType
+                    .Add(eventType, value);
             }
 
-            _socketEventSubscriptionIdByEventType[eventType].AddSubscription(value);
+            value.AddSubscription(eventDelegate);
             return true;
         }
 
-        internal async Task<bool> RemoveEventHandlerSubscriptionAsync(EventHandler<EventResultInfo> value, string eventType, CancellationToken cancellationToken)
+        internal async Task<bool> RemoveEventHandlerSubscriptionAsync<T>(T eventDelegate,
+            string eventType, CancellationToken cancellationToken) where T : Delegate
         {
             if (string.IsNullOrWhiteSpace(eventType))
             {
@@ -771,11 +797,12 @@ namespace HassClient.WS
                 return false;
             }
 
-            socketEventSubscription.RemoveSubscription(value);
+            socketEventSubscription.RemoveSubscription(eventDelegate);
 
             if (socketEventSubscription.SubscriptionCount == 0)
             {
-                var subscribeMessage = new UnsubscribeEventsMessage { SubscriptionId = socketEventSubscription.SubscriptionId };
+                var subscribeMessage = new UnsubscribeEventsMessage
+                    { SubscriptionId = socketEventSubscription.SubscriptionId };
                 if (!await SendCommandWithSuccessAsync(subscribeMessage, cancellationToken))
                 {
                     return false;
@@ -787,22 +814,26 @@ namespace HassClient.WS
             return true;
         }
 
-        internal Task<bool> AddEventHandlerSubscriptionAsync(EventHandler<EventResultInfo> value, KnownEventTypes eventType, CancellationToken cancellationToken)
+        internal Task<bool> AddEventHandlerSubscriptionAsync<T>(T value,
+            KnownEventTypes eventType, CancellationToken cancellationToken) where T : Delegate
         {
             return AddEventHandlerSubscriptionAsync(value, eventType.ToEventTypeString(), cancellationToken);
         }
 
-        internal Task<bool> RemoveEventHandlerSubscriptionAsync(EventHandler<EventResultInfo> value, KnownEventTypes eventType, CancellationToken cancellationToken)
+        internal Task<bool> RemoveEventHandlerSubscriptionAsync<T>(T value,
+            KnownEventTypes eventType, CancellationToken cancellationToken) where T : Delegate
         {
             return RemoveEventHandlerSubscriptionAsync(value, eventType.ToEventTypeString(), cancellationToken);
         }
 
-        internal Task<bool> AddEventHandlerSubscriptionAsync(EventHandler<EventResultInfo> value, CancellationToken cancellationToken)
+        internal Task<bool> AddEventHandlerSubscriptionAsync<T>(T value,
+            CancellationToken cancellationToken) where T : Delegate
         {
             return AddEventHandlerSubscriptionAsync(value, Event.AnyEventFilter, cancellationToken);
         }
 
-        internal Task<bool> RemoveEventHandlerSubscriptionAsync(EventHandler<EventResultInfo> value, CancellationToken cancellationToken)
+        internal Task<bool> RemoveEventHandlerSubscriptionAsync<T>(T value,
+            CancellationToken cancellationToken) where T : Delegate
         {
             return RemoveEventHandlerSubscriptionAsync(value, Event.AnyEventFilter, cancellationToken);
         }

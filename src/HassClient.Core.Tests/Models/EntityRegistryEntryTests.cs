@@ -70,7 +70,7 @@ namespace HassClient.Core.Tests.Models
             Assert.That(initialDisabledBy, Is.EqualTo(testEntry.DisabledBy));
         }
 
-        private EntityRegistryEntry CreateTestEntry(out string entityId, out string name, out string icon, out DisabledByEnum disabledBy)
+        private EntityRegistryEntry? CreateTestEntry(out string entityId, out string name, out string icon, out DisabledByEnum disabledBy)
         {
             entityId = MockHelpers.GetRandomEntityId(KnownDomains.InputBoolean);
             name = MockHelpers.GetRandomTestName();

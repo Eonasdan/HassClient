@@ -10,9 +10,9 @@ namespace HassClient.Core.Models.RegistryEntries
     /// </summary>
     public class Area : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _name = new ModifiableProperty<string>(nameof(Name));
+        private readonly ModifiableProperty<string> _name = new(nameof(Name));
 
-        private readonly ModifiableProperty<string> _picture = new ModifiableProperty<string>(nameof(Picture));
+        private readonly ModifiableProperty<string> _picture = new(nameof(Picture));
 
         /// <inheritdoc />
         protected internal override string UniqueId
@@ -77,7 +77,7 @@ namespace HassClient.Core.Models.RegistryEntries
         }
 
         // Used for testing purposes.
-        internal static Area CreateUnmodified(string name, string picture)
+        internal static Area? CreateUnmodified(string name, string picture)
         {
             var result = new Area(name, picture);
             result.SaveChanges();
@@ -108,7 +108,7 @@ namespace HassClient.Core.Models.RegistryEntries
         }
 
         // Used for testing purposes.
-        internal Area Clone()
+        internal Area? Clone()
         {
             var result = CreateUnmodified(Name, Picture);
             result.UniqueId = UniqueId;

@@ -6,10 +6,10 @@ namespace HassClient.WS.Messages.Commands
 {
     internal class RenderTemplateMessage : BaseOutgoingMessage
     {
-        private readonly TaskCompletionSource<string> _templateEventReceivedTcs;
+        private readonly TaskCompletionSource<string?> _templateEventReceivedTcs;
 
         [JsonIgnore]
-        public Task<string> WaitResponseTask => _templateEventReceivedTcs.Task;
+        public Task<string?> WaitResponseTask => _templateEventReceivedTcs.Task;
 
         [JsonProperty(Required = Required.Always)]
         public string Template { get; set; }
@@ -23,7 +23,7 @@ namespace HassClient.WS.Messages.Commands
         public RenderTemplateMessage()
             : base("render_template")
         {
-            _templateEventReceivedTcs = new TaskCompletionSource<string>();
+            _templateEventReceivedTcs = new TaskCompletionSource<string?>();
         }
 
         public void ProcessEventReceivedMessage(EventResultMessage eventResultMessage)

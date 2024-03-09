@@ -12,13 +12,13 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
     [StorageEntityDomain(KnownDomains.Zone)]
     public class Zone : StorageEntityRegistryEntryBase
     {
-        private readonly ModifiableProperty<float> _latitude = new ModifiableProperty<float>(nameof(Latitude));
+        private readonly ModifiableProperty<float> _latitude = new(nameof(Latitude));
 
-        private readonly ModifiableProperty<float> _longitude = new ModifiableProperty<float>(nameof(Longitude));
+        private readonly ModifiableProperty<float> _longitude = new(nameof(Longitude));
 
-        private readonly ModifiableProperty<bool> _passive = new ModifiableProperty<bool>(nameof(IsPassive));
+        private readonly ModifiableProperty<bool> _passive = new(nameof(IsPassive));
 
-        private readonly ModifiableProperty<float> _radius = new ModifiableProperty<float>(nameof(Radius));
+        private readonly ModifiableProperty<float> _radius = new(nameof(Radius));
 
         /// <summary>
         /// Gets or sets the latitude of the center point of the zone.
@@ -88,7 +88,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         }
 
         // Used for testing purposes.
-        internal static Zone CreateUnmodified(string uniqueId, string name, float longitude, float latitude, float radius, string icon = null, bool isPassive = false)
+        internal static Zone? CreateUnmodified(string uniqueId, string name, float longitude, float latitude, float radius, string icon = null, bool isPassive = false)
         {
             var result = new Zone(name, longitude, latitude, radius, icon, isPassive) { Id = uniqueId };
             result.SaveChanges();
@@ -109,7 +109,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         public override string ToString() => $"{nameof(Zone)}: {Name}";
 
         // Used for testing purposes.
-        internal Zone Clone()
+        internal Zone? Clone()
         {
             var result = CreateUnmodified(UniqueId, Name, Longitude, Latitude, Radius, Icon, IsPassive);
             return result;

@@ -10,24 +10,24 @@ namespace HassClient.WS.Messages.Response
         public bool Success { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public JRaw Result { get; set; }
+        public JRaw? Result { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public ErrorInfo Error { get; set; }
+        public ErrorInfo? Error { get; set; }
 
         public ResultMessage()
             : base("result")
         {
         }
 
-        public T DeserializeResult<T>()
+        public T? DeserializeResult<T>()
         {
-            return HassSerializer.DeserializeObject<T>(Result);
+            return Result != null ? HassSerializer.DeserializeObject<T>(Result) : default;
         }
 
-        public void PopulateResult(object target)
+        public void PopulateResult(object? target)
         {
-            HassSerializer.PopulateObject(Result, target);
+            if (Result != null) HassSerializer.PopulateObject(Result, target);
         }
     }
 }

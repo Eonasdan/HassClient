@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using HassClient.WS.Messages.Response;
 
 namespace HassClient.WS
 {
     internal class SocketEventSubscription
     {
-        private EventHandler<EventResultInfo> _internalEventHandler;
+        private Delegate? _internalEventHandler;
 
         public uint SubscriptionId { get; set; }
 
@@ -16,21 +17,23 @@ namespace HassClient.WS
             SubscriptionId = subscriptionId;
         }
 
-        public void AddSubscription(EventHandler<EventResultInfo> eventHandler)
+        public void AddSubscription<T>(T eventHandler) where T : Delegate
         {
-            _internalEventHandler += eventHandler;
+            var tempDelegate = Delegate.Combine(_internalEventHandler, eventHandler);
+            _internalEventHandler = tempDelegate as T;
             SubscriptionCount++;
         }
 
-        public void RemoveSubscription(EventHandler<EventResultInfo> eventHandler)
+        public void RemoveSubscription<T>(T eventHandler) where T : Delegate
         {
-            _internalEventHandler -= eventHandler;
+            var tempDelegate = Delegate.Remove(_internalEventHandler, eventHandler);
+            _internalEventHandler = tempDelegate as T;
             SubscriptionCount--;
         }
 
         public void Invoke(EventResultInfo eventResultInfo)
         {
-            _internalEventHandler?.Invoke(this, eventResultInfo);
+            _internalEventHandler?.DynamicInvoke(this, eventResultInfo);
         }
 
         public void ClearAllSubscriptions()

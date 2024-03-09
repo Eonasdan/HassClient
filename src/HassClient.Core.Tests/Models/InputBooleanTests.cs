@@ -94,7 +94,7 @@ namespace HassClient.Core.Tests.Models
             Assert.That(initial, Is.EqualTo(testEntry.Initial));
         }
 
-        private InputBoolean CreateTestEntry(out string entityId, out string name, out string icon, out bool initial)
+        private InputBoolean? CreateTestEntry(out string entityId, out string name, out string icon, out bool initial)
         {
             entityId = MockHelpers.GetRandomEntityId(KnownDomains.InputBoolean);
             name = MockHelpers.GetRandomTestName();

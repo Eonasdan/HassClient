@@ -12,7 +12,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
     [StorageEntityDomain(KnownDomains.InputBoolean)]
     public class InputBoolean : StorageEntityRegistryEntryBase
     {
-        private readonly ModifiableProperty<bool> _initial = new ModifiableProperty<bool>(nameof(Initial));
+        private readonly ModifiableProperty<bool> _initial = new(nameof(Initial));
 
         /// <summary>
         /// Gets or sets the initial value when Home Assistant starts.
@@ -42,7 +42,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         }
 
         // Used for testing purposes.
-        internal static InputBoolean CreateUnmodified(string uniqueId, string name, string icon = null, bool initial = false)
+        internal static InputBoolean? CreateUnmodified(string uniqueId, string name, string icon = null, bool initial = false)
         {
             var result = new InputBoolean(name, icon, initial) { Id = uniqueId };
             result.SaveChanges();
@@ -59,7 +59,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         public override string ToString() => $"{nameof(InputBoolean)}: {Name}";
 
         // Used for testing purposes.
-        internal InputBoolean Clone()
+        internal InputBoolean? Clone()
         {
             var result = CreateUnmodified(UniqueId, Name, Icon, Initial);
             return result;

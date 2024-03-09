@@ -11,9 +11,9 @@ namespace HassClient.Core.Models.RegistryEntries.Modifiable
     /// <typeparam name="T">The collection elements type.</typeparam>
     internal class ObservableHashSet<T> : ObservableCollection<T>
     {
-        private readonly HashSet<T> _addedValues = new HashSet<T>();
+        private readonly HashSet<T> _addedValues = new();
 
-        private readonly HashSet<T> _removedValues = new HashSet<T>();
+        private readonly HashSet<T> _removedValues = new();
 
         private readonly Action<T> _validationCallback;
 

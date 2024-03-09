@@ -7,7 +7,7 @@ namespace HassClient.WS.Tests
     public class ConfigurationApiTests : BaseHassWsApiTest
     {
 
-        private ConfigurationModel _configuration;
+        private ConfigurationModel? _configuration;
 
         [OneTimeSetUp]
         [Test]

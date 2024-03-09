@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HassClient.Core.Models.RegistryEntries;
@@ -10,7 +11,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
 {
     public class EntityRegistryApiTests : BaseHassWsApiTest
     {
-        private InputBoolean _testInputBoolean;
+        private InputBoolean? _testInputBoolean;
 
         private string _testEntityId;
 

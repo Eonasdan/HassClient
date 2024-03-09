@@ -11,13 +11,13 @@ namespace HassClient.Core.Models.RegistryEntries
     /// </summary>
     public class User : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _name = new ModifiableProperty<string>(nameof(Name));
+        private readonly ModifiableProperty<string> _name = new(nameof(Name));
 
-        private readonly ModifiableProperty<bool> _isActive = new ModifiableProperty<bool>(nameof(IsActive));
+        private readonly ModifiableProperty<bool> _isActive = new(nameof(IsActive));
 
-        private readonly ModifiableProperty<bool> _isLocalOnly = new ModifiableProperty<bool>(nameof(IsLocalOnly));
+        private readonly ModifiableProperty<bool> _isLocalOnly = new(nameof(IsLocalOnly));
 
-        private readonly ModifiablePropertyCollection<string> _groupIds = new ModifiablePropertyCollection<string>(nameof(GroupIds));
+        private readonly ModifiablePropertyCollection<string> _groupIds = new(nameof(GroupIds));
 
         /// <summary>
         /// The System Administrator group id constant.
@@ -171,7 +171,7 @@ namespace HassClient.Core.Models.RegistryEntries
         public bool ShouldSerializeIsActive() => IsTracked;
 
         // Used for testing purposes.
-        internal static User CreateUnmodified(string uniqueId, string name, bool isOwner)
+        internal static User? CreateUnmodified(string uniqueId, string name, bool isOwner)
         {
             var result = new User(name, isOwner)
             {
@@ -214,7 +214,7 @@ namespace HassClient.Core.Models.RegistryEntries
         }
 
         // Used for testing purposes.
-        internal User Clone()
+        internal User? Clone()
         {
             var result = CreateUnmodified(UniqueId, Name, IsOwner);
             return result;

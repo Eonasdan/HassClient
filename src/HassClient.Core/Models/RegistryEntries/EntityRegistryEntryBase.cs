@@ -10,9 +10,9 @@ namespace HassClient.Core.Models.RegistryEntries
     /// </summary>
     public abstract class EntityRegistryEntryBase : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _name = new ModifiableProperty<string>(nameof(Name));
+        private readonly ModifiableProperty<string> _name = new(nameof(Name));
 
-        private readonly ModifiableProperty<string> _icon = new ModifiableProperty<string>(nameof(Icon));
+        private readonly ModifiableProperty<string> _icon = new(nameof(Icon));
 
         /// <summary>
         /// Gets a value indicating that the name of the entity registry entry can be

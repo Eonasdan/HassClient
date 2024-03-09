@@ -19,7 +19,7 @@ namespace HassClient.Core.Serialization
     {
         private static readonly NamingStrategy NamingStrategy = new SnakeCaseNamingStrategy { OverrideSpecifiedNames = false };
 
-        internal static readonly JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
+        internal static readonly JsonSerializerSettings DefaultSettings = new()
         {
             ContractResolver = CreateContractResolver<DefaultContractResolver>(),
             Converters = new List<JsonConverter>
@@ -96,7 +96,7 @@ namespace HassClient.Core.Serialization
         /// </summary>
         /// <param name="value">The <see cref="JRaw"/> object to deserialize.</param>
         /// <param name="target">The target object to populate values onto.</param>
-        public static void PopulateObject(JRaw value, object target)
+        public static void PopulateObject(JRaw value, object? target)
         {
             if (value != null)
             {

@@ -8,7 +8,7 @@ namespace HassClient.WS.Tests
 {
     public class StatesApiTests : BaseHassWsApiTest
     {
-        private IEnumerable<StateModel> _states;
+        private IEnumerable<StateModel>? _states;
 
         [OneTimeSetUp]
         [Test]

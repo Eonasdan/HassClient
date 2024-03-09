@@ -79,7 +79,7 @@ namespace HassClient.Core.Tests.Models
             Assert.That(initialPicture, Is.EqualTo(testEntry.Picture));
         }
 
-        private Area CreateTestEntry(out string name, out string picture)
+        private Area? CreateTestEntry(out string name, out string picture)
         {
             name = MockHelpers.GetRandomTestName();
             picture = "/test/Picture.png";

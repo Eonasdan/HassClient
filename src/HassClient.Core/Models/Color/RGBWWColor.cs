@@ -39,7 +39,7 @@
         {
         }
 
-        public static implicit operator RGBWWColor(System.Drawing.Color x) => new RGBWWColor(x);
+        public static implicit operator RGBWWColor(System.Drawing.Color x) => new(x);
 
         /// <inheritdoc/>
         public override string ToString() => $"[{R}, {G}, {B}, {Cw}, {Ww}]";

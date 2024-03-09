@@ -9,7 +9,7 @@ namespace HassClient.WS.Tests
 {
     public class PanelsApiTests : BaseHassWsApiTest
     {
-        private IEnumerable<PanelInfo> _panels;
+        private IEnumerable<PanelInfo>? _panels;
 
         [OneTimeSetUp]
         [Test]

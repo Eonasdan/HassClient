@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HassClient.Core.Models.RegistryEntries;
 using HassClient.Core.Tests;
@@ -8,7 +9,7 @@ namespace HassClient.WS.Tests.RegistryEntryApiTests
 {
     public class AreaRegistryApiTests : BaseHassWsApiTest
     {
-        private Area _testArea;
+        private Area? _testArea;
 
         [OneTimeSetUp]
         [Test, Order(1)]

@@ -14,7 +14,7 @@ namespace HassClient.Core.Models.RegistryEntries
     public class EntityRegistryEntry : EntityRegistryEntryBase
     {
         [JsonProperty]
-        private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new ModifiableProperty<DisabledByEnum?>(nameof(_disabledBy));
+        private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new(nameof(_disabledBy));
 
         [JsonProperty(Required = Required.Always)]
         private string _entityId;
@@ -171,7 +171,7 @@ namespace HassClient.Core.Models.RegistryEntries
         }
 
         // Used for testing purposes.
-        internal static EntityRegistryEntry CreateUnmodified(string entityId, string name, string icon = null, DisabledByEnum disabledBy = DisabledByEnum.None)
+        internal static EntityRegistryEntry? CreateUnmodified(string entityId, string name, string icon = null, DisabledByEnum disabledBy = DisabledByEnum.None)
         {
             return new EntityRegistryEntry(entityId, name, icon, disabledBy);
         }
@@ -192,7 +192,7 @@ namespace HassClient.Core.Models.RegistryEntries
         public override string ToString() => $"{nameof(EntityRegistryEntry)}: {EntityId}";
 
         // Used for testing purposes.
-        internal EntityRegistryEntry Clone()
+        internal EntityRegistryEntry? Clone()
         {
             var result = CreateUnmodified(EntityId, Name, Icon, DisabledBy);
             result.UniqueId = UniqueId;

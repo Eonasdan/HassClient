@@ -13,12 +13,12 @@ namespace HassClient.WS
     /// </summary>
     public class StateChangedEventListener : IDisposable
     {
-        private readonly Dictionary<string, EventHandler<StateChangedEvent>> _stateChangedSubscriptionsByEntityId = new Dictionary<string, EventHandler<StateChangedEvent>>();
-        private readonly Dictionary<string, EventHandler<StateChangedEvent>> _stateChangedSubscriptionsByDomain = new Dictionary<string, EventHandler<StateChangedEvent>>();
+        private readonly Dictionary<string, EventHandler<StateChangedEvent>> _stateChangedSubscriptionsByEntityId = new();
+        private readonly Dictionary<string, EventHandler<StateChangedEvent>> _stateChangedSubscriptionsByDomain = new();
 
         private bool _isStateChangedSubscriptionActive;
 
-        private readonly SemaphoreSlim _refreshSubscriptionsSemaphore = new SemaphoreSlim(0);
+        private readonly SemaphoreSlim _refreshSubscriptionsSemaphore = new(0);
 
         private HassClientWebSocket _clientWebSocket;
 

@@ -4,8 +4,8 @@ namespace HassClient.Core.Helpers
 {
     internal class Map<T1, T2>
     {
-        private readonly Dictionary<T1, T2> _forward = new Dictionary<T1, T2>();
-        private readonly Dictionary<T2, T1> _reverse = new Dictionary<T2, T1>();
+        private readonly Dictionary<T1, T2> _forward = new();
+        private readonly Dictionary<T2, T1> _reverse = new();
 
         public IReadOnlyDictionary<T1, T2> Forward => _forward;
 

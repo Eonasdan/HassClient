@@ -5,7 +5,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class EntityRegistryMessagesFactory : RegistryEntryCollectionMessagesFactory<EntityRegistryEntry>
     {
-        public static readonly EntityRegistryMessagesFactory Instance = new EntityRegistryMessagesFactory();
+        public static readonly EntityRegistryMessagesFactory Instance = new();
 
         public EntityRegistryMessagesFactory()
             : base("config/entity_registry", "entity")
@@ -17,7 +17,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
             return CreateCustomOperationMessage("get", entityId);
         }
 
-        public BaseOutgoingMessage CreateUpdateMessage(EntityRegistryEntry entity, string newEntityId, bool? disable, bool forceUpdate)
+        public BaseOutgoingMessage CreateUpdateMessage(EntityRegistryEntry? entity, string? newEntityId, bool? disable, bool forceUpdate)
         {
             var model = CreateDefaultUpdateObject(entity, forceUpdate);
 
@@ -36,7 +36,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
             return CreateUpdateMessage(entity.EntityId, model);
         }
 
-        public new BaseOutgoingMessage CreateDeleteMessage(EntityRegistryEntry entity)
+        public new BaseOutgoingMessage CreateDeleteMessage(EntityRegistryEntry? entity)
         {
             return CreateCustomOperationMessage("remove", entity.EntityId);
         }

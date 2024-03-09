@@ -12,13 +12,13 @@ namespace HassClient.Core.Models.RegistryEntries
     /// </summary>
     public class Device : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _areaId = new ModifiableProperty<string>(nameof(AreaId));
+        private readonly ModifiableProperty<string> _areaId = new(nameof(AreaId));
 
         [JsonProperty]
-        private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new ModifiableProperty<DisabledByEnum?>(nameof(_disabledBy));
+        private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new(nameof(_disabledBy));
 
         [JsonProperty]
-        private readonly ModifiableProperty<string> _nameByUser = new ModifiableProperty<string>(nameof(_nameByUser));
+        private readonly ModifiableProperty<string> _nameByUser = new(nameof(_nameByUser));
 
         [JsonProperty("name")]
         private string _originalName;

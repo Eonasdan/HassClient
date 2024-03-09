@@ -11,7 +11,7 @@ namespace HassClient.Core.Tests.Models
     [TestFixture(TestOf = typeof(Person))]
     public class PersonTests
     {
-        private readonly User _testUser = User.CreateUnmodified("test", MockHelpers.GetRandomTestName(), false);
+        private readonly User? _testUser = User.CreateUnmodified("test", MockHelpers.GetRandomTestName(), false);
 
         [Test]
         public void HasPublicConstructorWithParameters()
@@ -143,7 +143,7 @@ namespace HassClient.Core.Tests.Models
             Assert.That(initialDeviceTrackers, Is.EqualTo(testEntry.DeviceTrackers));
         }
 
-        private Person CreateTestEntry(out string entityId, out string name, out User user, out string picture, out IEnumerable<string> deviceTrackers)
+        private Person? CreateTestEntry(out string entityId, out string name, out User? user, out string picture, out IEnumerable<string> deviceTrackers)
         {
             entityId = MockHelpers.GetRandomEntityId(KnownDomains.Person);
             name = MockHelpers.GetRandomTestName();

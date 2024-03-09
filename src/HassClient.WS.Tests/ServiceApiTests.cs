@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using HassClient.Core.Models;
 using HassClient.Core.Models.KnownEnums;
 using NUnit.Framework;
 

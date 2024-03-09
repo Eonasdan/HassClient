@@ -32,7 +32,7 @@
         {
         }
 
-        public static implicit operator RGBWColor(System.Drawing.Color x) => new RGBWColor(x);
+        public static implicit operator RGBWColor(System.Drawing.Color x) => new(x);
 
         /// <inheritdoc/>
         public override string ToString() => $"[{R}, {G}, {B}, {W}]";

@@ -77,7 +77,7 @@ namespace HassClient.Core.Tests.Models
             Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
-        private User CreateTestEntry(out string name)
+        private User? CreateTestEntry(out string name)
         {
             name = MockHelpers.GetRandomTestName();
             return User.CreateUnmodified("testId", name, false);

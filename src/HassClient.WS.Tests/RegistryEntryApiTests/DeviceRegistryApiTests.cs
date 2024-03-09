@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HassClient.Core.Models.RegistryEntries;
 using NUnit.Framework;
 
 namespace HassClient.WS.Tests.RegistryEntryApiTests

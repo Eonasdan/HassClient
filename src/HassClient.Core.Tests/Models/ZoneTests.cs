@@ -112,7 +112,7 @@ namespace HassClient.Core.Tests.Models
             Assert.That(testEntry.HasPendingChanges, Is.False);
         }
 
-        private Zone CreateTestEntry(out string name, out string icon, out float longitude, out float latitude, out float radius, out bool isPassive)
+        private Zone? CreateTestEntry(out string name, out string icon, out float longitude, out float latitude, out float radius, out bool isPassive)
         {
             name = MockHelpers.GetRandomTestName();
             icon = "mdi:zone";

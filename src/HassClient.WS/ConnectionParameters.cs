@@ -51,7 +51,7 @@ namespace HassClient.WS
         /// <returns>
         /// The connection parameters based on the specified Home Assistant base URL and Access Token.
         /// </returns>
-        public static ConnectionParameters CreateFromInstanceBaseUrl(string instanceBaseUrl, string accessToken)
+        public static ConnectionParameters? CreateFromInstanceBaseUrl(string instanceBaseUrl, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(instanceBaseUrl))
             {

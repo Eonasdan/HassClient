@@ -15,14 +15,14 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
     [StorageEntityDomain(KnownDomains.Person)]
     public class Person : StorageEntityRegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _userId = new ModifiableProperty<string>(nameof(UserId));
+        private readonly ModifiableProperty<string> _userId = new(nameof(UserId));
 
         private readonly ModifiablePropertyCollection<string> _deviceTrackers =
-            new ModifiablePropertyCollection<string>(
+            new(
                 nameof(DeviceTrackers),
                 v => v.IsValidDomainEntityId(KnownDomains.DeviceTracker));
 
-        private readonly ModifiableProperty<string> _picture = new ModifiableProperty<string>(nameof(Picture));
+        private readonly ModifiableProperty<string> _picture = new(nameof(Picture));
         //// "device_trackers":["device_tracker.demo_anne_therese","device_tracker.demo_paulus"],
         //// "picture":"/api/image/serve/f986543a0ea7b88ebffcd1213aeffb32/512x512"}
 
@@ -99,7 +99,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// </summary>
         /// <param name="name">The entity name.</param>
         /// <param name="user">The user account of the Home Assistant associated to this person.</param>
-        public Person(string name, User user)
+        public Person(string name, User? user)
             : this(name, user?.Id)
         {
             if (user is null)
@@ -115,7 +115,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// <para>This method affects the <see cref="UserId"/> property.</para>
         /// </summary>
         /// <param name="user">The user account of the Home Assistant associated to this person entity.</param>
-        public void ChangeUser(User user)
+        public void ChangeUser(User? user)
         {
             if (user is null)
             {
@@ -136,7 +136,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         }
 
         // Used for testing purposes.
-        internal static Person CreateUnmodified(string uniqueId, string name, string userId, string picture = null, IEnumerable<string> deviceTrackers = null)
+        internal static Person? CreateUnmodified(string uniqueId, string name, string userId, string picture = null, IEnumerable<string> deviceTrackers = null)
         {
             var result = new Person(name, userId)
             {
@@ -170,7 +170,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         public override string ToString() => $"{nameof(Person)}: {Name}";
 
         // Used for testing purposes.
-        internal Person Clone()
+        internal Person? Clone()
         {
             var result = CreateUnmodified(UniqueId, Name, UserId, Picture, DeviceTrackers);
             return result;

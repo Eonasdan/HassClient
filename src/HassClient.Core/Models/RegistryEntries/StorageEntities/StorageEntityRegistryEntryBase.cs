@@ -51,7 +51,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// <inheritdoc />
         public override string ToString() => $"{_domain}: {Name}";
 
-        private static readonly Dictionary<Type, KnownDomains> DomainsByType = new Dictionary<Type, KnownDomains>();
+        private static readonly Dictionary<Type, KnownDomains> DomainsByType = new();
 
         internal static KnownDomains GetDomain<T>()
             where T : StorageEntityRegistryEntryBase
