@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,18 +14,18 @@ namespace HassClient.Core.Models
         /// Gets the name of the service object.
         /// </summary>
         [JsonProperty]
-        public string Name { get; private set; }
+        public string? Name { get; private set; }
 
         /// <summary>
         /// Gets the description of the service object.
         /// </summary>
         [JsonProperty]
-        public string Description { get; private set; }
+        public string? Description { get; private set; }
 
         /// <summary>
         /// Gets the targets that the service supports.
         /// </summary>
-        [JsonProperty("target")]
+        [JsonPropertyName("target")]
         public Dictionary<string, JRaw> Targets { get; private set; }
 
         /// <summary>

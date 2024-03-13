@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace HassClient.Core.Models.RegistryEntries
@@ -20,21 +21,21 @@ namespace HassClient.Core.Models.RegistryEntries
         [JsonProperty]
         private readonly ModifiableProperty<string> _nameByUser = new(nameof(_nameByUser));
 
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         private string _originalName;
 
         /// <inheritdoc />
-        protected internal override string UniqueId
+        protected internal override string? UniqueId
         {
             get => Id;
-            set => Id = value;
+            protected set => Id = value;
         }
 
         /// <summary>
         /// Gets the ID of this device.
         /// </summary>
         [JsonProperty]
-        public string Id { get; private set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// Gets the original name of the device assigned when was created.
@@ -48,8 +49,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// If set to <see langword="null"/>, the <see cref="OriginalName"/> will be used.
         /// </para>
         /// </summary>
-        [JsonIgnore]
-        public string Name
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string? Name
         {
             get => _nameByUser.Value ?? _originalName;
             set => _nameByUser.Value = value == _originalName ? null : value;
@@ -58,14 +59,14 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the unique ids of the configuration entries associated with this device.
         /// </summary>
-        [JsonProperty("config_entries")]
+        [JsonPropertyName("config_entries")]
         public string[] ConfigurationEntries { get; private set; }
 
         /// <summary>
         /// Gets a URL on which the device or service can be configured.
         /// </summary>
         [JsonProperty]
-        public string ConfigurationUrl { get; private set; }
+        public string? ConfigurationUrl { get; private set; }
 
         /// <summary>
         /// Gets a set of tuples of (connection_type, connection identifier).
@@ -85,30 +86,30 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets the manufacturer of the device.
         /// </summary>
         [JsonProperty]
-        public string Manufacturer { get; private set; }
+        public string? Manufacturer { get; private set; }
 
         /// <summary>
         /// Gets the model of the device.
         /// </summary>
         [JsonProperty]
-        public string Model { get; private set; }
+        public string? Model { get; private set; }
 
         /// <summary>
         /// Gets the firmware version of the device.
         /// </summary>
         [JsonProperty]
-        public string SwVersion { get; private set; }
+        public string? SwVersion { get; private set; }
 
         /// <summary>
         /// Gets the hardware version of the device.
         /// </summary>
         [JsonProperty]
-        public string HwVersion { get; private set; }
+        public string? HwVersion { get; private set; }
 
         /// <summary>
         /// Gets the type of entry.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [System.Text.Json.Serialization.JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public DeviceEntryTypes EntryType { get; private set; }
 
         /// <summary>
@@ -117,12 +118,12 @@ namespace HassClient.Core.Models.RegistryEntries
         /// This is used to show device topology in Home Assistant.
         /// </summary>
         [JsonProperty]
-        public string ViaDeviceId { get; private set; }
+        public string? ViaDeviceId { get; private set; }
 
         /// <summary>
         /// Gets the area id which the device is placed in.
         /// </summary>
-        public string AreaId
+        public string? AreaId
         {
             get => _areaId.Value;
             set => _areaId.Value = value;
@@ -132,21 +133,21 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets the suggested name for the area where the device is located.
         /// </summary>
         [JsonProperty]
-        public string SuggestedArea { get; private set; }
+        public string? SuggestedArea { get; private set; }
 
         /// <summary>
         /// Gets a value indicating the disabling source, if any.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public DisabledByEnum DisabledBy => _disabledBy.Value ?? DisabledByEnum.None;
 
         /// <summary>
         /// Gets a value indicating whether the device is disabled.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public bool IsDisabled => DisabledBy != DisabledByEnum.None;
 
-        [JsonConstructor]
+        [System.Text.Json.Serialization.JsonConstructor]
         private Device()
         {
         }
@@ -182,7 +183,7 @@ namespace HassClient.Core.Models.RegistryEntries
         public override string ToString() => $"{nameof(Device)}: {Name}";
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Device device &&
                    Id == device.Id;
@@ -191,7 +192,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return -401120461 + EqualityComparer<string>.Default.GetHashCode(Id);
+            if (Id != null) return -401120461 + EqualityComparer<string>.Default.GetHashCode(Id);
+            return -1;
         }
     }
 }

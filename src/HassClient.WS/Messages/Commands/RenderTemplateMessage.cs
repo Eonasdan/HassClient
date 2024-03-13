@@ -8,11 +8,11 @@ namespace HassClient.WS.Messages.Commands
     {
         private readonly TaskCompletionSource<string?> _templateEventReceivedTcs;
 
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public Task<string?> WaitResponseTask => _templateEventReceivedTcs.Task;
 
         [JsonProperty(Required = Required.Always)]
-        public string Template { get; set; }
+        public string? Template { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string[] EntitiesIds { get; set; }

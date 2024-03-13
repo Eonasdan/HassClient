@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HassClient.Core.Models
@@ -12,30 +13,30 @@ namespace HassClient.Core.Models
         /// Gets the name of this field.
         /// </summary>
         [JsonProperty]
-        public string Name { get; private set; }
+        public string? Name { get; private set; }
 
         /// <summary>
         /// Gets the description of this field.
         /// </summary>
         [JsonProperty]
-        public string Description { get; private set; }
+        public string? Description { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the field is required or optional.
         /// </summary>
-        [JsonProperty("required")]
-        public string IsRequired { get; private set; }
+        [JsonPropertyName("required")]
+        public string? IsRequired { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the field is considered for advanced users.
         /// </summary>
-        [JsonProperty("advanced")]
-        public string IsAdvanced { get; private set; }
+        [JsonPropertyName("advanced")]
+        public string? IsAdvanced { get; private set; }
 
         /// <summary>
         /// Gets the default value of this field if defined; otherwise, <see langword="null"/>.
         /// </summary>
-        [JsonProperty("default")]
+        [JsonPropertyName("default")]
         public JRaw DefaultValue { get; private set; }
 
         /// <summary>

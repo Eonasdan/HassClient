@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace HassClient.Core.Models.RegistryEntries
 {
@@ -21,13 +21,13 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the unique identifier that represents this Registry Entry.
         /// </summary>
-        protected internal abstract string UniqueId { get; set; }
+        protected internal abstract string? UniqueId { get; protected set; }
 
         /// <summary>
         /// Gets a value indicating that the registry entry already exists on the Home Assistant instance.
         /// </summary>
         [JsonIgnore]
-        public bool IsTracked => IsDeserialized && UniqueId != null;
+        protected bool IsTracked => IsDeserialized && UniqueId != null;
 
         /// <summary>
         /// Gets a value indicating that the registry entry is marked as dirty and is pending to be updated.
@@ -44,7 +44,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistryEntryBase"/> class.
         /// </summary>
-        public RegistryEntryBase()
+        protected RegistryEntryBase()
         {
             _modifiableProperties = GetModifiableProperties().ToArray();
         }

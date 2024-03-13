@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using HassClient.Core.Helpers;
 using HassClient.Core.Models.KnownEnums;
-using Newtonsoft.Json;
 
 namespace HassClient.Core.Models.RegistryEntries.StorageEntities
 {
@@ -14,17 +14,17 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         private readonly KnownDomains _domain;
 
         /// <inheritdoc />
-        protected internal override string UniqueId
+        protected internal override string? UniqueId
         {
             get => Id;
-            set => Id = value;
+            protected set => Id = value;
         }
 
         /// <summary>
         /// Gets the entity identifier of the entity entry.
         /// </summary>
-        [JsonProperty]
-        public string Id { get; protected set; }
+        [JsonPropertyName("id")]
+        protected string? Id { get; set; }
 
         /// <inheritdoc />
         public override string EntityId => $"{_domain.ToDomainString()}.{UniqueId}";
@@ -42,7 +42,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// </summary>
         /// <param name="name">The entity name.</param>
         /// <param name="icon">The entity icon.</param>
-        protected StorageEntityRegistryEntryBase(string name, string icon)
+        protected StorageEntityRegistryEntryBase(string? name, string? icon)
             : base(name, icon)
         {
             _domain = GetDomain(GetType());
@@ -63,8 +63,8 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         {
             if (DomainsByType.TryGetValue(type, out var domain)) return domain;
             
-            var attribute = (StorageEntityDomainAttribute)Attribute.GetCustomAttribute(type, typeof(StorageEntityDomainAttribute));
-            domain = attribute.Domain;
+            var attribute = (StorageEntityDomainAttribute?)Attribute.GetCustomAttribute(type, typeof(StorageEntityDomainAttribute));
+            if (attribute != null) domain = attribute.Domain;
             DomainsByType.Add(type, domain);
 
             return domain;

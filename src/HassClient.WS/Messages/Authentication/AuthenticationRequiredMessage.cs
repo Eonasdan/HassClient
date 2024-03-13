@@ -5,7 +5,7 @@
     /// </summary>
     internal class AuthenticationRequiredMessage : BaseMessage
     {
-        public string HaVersion { get; set; }
+        public string? HaVersion { get; set; }
 
         public AuthenticationRequiredMessage()
             : base("auth_required")

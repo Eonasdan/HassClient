@@ -10,9 +10,9 @@ namespace HassClient.Core.Models.RegistryEntries
     /// </summary>
     public abstract class EntityRegistryEntryBase : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _name = new(nameof(Name));
+        private readonly ModifiableProperty<string?> _name = new(nameof(Name));
 
-        private readonly ModifiableProperty<string> _icon = new(nameof(Icon));
+        private readonly ModifiableProperty<string?> _icon = new(nameof(Icon));
 
         /// <summary>
         /// Gets a value indicating that the name of the entity registry entry can be
@@ -23,13 +23,13 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the entity identifier of the entity.
         /// </summary>
-        [JsonIgnore]
-        public abstract string EntityId { get; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public abstract string? EntityId { get; }
 
         /// <summary>
         /// Gets or sets the friendly name of this entity.
         /// </summary>
-        public virtual string Name
+        public virtual string? Name
         {
             get => _name.Value;
             set
@@ -48,13 +48,13 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets or sets the icon to display in front of the entity in the front-end.
         /// </summary>
         [JsonProperty]
-        public virtual string Icon
+        public virtual string? Icon
         {
             get => _icon.Value;
             set => _icon.Value = value;
         }
 
-        [JsonConstructor]
+        [System.Text.Json.Serialization.JsonConstructor]
         private protected EntityRegistryEntryBase()
         {
         }
@@ -64,7 +64,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// </summary>
         /// <param name="name">The entity name.</param>
         /// <param name="icon">The entity icon.</param>
-        protected EntityRegistryEntryBase(string name, string icon)
+        protected EntityRegistryEntryBase(string? name, string? icon)
         {
             if (!AcceptsNullOrWhiteSpaceName &&
                 string.IsNullOrWhiteSpace(name))

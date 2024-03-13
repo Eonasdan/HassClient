@@ -2,7 +2,7 @@
 using System.Linq;
 using HassClient.Core.Models.KnownEnums;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace HassClient.Core.Models.RegistryEntries.StorageEntities
 {
@@ -17,11 +17,11 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// <summary>
         /// Gets or sets the initial value when Home Assistant starts.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool Initial
         {
             get => _initial.Value;
-            set => _initial.Value = value;
+            init => _initial.Value = value;
         }
 
         [JsonConstructor]
@@ -35,14 +35,14 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// <param name="name">The entity name.</param>
         /// <param name="icon">The entity icon.</param>
         /// <param name="initial">The  initial value when Home Assistant starts.</param>
-        public InputBoolean(string name, string icon = null, bool initial = false)
+        public InputBoolean(string? name, string? icon = null, bool initial = false)
             : base(name, icon)
         {
             Initial = initial;
         }
 
         // Used for testing purposes.
-        internal static InputBoolean? CreateUnmodified(string uniqueId, string name, string icon = null, bool initial = false)
+        internal static InputBoolean CreateUnmodified(string? uniqueId, string? name, string? icon = null, bool initial = false)
         {
             var result = new InputBoolean(name, icon, initial) { Id = uniqueId };
             result.SaveChanges();
@@ -59,7 +59,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         public override string ToString() => $"{nameof(InputBoolean)}: {Name}";
 
         // Used for testing purposes.
-        internal InputBoolean? Clone()
+        internal InputBoolean Clone()
         {
             var result = CreateUnmodified(UniqueId, Name, Icon, Initial);
             return result;

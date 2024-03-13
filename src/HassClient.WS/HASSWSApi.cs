@@ -567,7 +567,7 @@ namespace HassClient.WS
         /// <returns>
         /// A task representing the asynchronous operation. The result of the task is the <see cref="EntityRegistryEntry"/>.
         /// </returns>
-        public Task<EntityRegistryEntry?> GetEntityAsync(string entityId, CancellationToken cancellationToken = default)
+        public Task<EntityRegistryEntry?> GetEntityAsync(string? entityId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(entityId))
             {

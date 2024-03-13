@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using HassClient.Core.Helpers;
 using HassClient.Core.Models.KnownEnums;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace HassClient.Core.Models.RegistryEntries.StorageEntities
 {
@@ -15,14 +15,14 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
     [StorageEntityDomain(KnownDomains.Person)]
     public class Person : StorageEntityRegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _userId = new(nameof(UserId));
+        private readonly ModifiableProperty<string?> _userId = new(nameof(UserId));
 
         private readonly ModifiablePropertyCollection<string> _deviceTrackers =
             new(
                 nameof(DeviceTrackers),
                 v => v.IsValidDomainEntityId(KnownDomains.DeviceTracker));
 
-        private readonly ModifiableProperty<string> _picture = new(nameof(Picture));
+        private readonly ModifiableProperty<string?> _picture = new(nameof(Picture));
         //// "device_trackers":["device_tracker.demo_anne_therese","device_tracker.demo_paulus"],
         //// "picture":"/api/image/serve/f986543a0ea7b88ebffcd1213aeffb32/512x512"}
 
@@ -37,8 +37,8 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// Gets the user ID of the Home Assistant user account for the person.
         /// <para>To set this property use the method <see cref="ChangeUser(User)"/>.</para>
         /// </summary>
-        [JsonProperty]
-        public string UserId
+        [JsonPropertyName("user_id")] //todo double check this
+        public string? UserId
         {
             get => _userId.Value;
             private set => _userId.Value = value;
@@ -47,17 +47,17 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// <summary>
         /// Gets or sets a list of device trackers entities associated to this person entity.
         /// </summary>
-        [JsonProperty]
+        [JsonPropertyName("device_trackers")]
         public ICollection<string> DeviceTrackers => _deviceTrackers.Value;
 
         /// <summary>
         /// Gets or sets a URL (relative or absolute) to a picture for the person entity.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string Picture
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Picture
         {
             get => _picture.Value;
-            set
+            init
             {
                 CheckSupportModification();
                 _picture.Value = value;
@@ -71,7 +71,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// an <see cref="InvalidOperationException"/>.
         /// </para>
         /// </summary>
-        public override string Icon
+        public override string? Icon
         {
             get => null;
             set
@@ -88,7 +88,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         {
         }
 
-        private Person(string name, string userId)
+        private Person(string? name, string? userId)
             : base(name, null)
         {
             UserId = userId;
@@ -99,13 +99,10 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// </summary>
         /// <param name="name">The entity name.</param>
         /// <param name="user">The user account of the Home Assistant associated to this person.</param>
-        public Person(string name, User? user)
+        public Person(string? name, User? user)
             : this(name, user?.Id)
         {
-            if (user is null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             IsStorageEntry = true;
         }
@@ -117,17 +114,14 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// <param name="user">The user account of the Home Assistant associated to this person entity.</param>
         public void ChangeUser(User? user)
         {
-            if (user is null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             CheckSupportModification(nameof(UserId));
 
             UserId = user.Id;
         }
 
-        private void CheckSupportModification([CallerMemberName] string propertyName = null)
+        private void CheckSupportModification([CallerMemberName] string? propertyName = null)
         {
             if (IsTracked && !IsStorageEntry)
             {
@@ -136,7 +130,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         }
 
         // Used for testing purposes.
-        internal static Person? CreateUnmodified(string uniqueId, string name, string userId, string picture = null, IEnumerable<string> deviceTrackers = null)
+        internal static Person CreateUnmodified(string? uniqueId, string? name, string? userId, string? picture = null, IEnumerable<string>? deviceTrackers = null)
         {
             var result = new Person(name, userId)
             {
@@ -170,7 +164,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         public override string ToString() => $"{nameof(Person)}: {Name}";
 
         // Used for testing purposes.
-        internal Person? Clone()
+        internal Person Clone()
         {
             var result = CreateUnmodified(UniqueId, Name, UserId, Picture, DeviceTrackers);
             return result;

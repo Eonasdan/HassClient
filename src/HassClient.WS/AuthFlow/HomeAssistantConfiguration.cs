@@ -11,7 +11,7 @@ public class HomeAssistantConfiguration
 
     public bool LimitHassInstance { get; set; } = true;
 
-    public static HomeAssistantConfiguration? FromConfig(IConfiguration configuration)
+    public static HomeAssistantConfiguration FromConfig(IConfiguration configuration)
     {
         var homeAssistantConfiguration = new HomeAssistantConfiguration();
         configuration.GetSection(SectionName).Bind(homeAssistantConfiguration);

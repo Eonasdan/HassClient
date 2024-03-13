@@ -13,7 +13,7 @@
         /// <summary>
         /// A message provided by the server with detailed information about the error.
         /// </summary>
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorInfo"/> class.

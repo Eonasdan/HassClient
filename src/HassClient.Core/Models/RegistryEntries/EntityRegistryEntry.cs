@@ -2,6 +2,7 @@
 using System.Linq;
 using HassClient.Core.Helpers;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,24 +17,24 @@ namespace HassClient.Core.Models.RegistryEntries
         [JsonProperty]
         private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new(nameof(_disabledBy));
 
-        [JsonProperty(Required = Required.Always)]
-        private string _entityId;
+        [System.Text.Json.Serialization.JsonRequired]
+        private string? _entityId;
 
         private string _deviceClass;
 
         /// <inheritdoc />
-        [JsonProperty]
-        protected internal override string UniqueId { get; set; }
+        [JsonPropertyName("unique_id")]
+        protected internal override string? UniqueId { get; protected set; }
 
         /// <inheritdoc />
-        public override string Name
+        public override string? Name
         {
             get => base.Name ?? OriginalName;
             set => base.Name = value != OriginalName ? value : null;
         }
 
         /// <inheritdoc />
-        public override string Icon
+        public override string? Icon
         {
             get => base.Icon ?? OriginalIcon;
             set => base.Icon = value != OriginalIcon ? value : null;
@@ -43,32 +44,32 @@ namespace HassClient.Core.Models.RegistryEntries
         protected override bool AcceptsNullOrWhiteSpaceName => true;
 
         /// <inheritdoc />
-        public override string EntityId => _entityId;
+        public override string? EntityId => _entityId;
 
         /// <summary>
         /// Gets the original friendly name of this entity.
         /// </summary>
         [JsonProperty]
-        public string OriginalName { get; protected set; }
+        public string? OriginalName { get; protected set; }
 
         /// <summary>
         /// Gets the original icon to display in front of the entity in the front-end.
         /// </summary>
         [JsonProperty]
-        public string OriginalIcon { get; protected set; }
+        public string? OriginalIcon { get; protected set; }
 
         /// <summary>
         /// Gets the original device class.
         /// </summary>
         [JsonProperty]
-        public string OriginalDeviceClass { get; protected set; }
+        public string? OriginalDeviceClass { get; protected set; }
 
         /// <summary>
         /// Gets the class of the device. This affects the state and default icon representation
         /// of the entity.
         /// </summary>
         [JsonProperty]
-        public string DeviceClass
+        public string? DeviceClass
         {
             get => _deviceClass ?? OriginalDeviceClass;
             set => _deviceClass = value != OriginalDeviceClass ? value : null;
@@ -78,36 +79,36 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets the platform associated with this entity registry.
         /// </summary>
         [JsonProperty]
-        public string Platform { get; private set; }
+        public string? Platform { get; private set; }
 
         /// <summary>
         /// Gets the device id associated with this entity registry.
         /// </summary>
         [JsonProperty]
-        public string DeviceId { get; private set; }
+        public string? DeviceId { get; private set; }
 
         /// <summary>
         /// Gets the area id associated with this entity registry.
         /// </summary>
         [JsonProperty]
-        public string AreaId { get; private set; }
+        public string? AreaId { get; private set; }
 
         /// <summary>
         /// Gets the configuration entry id associated with this entity registry.
         /// </summary>
         [JsonProperty]
-        public string ConfigEntryId { get; internal set; }
+        public string? ConfigEntryId { get; internal set; }
 
         /// <summary>
         /// Gets a value indicating the disabling source, if any.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public DisabledByEnum DisabledBy => _disabledBy.Value ?? DisabledByEnum.None;
 
         /// <summary>
         /// Gets a value indicating whether the entity is disabled.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public bool IsDisabled => DisabledBy != DisabledByEnum.None;
 
         /// <summary>
@@ -128,7 +129,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Sensors with missing <see cref="UnitOfMeasurement"/> are showing as discrete values.
         /// </summary>
         [JsonProperty]
-        public string UnitOfMeasurement { get; private set; }
+        public string? UnitOfMeasurement { get; private set; }
 
         /// <summary>
         /// Gets a value indicating the classification for non-primary entities.
@@ -137,15 +138,15 @@ namespace HassClient.Core.Models.RegistryEntries
         /// </para>
         /// </summary>
         [JsonProperty]
-        public string EntityCategory { get; private set; }
+        public string? EntityCategory { get; private set; }
 
         /// <summary>
         /// Gets the domain of the entity.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string Domain => EntityId.GetDomain();
 
-        [JsonConstructor]
+        [System.Text.Json.Serialization.JsonConstructor]
         private EntityRegistryEntry()
         {
         }
@@ -160,7 +161,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <param name="name">The original name.</param>
         /// <param name="icon">The original icon.</param>
         /// <param name="disabledBy">The original disable.</param>
-        protected internal EntityRegistryEntry(string entityId, string name, string icon, DisabledByEnum disabledBy = DisabledByEnum.None)
+        protected internal EntityRegistryEntry(string? entityId, string? name, string? icon, DisabledByEnum disabledBy = DisabledByEnum.None)
             : base(name, icon)
         {
             _entityId = entityId;
@@ -171,7 +172,7 @@ namespace HassClient.Core.Models.RegistryEntries
         }
 
         // Used for testing purposes.
-        internal static EntityRegistryEntry? CreateUnmodified(string entityId, string name, string icon = null, DisabledByEnum disabledBy = DisabledByEnum.None)
+        internal static EntityRegistryEntry CreateUnmodified(string? entityId, string? name, string? icon = null, DisabledByEnum disabledBy = DisabledByEnum.None)
         {
             return new EntityRegistryEntry(entityId, name, icon, disabledBy);
         }
@@ -192,7 +193,7 @@ namespace HassClient.Core.Models.RegistryEntries
         public override string ToString() => $"{nameof(EntityRegistryEntry)}: {EntityId}";
 
         // Used for testing purposes.
-        internal EntityRegistryEntry? Clone()
+        internal EntityRegistryEntry Clone()
         {
             var result = CreateUnmodified(EntityId, Name, Icon, DisabledBy);
             result.UniqueId = UniqueId;

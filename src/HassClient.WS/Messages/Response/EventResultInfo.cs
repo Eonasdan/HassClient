@@ -17,12 +17,12 @@ namespace HassClient.WS.Messages.Response
         /// Gets or sets the event type.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string EventType { get; set; }
+        public string? EventType { get; set; }
 
         /// <summary>
         /// Gets the event type as <see cref="KnownEventTypes"/>.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public KnownEventTypes KnownEventType => EventType.AsKnownEventType();
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace HassClient.WS.Messages.Response
         /// Gets or sets the origin that fired the event.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Origin { get; set; }
+        public string? Origin { get; set; }
 
         /// <summary>
         /// Gets or sets the data associated with the fired event.

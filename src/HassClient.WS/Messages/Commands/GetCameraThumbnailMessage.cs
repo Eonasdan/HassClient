@@ -7,7 +7,7 @@ namespace HassClient.WS.Messages.Commands
     internal class GetCameraThumbnailMessage : BaseOutgoingMessage
     {
         [JsonProperty(Required = Required.Always)]
-        public string EntityId { get; set; }
+        public string? EntityId { get; set; }
 
         public GetCameraThumbnailMessage()
             : base("camera_thumbnail")

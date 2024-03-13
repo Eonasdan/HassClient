@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace HassClient.Core.Models
 {
@@ -11,31 +12,31 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the entity unique identifier.
         /// </summary>
-        [JsonIgnore]
-        public string EntityId { get; internal set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string? EntityId { get; internal set; }
 
         /// <summary>
         /// Gets the entity domain.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Domain { get; private set; }
+        public string? Domain { get; private set; }
 
         /// <summary>
         /// Gets the source from which the entity comes from. Usually <c>platform_config</c> or <c>config_entry</c>.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Source { get; private set; }
+        public string? Source { get; private set; }
 
         /// <summary>
         /// Gets the configuration entry id associated with this entity.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string ConfigEntry { get; private set; }
+        public string? ConfigEntry { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the entity uses a custom component platform.
         /// </summary>
-        [JsonProperty("custom_component")]
+        [JsonPropertyName("custom_component")]
         public bool IsCustomComponent { get; private set; }
 
         /// <inheritdoc />

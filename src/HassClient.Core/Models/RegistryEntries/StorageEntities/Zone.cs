@@ -2,7 +2,7 @@
 using System.Linq;
 using HassClient.Core.Models.KnownEnums;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace HassClient.Core.Models.RegistryEntries.StorageEntities
 {
@@ -23,42 +23,43 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// <summary>
         /// Gets or sets the latitude of the center point of the zone.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public float Latitude
         {
             get => _latitude.Value;
-            set => _latitude.Value = value;
+            init => _latitude.Value = value;
         }
 
         /// <summary>
         /// Gets or sets the longitude of the center point of the zone.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public float Longitude
         {
             get => _longitude.Value;
-            set => _longitude.Value = value;
+            init => _longitude.Value = value;
         }
 
         /// <summary>
         /// Gets or sets a value indicating whether the zone will be used only for automation and hide it
         /// from the frontend and not use the zone for device tracker name.
         /// </summary>
-        [JsonProperty("passive", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("passive")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool IsPassive
         {
             get => _passive.Value;
-            set => _passive.Value = value;
+            init => _passive.Value = value;
         }
 
         /// <summary>
         /// Gets or sets the radius of the zone in meters.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public float Radius
         {
             get => _radius.Value;
-            set => _radius.Value = value;
+            init => _radius.Value = value;
         }
 
         [JsonConstructor]
@@ -78,7 +79,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         /// Whether the zone will be used only for automation and hide it
         /// from the frontend and not use the zone for device tracker name.
         /// </param>
-        public Zone(string name, float longitude, float latitude, float radius, string icon = null, bool isPassive = false)
+        public Zone(string? name, float longitude, float latitude, float radius, string? icon = null, bool isPassive = false)
             : base(name, icon)
         {
             Longitude = longitude;
@@ -88,7 +89,7 @@ namespace HassClient.Core.Models.RegistryEntries.StorageEntities
         }
 
         // Used for testing purposes.
-        internal static Zone? CreateUnmodified(string uniqueId, string name, float longitude, float latitude, float radius, string icon = null, bool isPassive = false)
+        internal static Zone CreateUnmodified(string? uniqueId, string? name, float longitude, float latitude, float radius, string? icon = null, bool isPassive = false)
         {
             var result = new Zone(name, longitude, latitude, radius, icon, isPassive) { Id = uniqueId };
             result.SaveChanges();

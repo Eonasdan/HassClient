@@ -5,11 +5,7 @@ VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HassClient.Core", "HassClient.Core\HassClient.Core.csproj", "{D6F15F47-DCD1-46D1-8583-97416E42A380}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HassClient.Core.Tests", "HassClient.Core.Tests\HassClient.Core.Tests.csproj", "{993D8048-4C29-40D3-BF14-534E0AF8C7E2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HassClient.WS", "HassClient.WS\HassClient.WS.csproj", "{AA616F62-E6D6-491B-8D45-6868C588E931}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HassClient.WS.Tests", "HassClient.WS.Tests\HassClient.WS.Tests.csproj", "{4D15C578-FA32-485F-A9A4-05F20D4BEF86}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{3A6FC14A-4E95-4B24-B986-BACFE6361794}"
 	ProjectSection(SolutionItems) = preProject
@@ -27,6 +23,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B1618469-AFBD-4483-85B5-FB6BBF2D212E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssistantClient", "HomeAssistantClient\HomeAssistantClient.csproj", "{385A54C1-D206-4B41-9DE5-685013D23AEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeAssistantClient.Core", "HomeAssistantClient.Core\HomeAssistantClient.Core.csproj", "{EBA4E8DB-F938-4FB2-B972-7B8D11134B94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{33C844D9-CBED-40B9-925F-4D546FF351C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,18 +39,18 @@ Global
 		{D6F15F47-DCD1-46D1-8583-97416E42A380}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6F15F47-DCD1-46D1-8583-97416E42A380}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6F15F47-DCD1-46D1-8583-97416E42A380}.Release|Any CPU.Build.0 = Release|Any CPU
-		{993D8048-4C29-40D3-BF14-534E0AF8C7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{993D8048-4C29-40D3-BF14-534E0AF8C7E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{993D8048-4C29-40D3-BF14-534E0AF8C7E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{993D8048-4C29-40D3-BF14-534E0AF8C7E2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA616F62-E6D6-491B-8D45-6868C588E931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AA616F62-E6D6-491B-8D45-6868C588E931}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA616F62-E6D6-491B-8D45-6868C588E931}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA616F62-E6D6-491B-8D45-6868C588E931}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D15C578-FA32-485F-A9A4-05F20D4BEF86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D15C578-FA32-485F-A9A4-05F20D4BEF86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D15C578-FA32-485F-A9A4-05F20D4BEF86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D15C578-FA32-485F-A9A4-05F20D4BEF86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{385A54C1-D206-4B41-9DE5-685013D23AEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{385A54C1-D206-4B41-9DE5-685013D23AEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{385A54C1-D206-4B41-9DE5-685013D23AEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{385A54C1-D206-4B41-9DE5-685013D23AEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBA4E8DB-F938-4FB2-B972-7B8D11134B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBA4E8DB-F938-4FB2-B972-7B8D11134B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBA4E8DB-F938-4FB2-B972-7B8D11134B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBA4E8DB-F938-4FB2-B972-7B8D11134B94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,7 +59,7 @@ Global
 		SolutionGuid = {735208C8-7A8C-4CBE-8670-836AE8053CF5}
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{993D8048-4C29-40D3-BF14-534E0AF8C7E2} = {B1618469-AFBD-4483-85B5-FB6BBF2D212E}
-		{4D15C578-FA32-485F-A9A4-05F20D4BEF86} = {B1618469-AFBD-4483-85B5-FB6BBF2D212E}
+		{D6F15F47-DCD1-46D1-8583-97416E42A380} = {33C844D9-CBED-40B9-925F-4D546FF351C6}
+		{AA616F62-E6D6-491B-8D45-6868C588E931} = {33C844D9-CBED-40B9-925F-4D546FF351C6}
 	EndGlobalSection
 EndGlobal

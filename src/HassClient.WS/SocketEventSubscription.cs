@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using HassClient.WS.Messages.Response;
 
 namespace HassClient.WS

@@ -16,12 +16,12 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
         /// <summary>
         /// Gets the API prefix used in underlying message types.
         /// </summary>
-        public string ApiPrefix { get; }
+        public string? ApiPrefix { get; }
 
         /// <summary>
         /// Gets the model name used to generate model identifier property.
         /// </summary>
-        public string ModelName { get; }
+        public string? ModelName { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegistryEntryCollectionMessagesFactory{TModel}"/> class.
@@ -126,7 +126,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
         /// <returns>
         /// A <see cref="BaseOutgoingMessage"/> used to update an existing item from the collection registry.
         /// </returns>
-        protected BaseOutgoingMessage CreateUpdateMessage(string modelId, object model, IEnumerable<string> selectedProperties = null)
+        protected BaseOutgoingMessage CreateUpdateMessage(string? modelId, object model, IEnumerable<string> selectedProperties = null)
         {
             var mergedObject = HassSerializer.CreateJObject(model, selectedProperties);
             AddModelIdProperty(mergedObject, modelId);
@@ -140,7 +140,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
         /// <returns>
         /// A <see cref="BaseOutgoingMessage"/> used to delete an existing item from the collection registry.
         /// </returns>
-        protected BaseOutgoingMessage CreateDeleteMessage(string modelId)
+        protected BaseOutgoingMessage CreateDeleteMessage(string? modelId)
         {
             var mergedObject = new JObject();
             AddModelIdProperty(mergedObject, modelId);
@@ -156,7 +156,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
         /// <param name="selectedProperties">White-list containing the name of the properties to extract from the <paramref name="model"/> object.
         /// When <see langword="null"/>, no filter will be applied.</param>
         /// <returns>A <see cref="BaseOutgoingMessage"/> used in specific operations for certain collection registry items.</returns>
-        protected BaseOutgoingMessage CreateCustomOperationMessage(string customOpName, string modelId, TModel model = null, IEnumerable<string> selectedProperties = null)
+        protected BaseOutgoingMessage CreateCustomOperationMessage(string customOpName, string? modelId, TModel model = null, IEnumerable<string> selectedProperties = null)
         {
             var mergedObject = model != null ? HassSerializer.CreateJObject(model, selectedProperties) : new JObject();
             AddModelIdProperty(mergedObject, modelId);
@@ -187,7 +187,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
             return HassSerializer.CreateJObject(model, selectedProperties);
         }
 
-        private void AddModelIdProperty(JObject mergedObject, string modelId)
+        private void AddModelIdProperty(JObject mergedObject, string? modelId)
         {
             var propertyName = $"{ModelName}_id";
             if (!mergedObject.ContainsKey(propertyName))

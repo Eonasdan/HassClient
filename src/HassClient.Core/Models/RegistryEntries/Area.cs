@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace HassClient.Core.Models.RegistryEntries
 {
@@ -10,31 +10,31 @@ namespace HassClient.Core.Models.RegistryEntries
     /// </summary>
     public class Area : RegistryEntryBase
     {
-        private readonly ModifiableProperty<string> _name = new(nameof(Name));
+        private readonly ModifiableProperty<string?> _name = new(nameof(Name));
 
-        private readonly ModifiableProperty<string> _picture = new(nameof(Picture));
+        private readonly ModifiableProperty<string?> _picture = new(nameof(Picture));
 
         /// <inheritdoc />
-        protected internal override string UniqueId
+        protected internal override string? UniqueId
         {
             get => Id;
-            set => Id = value;
+            protected set => Id = value;
         }
 
         /// <summary>
         /// Gets the ID of this area.
         /// </summary>
-        [JsonProperty(PropertyName = "area_id")]
-        public string Id { get; private set; }
+        [JsonPropertyName("area_id")]
+        public string? Id { get; private set; }
 
         /// <summary>
         /// Gets or sets the name of this area.
         /// </summary>
-        [JsonProperty]
-        public string Name
+        [JsonPropertyName("name")]
+        public string? Name
         {
             get => _name.Value;
-            set
+            init
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
@@ -48,11 +48,11 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets or sets a URL (relative or absolute) to a picture for this area.
         /// </summary>
-        [JsonProperty]
-        public string Picture
+        [JsonPropertyName("picture")]
+        public string? Picture
         {
             get => _picture.Value;
-            set => _picture.Value = value;
+            init => _picture.Value = value;
         }
 
         [JsonConstructor]
@@ -65,7 +65,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// </summary>
         /// <param name="name">The name of the area.</param>
         /// <param name="picture">a URL (relative or absolute) to a picture for this area.</param>
-        public Area(string name, string picture = null)
+        public Area(string name, string? picture = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -77,7 +77,7 @@ namespace HassClient.Core.Models.RegistryEntries
         }
 
         // Used for testing purposes.
-        internal static Area? CreateUnmodified(string name, string picture)
+        internal static Area CreateUnmodified(string name, string picture)
         {
             var result = new Area(name, picture);
             result.SaveChanges();
@@ -95,7 +95,7 @@ namespace HassClient.Core.Models.RegistryEntries
         public override string ToString() => $"{nameof(Area)}: {Name}";
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Area area &&
                    Id == area.Id;
@@ -108,9 +108,9 @@ namespace HassClient.Core.Models.RegistryEntries
         }
 
         // Used for testing purposes.
-        internal Area? Clone()
+        internal Area Clone()
         {
-            var result = CreateUnmodified(Name, Picture);
+            var result = CreateUnmodified(Name!, Picture!);
             result.UniqueId = UniqueId;
             return result;
         }

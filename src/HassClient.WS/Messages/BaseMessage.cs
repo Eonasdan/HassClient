@@ -12,7 +12,7 @@ namespace HassClient.WS.Messages
         /// Gets the message type.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Type { get; private set; }
+        public string? Type { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseMessage"/> class.

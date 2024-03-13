@@ -5,7 +5,7 @@
     /// </summary>
     internal class AuthenticationMessage : BaseMessage
     {
-        public string AccessToken { get; set; }
+        public string? AccessToken { get; set; }
 
         public AuthenticationMessage()
             : base("auth")

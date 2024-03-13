@@ -18,7 +18,7 @@ namespace HassClient.Core.Helpers
         /// <exception cref="ArgumentException">
         /// Thrown when an invalid <paramref name="entityId"/> is set.
         /// </exception>
-        public static string[] SplitEntityId(this string entityId)
+        public static string[] SplitEntityId(this string? entityId)
         {
             if (!entityId.IsValidEntityId())
             {
@@ -34,7 +34,7 @@ namespace HassClient.Core.Helpers
         /// <param name="entityId">An entity id. (e.g. <c>light.livingroom</c>).</param>
         /// <returns>The domain as a <see cref="string"/>.</returns>
         /// <exception cref="ArgumentException">Thrown when an invalid <paramref name="entityId"/> is set.</exception>
-        public static string GetDomain(this string entityId)
+        public static string GetDomain(this string? entityId)
         {
             return entityId.SplitEntityId()[0];
         }
@@ -60,7 +60,7 @@ namespace HassClient.Core.Helpers
         /// <returns>
         /// A <see cref="bool"/> indicating whether the <paramref name="entityId"/> has a valid format.
         /// </returns>
-        public static bool IsValidEntityId(this string entityId)
+        public static bool IsValidEntityId(this string? entityId)
         {
             return entityId == null ||
                    entityId.IndexOf(EntitySeparator) == entityId.LastIndexOf(EntitySeparator);

@@ -12,7 +12,7 @@ namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
         {
         }
 
-        public BaseOutgoingMessage CreateGetMessage(string entityId)
+        public BaseOutgoingMessage CreateGetMessage(string? entityId)
         {
             return CreateCustomOperationMessage("get", entityId);
         }

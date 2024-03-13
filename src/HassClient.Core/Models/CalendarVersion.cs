@@ -26,7 +26,7 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets or sets an optional text tag, such as "dev", "alpha", "beta", "rc1", and so on.
         /// </summary>
-        public string Modifier { get; set; }
+        public string? Modifier { get; set; }
 
         /// <summary>
         /// Gets the release date extracted from <see cref="Year"/> and <see cref="Month"/>.

@@ -5,7 +5,7 @@
     /// </summary>
     internal class AuthenticationOkMessage : BaseMessage
     {
-        public string HaVersion { get; set; }
+        public string? HaVersion { get; set; }
 
         public AuthenticationOkMessage()
             : base("auth_ok")

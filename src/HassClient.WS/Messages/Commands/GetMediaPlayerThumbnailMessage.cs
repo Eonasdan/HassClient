@@ -7,7 +7,7 @@ namespace HassClient.WS.Messages.Commands
     internal class GetMediaPlayerThumbnailMessage : BaseOutgoingMessage
     {
         [JsonProperty(Required = Required.Always)]
-        public string EntityId { get; set; }
+        public string? EntityId { get; set; }
 
         public GetMediaPlayerThumbnailMessage()
             : base("media_player_thumbnail")

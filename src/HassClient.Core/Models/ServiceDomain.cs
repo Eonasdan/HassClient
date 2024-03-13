@@ -13,7 +13,7 @@ namespace HassClient.Core.Models
         /// Gets the service domain's name.
         /// </summary>
         [JsonProperty]
-        public string Domain { get; internal set; }
+        public string? Domain { get; internal set; }
 
         /// <summary>
         /// Gets the list of services in this domain.
@@ -24,7 +24,7 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets a flat, fully-qualified list of services in this service domain.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public IEnumerable<string> FlatServiceList => Services.Select(s => $"{Domain}.{s}");
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace HassClient.Core.Models
         /// </summary>
         /// <param name="service">The service name to retrieve.</param>
         /// <returns>The <see cref="Service" />, if the name exists in this domain, otherwise <see langword="null" />.</returns>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public Service this[string service] => Services.ContainsKey(service) ? Services[service] : null;
 
         /// <summary>

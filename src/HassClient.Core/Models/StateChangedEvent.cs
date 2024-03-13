@@ -12,12 +12,12 @@ namespace HassClient.Core.Models
         /// Gets the entity id of the entity.
         /// </summary>
         [JsonProperty]
-        public string EntityId { get; private set; }
+        public string? EntityId { get; private set; }
 
         /// <summary>
         /// Gets or sets the entity domain of the entity.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string Domain => EntityId.GetDomain();
 
         /// <summary>

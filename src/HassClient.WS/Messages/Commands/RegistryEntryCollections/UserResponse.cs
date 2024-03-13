@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using Newtonsoft.Json.Linq;
 
 namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
 {
     internal class UserResponse
     {
-        [JsonProperty("user")]
+        [JsonPropertyName("user")]
         public JRaw UserRaw { get; set; }
 
         /// <inheritdoc />

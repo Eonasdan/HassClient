@@ -5,10 +5,10 @@ namespace HassClient.WS.Messages.Commands
     internal class CallServiceMessage() : BaseOutgoingMessage("call_service")
     {
         [JsonProperty(Required = Required.Always)]
-        public string Domain { get; set; } = null!;
+        public string? Domain { get; set; } = null!;
 
         [JsonProperty(Required = Required.Always)]
-        public string Service { get; set; } = null!;
+        public string? Service { get; set; } = null!;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public object? ServiceData { get; set; }

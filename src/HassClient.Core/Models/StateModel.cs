@@ -18,18 +18,18 @@ namespace HassClient.Core.Models
         /// Gets the Entity ID that this state represents.
         /// </summary>
         [JsonProperty]
-        public string EntityId { get; private set; }
+        public string? EntityId { get; private set; }
 
         /// <summary>
         /// Gets the string representation of the state that this entity is currently in.
         /// </summary>
         [JsonProperty]
-        public string State { get; private set; }
+        public string? State { get; private set; }
 
         /// <summary>
         /// Gets the state that this entity is currently in as a <see cref="KnownStates"/>.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public KnownStates KnownState => State.AsKnownState();
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace HassClient.Core.Models.Color
 {
@@ -310,8 +310,8 @@ namespace HassClient.Core.Models.Color
         /// <summary>
         /// Gets a the color name.
         /// </summary>
-        [JsonProperty("color_name")]
-        public string Name { get; internal set; }
+        [JsonPropertyName("color_name")]
+        public string? Name { get; internal set; }
 
         internal NameColor(string name)
         {

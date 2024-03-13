@@ -11,7 +11,7 @@ namespace HassClient.WS.Messages.Commands
         /// <summary>
         /// Object containing additional fields that will be merged to the base message.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public object MergedObject;
 
         /// <summary>

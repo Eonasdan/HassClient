@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -25,23 +26,23 @@ namespace HassClient.Core.Models.RegistryEntries
         public const string SysadminGroupId = "system-admin";
 
         /// <inheritdoc />
-        protected internal override string UniqueId
+        protected internal override string? UniqueId
         {
             get => Id;
-            set => Id = value;
+            protected set => Id = value;
         }
 
         /// <summary>
         /// Gets the ID of this user.
         /// </summary>
         [JsonProperty]
-        public string Id { get; private set; }
+        public string? Id { get; private set; }
 
         /// <summary>
         /// Gets or sets the name of this user.
         /// </summary>
         [JsonProperty]
-        public string Name
+        public string? Name
         {
             get => _name.Value;
             set
@@ -64,7 +65,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets or sets a value indicating whether the user is only allowed to log in from the local network and not from the internet or cloud.
         /// </summary>
-        [JsonProperty("local_only")]
+        [JsonPropertyName("local_only")]
         public bool IsLocalOnly
         {
             get => _isLocalOnly.Value;
@@ -84,7 +85,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets a value indicating whether the user is administrator.
         /// </summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public bool IsAdministrator
         {
             get => GroupIds?.Contains(SysadminGroupId) == true;
@@ -105,7 +106,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets the user name of the user.
         /// </summary>
         [JsonProperty]
-        public string Username { get; private set; }
+        public string? Username { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the user has been generated automatically by the system.
@@ -125,7 +126,7 @@ namespace HassClient.Core.Models.RegistryEntries
         [JsonProperty]
         public JRaw Credentials { get; private set; }
 
-        [JsonConstructor]
+        [System.Text.Json.Serialization.JsonConstructor]
         private User()
         {
         }
@@ -171,7 +172,7 @@ namespace HassClient.Core.Models.RegistryEntries
         public bool ShouldSerializeIsActive() => IsTracked;
 
         // Used for testing purposes.
-        internal static User? CreateUnmodified(string uniqueId, string name, bool isOwner)
+        internal static User CreateUnmodified(string? uniqueId, string name, bool isOwner)
         {
             var result = new User(name, isOwner)
             {

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace HassClient.Core.Models.Events
 {
@@ -12,8 +12,8 @@ namespace HassClient.Core.Models.Events
         /// <summary>
         /// Gets the event's name.
         /// </summary>
-        [JsonProperty("event")]
-        public string Name { get; internal set; }
+        [JsonPropertyName("event")]
+        public string? Name { get; internal set; }
 
         /// <summary>
         /// Gets the listener count for this event.

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace HassClient.Core.Models
 {
@@ -17,26 +18,26 @@ namespace HassClient.Core.Models
         /// Gets an unique short name consisting of characters and underscores (e.g. "mobile_app").
         /// </summary>
         [JsonProperty]
-        public string Domain { get; private set; }
+        public string? Domain { get; private set; }
 
         /// <summary>
         /// Gets a friendly name for the integration.
         /// </summary>
         [JsonProperty]
-        public string Name { get; private set; }
+        public string? Name { get; private set; }
 
         /// <summary>
         /// Gets the website containing documentation on how to use the integration.
         /// </summary>
         [JsonProperty]
-        public string Documentation { get; private set; }
+        public string? Documentation { get; private set; }
 
         /// <summary>
         /// Gets the issue tracker where users reports issues if they run into one. This is only defined for not
         /// <see cref="IsBuiltIn"/> integrations.
         /// </summary>
         [JsonProperty]
-        public string IssueTracker { get; private set; }
+        public string? IssueTracker { get; private set; }
 
         /// <summary>
         /// Gets a list of other integrations that need to set up successfully prior to the integration being loaded.
@@ -75,12 +76,12 @@ namespace HassClient.Core.Models
         /// </para>
         /// </summary>
         [JsonProperty]
-        public string QualityScale { get; private set; }
+        public string? QualityScale { get; private set; }
 
         /// <summary>
         /// Gets the version number from which this integration is available or compatible.
         /// </summary>
-        [JsonProperty("homeassistant")]
+        [JsonPropertyName("homeassistant")]
         public CalendarVersion SinceHassVersion { get; private set; }
 
         /// <inheritdoc />

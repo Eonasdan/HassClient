@@ -5,7 +5,7 @@
     /// </summary>
     internal class AuthenticationInvalidMessage : BaseMessage
     {
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
         public AuthenticationInvalidMessage()
             : base("auth_invalid")
