@@ -10,43 +10,43 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the length unit (usually "km" or "mi").
         /// </summary>
-        [JsonProperty]
-        public string? Length { get; private set; }
+        [JsonPropertyName("Length")]
+        public string? Length { get; init; }
 
         /// <summary>
         /// Gets the mass unit (usually "g" or "lb").
         /// </summary>
-        [JsonProperty]
-        public string? Mass { get; private set; }
+        [JsonPropertyName("Mass")]
+        public string? Mass { get; init; }
 
         /// <summary>
         /// Gets the pressure unit (usually "Pa" or "psi").
         /// </summary>
-        [JsonProperty]
-        public string? Pressure { get; private set; }
+        [JsonPropertyName("Pressure")]
+        public string? Pressure { get; init; }
 
         /// <summary>
         /// Gets the temperature unit including degree symbol (usually "°C" or "°F").
         /// </summary>
-        [JsonProperty]
-        public string? Temperature { get; private set; }
+        [JsonPropertyName("Temperature")]
+        public string? Temperature { get; init; }
 
         /// <summary>
         /// Gets the volume unit (usually "L" or "gal").
         /// </summary>
-        [JsonProperty]
-        public string? Volume { get; private set; }
+        [JsonPropertyName("Volume")]
+        public string? Volume { get; init; }
 
         /// <summary>
         /// Gets the accumulated precipitation unit (usually "mm" or "in").
         /// </summary>
-        [JsonProperty]
-        public string? AccumulatedPrecipitation { get; private set; }
+        [JsonPropertyName("AccumulatedPrecipitation")]
+        public string? AccumulatedPrecipitation { get; init; }
 
         /// <summary>
         /// Gets the wind speed unit (usually "m/s" or "mi/h").
         /// </summary>
-        [JsonProperty]
-        public string? WindSpeed { get; private set; }
+        [JsonPropertyName("WindSpeed")]
+        public string? WindSpeed { get; init; }
     }
 }

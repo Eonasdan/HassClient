@@ -13,20 +13,20 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the panel component name. Typical values are <c>config</c>, <c>lovelace</c>, <c>custom</c>, etc.
         /// </summary>
-        [JsonProperty]
-        public string? ComponentName { get; private set; }
+        [JsonPropertyName("ComponentName")]
+        public string? ComponentName { get; init; }
 
         /// <summary>
         /// Gets the icon to display in the front-end.
         /// </summary>
-        [JsonProperty]
-        public string? Icon { get; private set; }
+        [JsonPropertyName("Icon")]
+        public string? Icon { get; init; }
 
         /// <summary>
         /// Gets the title to display in the front-end.
         /// </summary>
-        [JsonProperty]
-        public string? Title { get; private set; }
+        [JsonPropertyName("Title")]
+        public string? Title { get; init; }
 
         /// <summary>
         /// Gets an object that contains specific configuration parameters of the panel.
@@ -37,14 +37,14 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the URL path of the panel from which it can be accessed.
         /// </summary>
-        [JsonProperty]
-        public string? UrlPath { get; private set; }
+        [JsonPropertyName("UrlPath")]
+        public string? UrlPath { get; init; }
 
         /// <summary>
         /// Gets a value indicating whether a user needs administrator rights to access the panel.
         /// </summary>
-        [JsonProperty]
-        public bool RequireAdmin { get; private set; }
+        [JsonPropertyName("RequireAdmin")]
+        public bool RequireAdmin { get; init; }
 
         /// <summary>
         /// Deserializes the <see cref="Configuration"/> object with the specified type.

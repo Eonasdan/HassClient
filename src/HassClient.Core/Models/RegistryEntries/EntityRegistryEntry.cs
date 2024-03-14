@@ -50,20 +50,20 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the original friendly name of this entity.
         /// </summary>
-        [JsonProperty]
-        public string? OriginalName { get; protected set; }
+        [JsonPropertyName("OriginalName")]
+        public string? OriginalName { get; init; }
 
         /// <summary>
         /// Gets the original icon to display in front of the entity in the front-end.
         /// </summary>
-        [JsonProperty]
-        public string? OriginalIcon { get; protected set; }
+        [JsonPropertyName("OriginalIcon")]
+        public string? OriginalIcon { get; init; }
 
         /// <summary>
         /// Gets the original device class.
         /// </summary>
-        [JsonProperty]
-        public string? OriginalDeviceClass { get; protected set; }
+        [JsonPropertyName("OriginalDeviceClass")]
+        public string? OriginalDeviceClass { get; init; }
 
         /// <summary>
         /// Gets the class of the device. This affects the state and default icon representation
@@ -79,20 +79,20 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the platform associated with this entity registry.
         /// </summary>
-        [JsonProperty]
-        public string? Platform { get; private set; }
+        [JsonPropertyName("Platform")]
+        public string? Platform { get; init; }
 
         /// <summary>
         /// Gets the device id associated with this entity registry.
         /// </summary>
-        [JsonProperty]
-        public string? DeviceId { get; private set; }
+        [JsonPropertyName("DeviceId")]
+        public string? DeviceId { get; init; }
 
         /// <summary>
         /// Gets the area id associated with this entity registry.
         /// </summary>
-        [JsonProperty]
-        public string? AreaId { get; private set; }
+        [JsonPropertyName("AreaId")]
+        public string? AreaId { get; init; }
 
         /// <summary>
         /// Gets the configuration entry id associated with this entity registry.
@@ -115,22 +115,22 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the capabilities of the entity.
         /// </summary>
-        [JsonProperty]
-        public List<Tuple<string, JRaw>> Capabilities { get; private set; }
+        [JsonPropertyName("Capabilities")]
+        public List<Tuple<string, JRaw>> Capabilities { get; init; }
 
         /// <summary>
         /// Gets a the supported features of this entity, if any.
         /// </summary>
-        [JsonProperty]
-        public int SupportedFeatures { get; private set; }
+        [JsonPropertyName("SupportedFeatures")]
+        public int SupportedFeatures { get; init; }
 
         /// <summary>
         /// Gets the units of measurement, if any. This will also influence the graphical presentation
         /// in the history visualization as continuous value.
         /// Sensors with missing <see cref="UnitOfMeasurement"/> are showing as discrete values.
         /// </summary>
-        [JsonProperty]
-        public string? UnitOfMeasurement { get; private set; }
+        [JsonPropertyName("UnitOfMeasurement")]
+        public string? UnitOfMeasurement { get; init; }
 
         /// <summary>
         /// Gets a value indicating the classification for non-primary entities.
@@ -138,8 +138,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Primary entity's category will be <see cref="EntityCategory.None"/>.
         /// </para>
         /// </summary>
-        [JsonProperty]
-        public string? EntityCategory { get; private set; }
+        [JsonPropertyName("EntityCategory")]
+        public string? EntityCategory { get; init; }
 
         /// <summary>
         /// Gets the domain of the entity.

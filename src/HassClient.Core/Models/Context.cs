@@ -10,20 +10,20 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the ID of this context.
         /// </summary>
-        [JsonProperty]
-        public string? Id { get; private set; }
+        [JsonPropertyName("Id")]
+        public string? Id { get; init; }
 
         /// <summary>
         /// Gets the Parent Context ID if this element is a child of another context, otherwise <see langword="null" />.
         /// </summary>
-        [JsonProperty]
-        public string? ParentId { get; private set; }
+        [JsonPropertyName("ParentId")]
+        public string? ParentId { get; init; }
 
         /// <summary>
         /// Gets the User ID of this element, or <see langword="null" /> for the default user or no user.
         /// </summary>
-        [JsonProperty]
-        public string? UserId { get; private set; }
+        [JsonPropertyName("UserId")]
+        public string? UserId { get; init; }
 
         /// <inheritdoc />
         public override string ToString() => $"{nameof(Context)}: {Id}{(!string.IsNullOrWhiteSpace(ParentId) ? " / Parent: " + ParentId : string.Empty)}";

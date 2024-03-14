@@ -35,8 +35,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the ID of this user.
         /// </summary>
-        [JsonProperty]
-        public string? Id { get; private set; }
+        [JsonPropertyName("Id")]
+        public string? Id { get; init; }
 
         /// <summary>
         /// Gets or sets the name of this user.
@@ -59,8 +59,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets a value indicating whether the user is owner of the system. In this case, the user will have full access to everything.
         /// </summary>
-        [JsonProperty]
-        public bool IsOwner { get; private set; }
+        [JsonPropertyName("IsOwner")]
+        public bool IsOwner { get; init; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user is only allowed to log in from the local network and not from the internet or cloud.
@@ -105,14 +105,14 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the user name of the user.
         /// </summary>
-        [JsonProperty]
-        public string? Username { get; private set; }
+        [JsonPropertyName("Username")]
+        public string? Username { get; init; }
 
         /// <summary>
         /// Gets a value indicating whether the user has been generated automatically by the system.
         /// </summary>
-        [JsonProperty]
-        public bool SystemGenerated { get; private set; }
+        [JsonPropertyName("SystemGenerated")]
+        public bool SystemGenerated { get; init; }
 
         /// <summary>
         /// Gets a set of group ids where the user is included.
@@ -123,8 +123,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the credentials of this user.
         /// </summary>
-        [JsonProperty]
-        public JRaw Credentials { get; private set; }
+        [JsonPropertyName("Credentials")]
+        public JRaw Credentials { get; init; }
 
         [System.Text.Json.Serialization.JsonConstructor]
         private User()

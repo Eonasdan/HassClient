@@ -11,8 +11,8 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the entity id of the entity.
         /// </summary>
-        [JsonProperty]
-        public string? EntityId { get; private set; }
+        [JsonPropertyName("EntityId")]
+        public string? EntityId { get; init; }
 
         /// <summary>
         /// Gets or sets the entity domain of the entity.
@@ -23,13 +23,13 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the old state.
         /// </summary>
-        [JsonProperty]
-        public StateModel OldState { get; private set; }
+        [JsonPropertyName("OldState")]
+        public StateModel OldState { get; init; }
 
         /// <summary>
         /// Gets the new state.
         /// </summary>
-        [JsonProperty]
-        public StateModel NewState { get; private set; }
+        [JsonPropertyName("NewState")]
+        public StateModel NewState { get; init; }
     }
 }

@@ -66,34 +66,34 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets a URL on which the device or service can be configured.
         /// </summary>
-        [JsonProperty]
-        public string? ConfigurationUrl { get; private set; }
+        [JsonPropertyName("ConfigurationUrl")]
+        public string? ConfigurationUrl { get; init; }
 
         /// <summary>
         /// Gets a set of tuples of (connection_type, connection identifier).
         /// Connection types are defined in the device registry module.
         /// </summary>
-        [JsonProperty]
-        public List<Tuple<string, string>> Connections { get; private set; }
+        [JsonPropertyName("Connections")]
+        public List<Tuple<string, string>> Connections { get; init; }
 
         /// <summary>
         /// Gets a set of identifiers. They identify the device in the outside world.
         /// An example is a serial number.
         /// </summary>
-        [JsonProperty]
-        public List<Tuple<string, string>> Identifiers { get; private set; }
+        [JsonPropertyName("Identifiers")]
+        public List<Tuple<string, string>> Identifiers { get; init; }
 
         /// <summary>
         /// Gets the manufacturer of the device.
         /// </summary>
-        [JsonProperty]
-        public string? Manufacturer { get; private set; }
+        [JsonPropertyName("Manufacturer")]
+        public string? Manufacturer { get; init; }
 
         /// <summary>
         /// Gets the model of the device.
         /// </summary>
-        [JsonProperty]
-        public string? Model { get; private set; }
+        [JsonPropertyName("Model")]
+        public string? Model { get; init; }
 
         /// <summary>
         /// Gets the firmware version of the device.
@@ -105,8 +105,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the hardware version of the device.
         /// </summary>
-        [JsonProperty]
-        public string? HwVersion { get; private set; }
+        [JsonPropertyName("HwVersion")]
+        public string? HwVersion { get; init; }
 
         /// <summary>
         /// Gets the type of entry.
@@ -119,8 +119,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Examples of such devices are hubs, or parent devices of a sub-device.
         /// This is used to show device topology in Home Assistant.
         /// </summary>
-        [JsonProperty]
-        public string? ViaDeviceId { get; private set; }
+        [JsonPropertyName("ViaDeviceId")]
+        public string? ViaDeviceId { get; init; }
 
         /// <summary>
         /// Gets the area id which the device is placed in.
@@ -134,8 +134,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the suggested name for the area where the device is located.
         /// </summary>
-        [JsonProperty]
-        public string? SuggestedArea { get; private set; }
+        [JsonPropertyName("SuggestedArea")]
+        public string? SuggestedArea { get; init; }
 
         /// <summary>
         /// Gets a value indicating the disabling source, if any.

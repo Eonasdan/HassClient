@@ -17,14 +17,14 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the Entity ID that this state represents.
         /// </summary>
-        [JsonProperty]
-        public string? EntityId { get; private set; }
+        [JsonPropertyName("EntityId")]
+        public string? EntityId { get; init; }
 
         /// <summary>
         /// Gets the string representation of the state that this entity is currently in.
         /// </summary>
-        [JsonProperty]
-        public string? State { get; private set; }
+        [JsonPropertyName("State")]
+        public string? State { get; init; }
 
         /// <summary>
         /// Gets the state that this entity is currently in as a <see cref="KnownStates"/>.
@@ -35,8 +35,8 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the entity's current attributes and values.
         /// </summary>
-        [JsonProperty]
-        public List<Tuple<string, JRaw>> Attributes { get; private set; }
+        [JsonPropertyName("Attributes")]
+        public List<Tuple<string, JRaw>> Attributes { get; init; }
 
         /// <summary>
         /// Gets the context for this entity's state.
@@ -47,14 +47,14 @@ namespace HassClient.Core.Models
         /// <summary>
         /// Gets the UTC date and time that this state was last changed.
         /// </summary>
-        [JsonProperty]
-        public DateTimeOffset LastChanged { get; private set; }
+        [JsonPropertyName("LastChanged")]
+        public DateTimeOffset LastChanged { get; init; }
 
         /// <summary>
         /// Gets the UTC date and time that this state was last updated.
         /// </summary>
-        [JsonProperty]
-        public DateTimeOffset LastUpdated { get; private set; }
+        [JsonPropertyName("LastUpdated")]
+        public DateTimeOffset LastUpdated { get; init; }
 
         /// <summary>
         /// Attempts to get the value of the specified attribute by <paramref name="name"/>,
