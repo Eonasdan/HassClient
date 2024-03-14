@@ -29,6 +29,7 @@ namespace HassClient.Core.Serialization
                 new ModifiablePropertyConverter(),
                 new StringEnumConverter(NamingStrategy),
                 new TupleSetToDictionaryConverter(),
+                new TupleSetConverter(),
             },
         };
 
@@ -65,6 +66,7 @@ namespace HassClient.Core.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static T DeserializeObject<T>(string value)
         {
+            var a = typeof(T);
             return JsonConvert.DeserializeObject<T>(value, DefaultSettings);
         }
 

@@ -287,7 +287,7 @@ namespace HassClient.WS
                 new ServiceDomain
                 {
                     Domain = x.Key,
-                    Services = HassSerializer.DeserializeObject<Dictionary<string, Service>>(x.Value),
+                    Services = HassSerializer.DeserializeObject<HassDomainServices>(x.Value),
                 });
         }
 

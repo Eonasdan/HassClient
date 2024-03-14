@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
+using Bogus.DataSets;
 using HassClient.Core.Helpers;
 using HassClient.Core.Models;
 using HassClient.Core.Models.KnownEnums;
@@ -12,98 +13,104 @@ namespace HassClient.WS.Tests.Mocks
 {
     public static class MockHassModelFactory
     {
+        public static string FakeMac = new Internet().Mac();
+
         public static readonly Faker<Device> DeviceFaker =
             new Faker<Device>()
-            .CustomInstantiator(f => Device.CreateUnmodified(f.RandomUuid(), f.Commerce.ProductName(), f.RandomUuid(), f.Random.Enum<DisabledByEnum>()))
-            .RuleFor(x => x.ConfigurationEntries, f => new[] { f.RandomUuid() })
-            .RuleFor(x => x.Connections, f => new Dictionary<string, string> { { "zigbee", f.Internet.Mac() } })
-            .RuleFor(x => x.Manufacturer, f => f.Company.CompanyName())
-            .RuleFor(x => x.Model, f => f.Commerce.Product())
-            .RuleFor(x => x.Name, f => f.Random.Bool() ? f.Commerce.ProductName() : null)
-            .RuleFor(x => x.SwVersion, f => f.Random.Hexadecimal(8))
-            .RuleFor(x => x.Identifiers, f => new Dictionary<string, string> { { "zha", string.Empty } })
-            .RuleFor(x => x.ViaDeviceId, f => f.RandomUuid())
-            .FinishWith((f, x) => x.Identifiers["zha"] = x.Connections["zigbee"]);
+                .CustomInstantiator(f => Device.CreateUnmodified(f.RandomUuid(), f.Commerce.ProductName(),
+                    f.RandomUuid(), f.Random.Enum<DisabledByEnum>()))
+                .RuleFor(x => x.ConfigurationEntries, f => [f.RandomUuid()])
+                .RuleFor(x => x.Connections,
+                    _ => [new Tuple<string, string>("zigbee", FakeMac)]
+                )
+                .RuleFor(x => x.Manufacturer, f => f.Company.CompanyName())
+                .RuleFor(x => x.Model, f => f.Commerce.Product())
+                .RuleFor(x => x.Name, f => f.Random.Bool() ? f.Commerce.ProductName() : null)
+                .RuleFor(x => x.SwVersion, f => [f.Random.Hexadecimal(8)])
+                .RuleFor(x => x.Identifiers,
+                    _ => [new Tuple<string, string>("zha", FakeMac)]
+                )
+                .RuleFor(x => x.ViaDeviceId, f => f.RandomUuid());
 
         public static readonly Faker<PanelInfo> PanelInfoFaker =
             new Faker<PanelInfo>()
-            .RuleFor(x => x.ComponentName, f => f.Commerce.Product())
-            .RuleFor(x => x.Icon, f => f.RandomIcon())
-            .RuleFor(x => x.RequireAdmin, f => f.Random.Bool())
-            .RuleFor(x => x.Title, (f, x) => x.ComponentName)
-            .RuleFor(x => x.UrlPath, (f, x) => x.ComponentName);
+                .RuleFor(x => x.ComponentName, f => f.Commerce.Product())
+                .RuleFor(x => x.Icon, f => f.RandomIcon())
+                .RuleFor(x => x.RequireAdmin, f => f.Random.Bool())
+                .RuleFor(x => x.Title, (_, x) => x.ComponentName)
+                .RuleFor(x => x.UrlPath, (_, x) => x.ComponentName);
 
         public static readonly Faker<EntitySource> EntitySourceFaker =
             new Faker<EntitySource>()
-            .RuleFor(x => x.ConfigEntry, f => f.RandomUuid())
-            .RuleFor(x => x.EntityId, f => f.RandomEntityId())
-            .RuleFor(x => x.Domain, (f, x) => x.EntityId.GetDomain())
-            .RuleFor(x => x.Source, "config_entry");
+                .RuleFor(x => x.ConfigEntry, f => f.RandomUuid())
+                .RuleFor(x => x.EntityId, f => f.RandomEntityId())
+                .RuleFor(x => x.Domain, (_, x) => x.EntityId.GetDomain())
+                .RuleFor(x => x.Source, "config_entry");
 
         public static readonly Faker<UnitSystemModel> UnitSystemFaker =
             new Faker<UnitSystemModel>()
-            .RuleFor(x => x.Length, f => f.PickRandom("km", "mi"))
-            .RuleFor(x => x.Mass, f => f.PickRandom("g", "lb"))
-            .RuleFor(x => x.Pressure, f => f.PickRandom("Pa", "psi"))
-            .RuleFor(x => x.Temperature, f => f.PickRandom("°C", "°F"))
-            .RuleFor(x => x.Volume, f => f.PickRandom("L", "gal"));
+                .RuleFor(x => x.Length, f => f.PickRandom("km", "mi"))
+                .RuleFor(x => x.Mass, f => f.PickRandom("g", "lb"))
+                .RuleFor(x => x.Pressure, f => f.PickRandom("Pa", "psi"))
+                .RuleFor(x => x.Temperature, f => f.PickRandom("°C", "°F"))
+                .RuleFor(x => x.Volume, f => f.PickRandom("L", "gal"));
 
         public static readonly Faker<ConfigurationModel> ConfigurationFaker =
             new Faker<ConfigurationModel>()
-            .RuleFor(x => x.AllowedExternalDirs, f => f.Make(3, () => f.System.DirectoryPath()))
-            .RuleFor(x => x.AllowedExternalUrls, f => f.Make(3, () => f.Internet.Url()))
-            .RuleFor(x => x.Components, f => f.Make(10, () => f.RandomDomain()).Distinct().ToList())
-            .RuleFor(x => x.ConfigDirectory, "/config")
-            .RuleFor(x => x.ConfigSource, "storage")
-            .RuleFor(x => x.Elevation, f => f.Random.Int(min: 0))
-            .RuleFor(x => x.ExternalUrl, f => f.Internet.Url())
-            .RuleFor(x => x.InternalUrl, f => f.Internet.Url())
-            .RuleFor(x => x.Latitude, f => (float)f.Address.Latitude())
-            .RuleFor(x => x.Longitude, f => (float)f.Address.Longitude())
-            .RuleFor(x => x.LocationName, f => "Fake Home")
-            .RuleFor(x => x.SafeMode, f => f.Random.Bool())
-            .RuleFor(x => x.State, "RUNNING")
-            .RuleFor(x => x.TimeZone, f => f.Date.TimeZoneString())
-            .RuleFor(x => x.UnitSystem, UnitSystemFaker.Generate())
-            .RuleFor(x => x.Version, CalendarVersion.Create("2022.1.0"));
+                .RuleFor(x => x.AllowedExternalDirs, f => f.Make(3, () => f.System.DirectoryPath()))
+                .RuleFor(x => x.AllowedExternalUrls, f => f.Make(3, () => f.Internet.Url()))
+                .RuleFor(x => x.Components, f => f.Make(10, () => f.RandomDomain()).Distinct().ToList())
+                .RuleFor(x => x.ConfigDirectory, "/config")
+                .RuleFor(x => x.ConfigSource, "storage")
+                .RuleFor(x => x.Elevation, f => f.Random.Int(min: 0))
+                .RuleFor(x => x.ExternalUrl, f => f.Internet.Url())
+                .RuleFor(x => x.InternalUrl, f => f.Internet.Url())
+                .RuleFor(x => x.Latitude, f => (float)f.Address.Latitude())
+                .RuleFor(x => x.Longitude, f => (float)f.Address.Longitude())
+                .RuleFor(x => x.LocationName, _ => "Fake Home")
+                .RuleFor(x => x.SafeMode, f => f.Random.Bool())
+                .RuleFor(x => x.State, "RUNNING")
+                .RuleFor(x => x.TimeZone, f => f.Date.TimeZoneString())
+                .RuleFor(x => x.UnitSystem, UnitSystemFaker.Generate())
+                .RuleFor(x => x.Version, CalendarVersion.Create("2022.1.0"));
 
         public static readonly Faker<Context> ContextFaker =
             new Faker<Context>()
-            .RuleFor(x => x.Id, f => f.RandomUuid())
-            .RuleFor(x => x.ParentId, f => f.RandomUuid())
-            .RuleFor(x => x.UserId, f => f.RandomUuid());
+                .RuleFor(x => x.Id, f => f.RandomUuid())
+                .RuleFor(x => x.ParentId, f => f.RandomUuid())
+                .RuleFor(x => x.UserId, f => f.RandomUuid());
 
         public static readonly Faker<StateModel> StateModelFaker =
             new Faker<StateModel>()
-            .RuleForType(typeof(DateTimeOffset), f => DateTimeOffset.Now)
-            .RuleFor(x => x.EntityId, f => f.RandomEntityId())
-            .RuleFor(x => x.Context, f => ContextFaker.Generate())
-            .RuleFor(x => x.State, f => f.RandomEntityState())
-            .RuleFor(x => x.Attributes, (f, x) => new Dictionary<string, JRaw> { { "friendly_name", new JRaw($"\"{x.EntityId.SplitEntityId()[1]}\"") } });
+                .RuleForType(typeof(DateTimeOffset), _ => DateTimeOffset.Now)
+                .RuleFor(x => x.EntityId, f => f.RandomEntityId())
+                .RuleFor(x => x.Context, _ => ContextFaker.Generate())
+                .RuleFor(x => x.State, f => f.RandomEntityState())
+                .RuleFor(x => x.Attributes, (_, x) =>
+                    [new Tuple<string, JRaw>("friendly_name", new JRaw($"\"{x.EntityId.SplitEntityId()[1]}\""))]
+                );
 
         public static readonly Faker<StateChangedEvent> StateChangedEventFaker =
             new Faker<StateChangedEvent>()
-            .RuleFor(x => x.EntityId, f => f.RandomEntityId())
-            .RuleFor(x => x.OldState, (f, x) => StateModelFaker.GenerateWith(x.EntityId, null))
-            .RuleFor(x => x.NewState, (f, x) => StateModelFaker.GenerateWith(x.EntityId, x.OldState.Context));
+                .RuleFor(x => x.EntityId, f => f.RandomEntityId())
+                .RuleFor(x => x.OldState, (_, x) => StateModelFaker.GenerateWith(x.EntityId, null))
+                .RuleFor(x => x.NewState, (_, x) => StateModelFaker.GenerateWith(x.EntityId, x.OldState.Context));
 
-        public static IEnumerable<EntitySource> GenerateWithEntityIds(this Faker<EntitySource> faker, params string[] entityIds)
+        public static IEnumerable<EntitySource> GenerateWithEntityIds(this Faker<EntitySource> faker,
+            params string[] entityIds)
         {
-            foreach (var item in entityIds)
-            {
-                yield return faker.RuleFor(x => x.EntityId, f => item)
-                                  .Generate();
-            }
+            return entityIds.Select(item => faker.RuleFor(x => x.EntityId, _ => item)
+                .Generate());
         }
 
         public static StateModel GenerateWith(this Faker<StateModel> faker, string entityId, Context context) =>
             faker.RuleFor(x => x.EntityId, f => entityId ?? f.RandomEntityId())
-                 .RuleFor(x => x.Context, f => context ?? ContextFaker.Generate())
-                 .Generate();
+                .RuleFor(x => x.Context, _ => context ?? ContextFaker.Generate())
+                .Generate();
 
         public static StateChangedEvent GenerateWithEntityId(this Faker<StateChangedEvent> faker, string entityId) =>
             faker.RuleFor(x => x.EntityId, f => entityId ?? f.RandomEntityId())
-                 .Generate();
+                .Generate();
 
         public static string RandomUuid(this Faker faker) => faker.Random.Hexadecimal(32, string.Empty);
 
@@ -135,11 +142,12 @@ namespace HassClient.WS.Tests.Mocks
             "mdi: cast",
             "mdi: account");
 
-        public static IDictionary<TKey, TValue> ToDistinctDictionary<TKey, TValue>(this IEnumerable<TValue> source, Func<TValue, TKey> keySelector)
+        public static IDictionary<TKey, TValue> ToDistinctDictionary<TKey, TValue>(this IEnumerable<TValue> source,
+            Func<TValue, TKey> keySelector)
         {
             return source.GroupBy(x => keySelector(x))
-                         .Select(x => x.First())
-                         .ToDictionary(x => keySelector(x));
+                .Select(x => x.First())
+                .ToDictionary(x => keySelector(x));
         }
 
         public static IEnumerable<T> Generate<T>(this Faker faker, int count, Func<Faker, T> generator)

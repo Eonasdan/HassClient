@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HassClient.Core.Helpers;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
@@ -114,7 +115,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets the capabilities of the entity.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, JRaw> Capabilities { get; private set; }
+        public List<Tuple<string, JRaw>> Capabilities { get; private set; }
 
         /// <summary>
         /// Gets a the supported features of this entity, if any.

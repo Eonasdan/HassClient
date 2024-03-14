@@ -581,9 +581,13 @@ namespace HassClient.WS
                     else if (message is RawCommandMessage rawCommand)
                     {
                         var mergedMessage = HassSerializer.CreateJObject(message);
-                        var mergedObject = rawCommand.MergedObject as JObject ??
-                                           HassSerializer.CreateJObject(rawCommand.MergedObject);
-                        mergedMessage.Merge(mergedObject);
+                        if (rawCommand.MergedObject != null)
+                        {
+                            var mergedObject = rawCommand.MergedObject as JObject ??
+                                               HassSerializer.CreateJObject(rawCommand.MergedObject);
+                            mergedMessage.Merge(mergedObject);
+                        }
+
                         toSerialize = mergedMessage;
                     }
 

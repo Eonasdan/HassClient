@@ -19,7 +19,7 @@ namespace HassClient.Core.Models
         /// Gets the list of services in this domain.
         /// </summary>
         [JsonProperty]
-        public IReadOnlyDictionary<string, Service> Services { get; internal set; }
+        public HassDomainServices Services { get; internal set; } = [];
 
         /// <summary>
         /// Gets a flat, fully-qualified list of services in this service domain.
@@ -33,7 +33,7 @@ namespace HassClient.Core.Models
         /// <param name="service">The service name to retrieve.</param>
         /// <returns>The <see cref="Service" />, if the name exists in this domain, otherwise <see langword="null" />.</returns>
         [JsonIgnore]
-        public Service this[string service] => Services.ContainsKey(service) ? Services[service] : null;
+        public Service? this[string service] => Services.ContainsKey(service) ? Services[service] : null;
 
         /// <summary>
         /// If the specified <paramref name="serviceName" /> exists, populates the <paramref name="fullServiceName" /> with the

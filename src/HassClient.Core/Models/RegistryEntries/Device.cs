@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
+using HassClient.Core.Serialization.Converters;
 using Newtonsoft.Json;
 
 namespace HassClient.Core.Models.RegistryEntries
@@ -72,14 +74,14 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Connection types are defined in the device registry module.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, string> Connections { get; private set; }
+        public List<Tuple<string, string>> Connections { get; private set; }
 
         /// <summary>
         /// Gets a set of identifiers. They identify the device in the outside world.
         /// An example is a serial number.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, string> Identifiers { get; private set; }
+        public List<Tuple<string, string>> Identifiers { get; private set; }
 
         /// <summary>
         /// Gets the manufacturer of the device.
@@ -97,7 +99,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets the firmware version of the device.
         /// </summary>
         [JsonProperty]
-        public string SwVersion { get; private set; }
+        [JsonConverter(typeof(SingleOrArrayConverter))]
+        public string[] SwVersion { get; private set; }
 
         /// <summary>
         /// Gets the hardware version of the device.

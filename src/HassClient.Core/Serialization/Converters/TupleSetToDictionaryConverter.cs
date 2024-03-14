@@ -31,4 +31,34 @@ namespace HassClient.Core.Serialization.Converters
             return array.ToDictionary(x => x[0], x => x.Length > 1 ? x[1] : null);
         }
     }
+    
+    
+    
+    public class TupleSetConverter : JsonConverter<List<Tuple<string, string>>>
+    {
+        /// <inheritdoc />
+        public override void WriteJson(JsonWriter writer, List<Tuple<string, string>>? value, JsonSerializer serializer)
+        {
+            if (value == null) return;
+            var array = value.Select(x => new[] { x.Item1, x.Item1 }).ToArray();
+            serializer.Serialize(writer, array);
+        }
+
+        /// <inheritdoc />
+        public override List<Tuple<string, string>> ReadJson(JsonReader reader, Type objectType, List<Tuple<string, string>>? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            var array = serializer.Deserialize<string[][]>(reader);
+
+            if (array == null ||
+                array.Length == 0)
+            {
+                return [];
+            }
+
+            return array
+                .Select(x => new Tuple<string, string>(x[0], x[1]))
+                .ToList();;
+        }
+    }
+    
 }
