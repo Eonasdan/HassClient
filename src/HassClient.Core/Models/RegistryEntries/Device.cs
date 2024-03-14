@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HassClient.Core.Models.RegistryEntries.Modifiable;
-using System.Text.Json.Serialization;
+using HassClient.Core.Serialization.Converters;
 using Newtonsoft.Json;
 
 namespace HassClient.Core.Models.RegistryEntries
@@ -21,7 +22,7 @@ namespace HassClient.Core.Models.RegistryEntries
         [JsonProperty]
         private readonly ModifiableProperty<string> _nameByUser = new(nameof(_nameByUser));
 
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         private string _originalName;
 
         /// <inheritdoc />
@@ -49,8 +50,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// If set to <see langword="null"/>, the <see cref="OriginalName"/> will be used.
         /// </para>
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        public string? Name
+        [JsonIgnore]
+        public string Name
         {
             get => _nameByUser.Value ?? _originalName;
             set => _nameByUser.Value = value == _originalName ? null : value;
@@ -59,7 +60,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the unique ids of the configuration entries associated with this device.
         /// </summary>
-        [JsonPropertyName("config_entries")]
+        [JsonProperty("config_entries")]
         public string[] ConfigurationEntries { get; private set; }
 
         /// <summary>
@@ -73,14 +74,14 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Connection types are defined in the device registry module.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, string> Connections { get; private set; }
+        public List<Tuple<string, string>> Connections { get; private set; }
 
         /// <summary>
         /// Gets a set of identifiers. They identify the device in the outside world.
         /// An example is a serial number.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, string> Identifiers { get; private set; }
+        public List<Tuple<string, string>> Identifiers { get; private set; }
 
         /// <summary>
         /// Gets the manufacturer of the device.
@@ -98,7 +99,8 @@ namespace HassClient.Core.Models.RegistryEntries
         /// Gets the firmware version of the device.
         /// </summary>
         [JsonProperty]
-        public string? SwVersion { get; private set; }
+        [JsonConverter(typeof(SingleOrArrayConverter))]
+        public string[] SwVersion { get; private set; } = [];
 
         /// <summary>
         /// Gets the hardware version of the device.
@@ -109,7 +111,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets the type of entry.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public DeviceEntryTypes EntryType { get; private set; }
 
         /// <summary>
@@ -138,16 +140,16 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <summary>
         /// Gets a value indicating the disabling source, if any.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public DisabledByEnum DisabledBy => _disabledBy.Value ?? DisabledByEnum.None;
 
         /// <summary>
         /// Gets a value indicating whether the device is disabled.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public bool IsDisabled => DisabledBy != DisabledByEnum.None;
 
-        [System.Text.Json.Serialization.JsonConstructor]
+        [JsonConstructor]
         private Device()
         {
         }
@@ -192,8 +194,7 @@ namespace HassClient.Core.Models.RegistryEntries
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            if (Id != null) return -401120461 + EqualityComparer<string>.Default.GetHashCode(Id);
-            return -1;
+            return -401120461 + EqualityComparer<string>.Default.GetHashCode(Id);
         }
     }
 }

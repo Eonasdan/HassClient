@@ -36,7 +36,7 @@ namespace HassClient.Core.Models
         /// Gets the entity's current attributes and values.
         /// </summary>
         [JsonProperty]
-        public Dictionary<string, JRaw> Attributes { get; private set; }
+        public List<Tuple<string, JRaw>> Attributes { get; private set; }
 
         /// <summary>
         /// Gets the context for this entity's state.
@@ -65,7 +65,7 @@ namespace HassClient.Core.Models
         /// <typeparam name="T">The desired type to cast the attribute value to.</typeparam>
         /// <param name="name">The name of the attribute to retrieve the value for.</param>
         /// <returns>The attribute's current value, cast to type <typeparamref name="T" />.</returns>
-        public T GetAttributeValue<T>(string name) => !Attributes.ContainsKey(name) ? default : HassSerializer.DeserializeObject<T>(Attributes[name]);
+        public T GetAttributeValue<T>(string name) => Attributes.All(x => x.Item1 != name) ? default : HassSerializer.DeserializeObject<T>(Attributes.First(x => x.Item1 == name).Item2); //todo this was a dictionary
 
         /// <summary>
         /// Attempts to get the values of the specified attribute by <paramref name="name"/> as an
