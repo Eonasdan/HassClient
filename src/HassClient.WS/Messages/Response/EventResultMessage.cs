@@ -1,20 +1,18 @@
 ﻿using HassClient.Core.Serialization;
-using Newtonsoft.Json.Linq;
 
-namespace HassClient.WS.Messages.Response
+namespace HassClient.WS.Messages.Response;
+
+internal class EventResultMessage : BaseIncomingMessage
 {
-    internal class EventResultMessage : BaseIncomingMessage
-    {
-        public JRaw Event { get; set; }
+    public JRaw Event { get; set; }
 
-        public EventResultMessage()
-            : base("event")
-        {
+    public EventResultMessage()
+        : base("event")
+    {
         }
 
-        public T DeserializeEvent<T>()
-        {
+    public T DeserializeEvent<T>()
+    {
             return HassSerializer.DeserializeObject<T>(Event);
         }
-    }
 }

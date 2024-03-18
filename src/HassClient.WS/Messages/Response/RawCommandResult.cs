@@ -1,29 +1,27 @@
-﻿using Newtonsoft.Json.Linq;
+﻿namespace HassClient.WS.Messages.Response;
 
-namespace HassClient.WS.Messages.Response
+/// <summary>
+/// The result of a raw command operation.
+/// </summary>
+public class RawCommandResult
 {
     /// <summary>
-    /// The result of a raw command operation.
+    /// Gets or sets a value indicating whether the operation was successful.
     /// </summary>
-    public class RawCommandResult
+    public bool Success { get; set; }
+
+    /// <summary>
+    /// Gets or sets the result object of the command operation.
+    /// </summary>
+    public JRaw? Result { get; set; }
+
+    /// <summary>
+    /// Gets or sets error information when the operation failed.
+    /// </summary>
+    public ErrorInfo? Error { get; set; }
+
+    internal static RawCommandResult FromResultMessage(ResultMessage? message)
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether the operation was successful.
-        /// </summary>
-        public bool Success { get; set; }
-
-        /// <summary>
-        /// Gets or sets the result object of the command operation.
-        /// </summary>
-        public JRaw? Result { get; set; }
-
-        /// <summary>
-        /// Gets or sets error information when the operation failed.
-        /// </summary>
-        public ErrorInfo? Error { get; set; }
-
-        internal static RawCommandResult FromResultMessage(ResultMessage? message)
-        {
             return new RawCommandResult
             {
                 Success = message.Success,
@@ -31,5 +29,4 @@ namespace HassClient.WS.Messages.Response
                 Result = message.Result,
             };
         }
-    }
 }

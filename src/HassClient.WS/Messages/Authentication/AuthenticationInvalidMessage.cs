@@ -1,15 +1,14 @@
-﻿namespace HassClient.WS.Messages.Authentication
-{
-    /// <summary>
-    /// Represents an authentication message used by Web Socket API.
-    /// </summary>
-    internal class AuthenticationInvalidMessage : BaseMessage
-    {
-        public string? Message { get; set; }
+﻿namespace HassClient.WS.Messages.Authentication;
 
-        public AuthenticationInvalidMessage()
-            : base("auth_invalid")
-        {
-        }
+/// <summary>
+/// Represents an authentication message used by Web Socket API.
+/// </summary>
+internal class AuthenticationInvalidMessage : BaseMessage
+{
+    public string? Message { get; set; }
+
+    public AuthenticationInvalidMessage()
+        : base("auth_invalid")
+    {
     }
 }

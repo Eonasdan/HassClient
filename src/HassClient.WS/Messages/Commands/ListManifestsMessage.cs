@@ -1,10 +1,9 @@
-﻿namespace HassClient.WS.Messages.Commands
+﻿namespace HassClient.WS.Messages.Commands;
+
+internal class ListManifestsMessage : BaseOutgoingMessage
 {
-    internal class ListManifestsMessage : BaseOutgoingMessage
+    public ListManifestsMessage()
+        : base("manifest/list")
     {
-        public ListManifestsMessage()
-            : base("manifest/list")
-        {
-        }
     }
 }

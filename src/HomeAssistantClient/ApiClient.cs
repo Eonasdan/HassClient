@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 namespace HomeAssistantClient.API;
 
 [PublicAPI]
-public class Client : JsonClient
+public class ApiClient : JsonClient
 {
-    public Client(HttpClient client, IConfiguration configuration) : base(client)
+    public ApiClient(HttpClient client, IConfiguration configuration) : base(client)
     {
         var homeAssistantConfiguration = HomeAssistantConfiguration.FromConfig(configuration);
         client.BaseAddress = new Uri($"{homeAssistantConfiguration!.Uri!}/api/");

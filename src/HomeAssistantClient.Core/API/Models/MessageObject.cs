@@ -1,16 +1,15 @@
 ﻿using JetBrains.Annotations;
 
-namespace HomeAssistantClient.Core.API.Models
+namespace HomeAssistantClient.Core.API.Models;
+
+/// <summary>
+/// Represents a basic message object returned from the server (e.g. an object with a "message" property).
+/// </summary>
+[PublicAPI]
+public class MessageObject
 {
     /// <summary>
-    /// Represents a basic message object returned from the server (e.g. an object with a "message" property).
+    /// Gets or sets the message for this message object.
     /// </summary>
-    [PublicAPI]
-    public class MessageObject
-    {
-        /// <summary>
-        /// Gets or sets the message for this message object.
-        /// </summary>
-        public string? Message { get; set; }
-    }
+    public string? Message { get; set; }
 }

@@ -1,29 +1,29 @@
 ﻿using System;
 
-namespace HassClient.Core.Models.Color
+namespace HassClient.Core.Models.Color;
+
+/// <summary>
+/// Represents a HSV color by hue and saturation.
+/// </summary>
+public class HSColor : Color
 {
     /// <summary>
-    /// Represents a HSV color by hue and saturation.
+    /// Gets the hue value.
     /// </summary>
-    public class HSColor : Color
+    public uint Hue { get; internal set; }
+
+    /// <summary>
+    /// Gets the saturation value.
+    /// </summary>
+    public uint Saturation { get; internal set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HSColor"/> class.
+    /// </summary>
+    /// <param name="hue">The hue value in the range [0, 360].</param>
+    /// <param name="saturation">The saturation value in the range [0, 100].</param>
+    public HSColor(uint hue, uint saturation)
     {
-        /// <summary>
-        /// Gets the hue value.
-        /// </summary>
-        public uint Hue { get; internal set; }
-
-        /// <summary>
-        /// Gets the saturation value.
-        /// </summary>
-        public uint Saturation { get; internal set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HSColor"/> class.
-        /// </summary>
-        /// <param name="hue">The hue value in the range [0, 360].</param>
-        /// <param name="saturation">The saturation value in the range [0, 100].</param>
-        public HSColor(uint hue, uint saturation)
-        {
             if (hue > 360)
             {
                 throw new ArgumentOutOfRangeException(nameof(hue), hue, "Hue value must be in the range [0, 360]");
@@ -38,7 +38,6 @@ namespace HassClient.Core.Models.Color
             Saturation = saturation;
         }
 
-        /// <inheritdoc />
-        public override string ToString() => $"[{Hue}, {Saturation}]";
-    }
+    /// <inheritdoc />
+    public override string ToString() => $"[{Hue}, {Saturation}]";
 }

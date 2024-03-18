@@ -1,26 +1,26 @@
 ﻿using System;
 using HassClient.Core.Serialization;
 
-namespace HassClient.Core.Helpers
+namespace HassClient.Core.Helpers;
+
+/// <summary>
+/// Cache used to reduce use of string in KnownEnum types.
+/// </summary>
+/// <typeparam name="TEnum">The KnownEnum type.</typeparam>
+internal class KnownEnumCache<TEnum>
+    where TEnum : struct, Enum
 {
-    /// <summary>
-    /// Cache used to reduce use of string in KnownEnum types.
-    /// </summary>
-    /// <typeparam name="TEnum">The KnownEnum type.</typeparam>
-    internal class KnownEnumCache<TEnum>
-            where TEnum : struct, Enum
+    private readonly Map<string, TEnum> _cache = new();
+
+    private readonly TEnum? _valueForNullString;
+
+    public KnownEnumCache(TEnum? valueForNullString = null)
     {
-        private readonly Map<string, TEnum> _cache = new();
-
-        private readonly TEnum? _valueForNullString;
-
-        public KnownEnumCache(TEnum? valueForNullString = null)
-        {
             _valueForNullString = valueForNullString;
         }
 
-        public TEnum AsEnum(string value)
-        {
+    public TEnum AsEnum(string value)
+    {
             if (string.IsNullOrEmpty(value))
             {
                 if (_valueForNullString.HasValue)
@@ -40,13 +40,12 @@ namespace HassClient.Core.Helpers
             return result;
         }
 
-        public string AsString(TEnum value)
-        {
+    public string AsString(TEnum value)
+    {
             if (_cache.Reverse.TryGetValue(value, out var result)) return result;
             result = value.ToSnakeCaseUnchecked();
             _cache.Add(result, value);
 
             return result;
         }
-    }
 }

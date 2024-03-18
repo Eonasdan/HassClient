@@ -1,25 +1,22 @@
-﻿using Newtonsoft.Json;
+﻿namespace HassClient.WS.Messages.Commands.Search;
 
-namespace HassClient.WS.Messages.Commands.Search
+internal class SearchRelatedMessage : BaseOutgoingMessage
 {
-    internal class SearchRelatedMessage : BaseOutgoingMessage
+    [JsonProperty(Required = Required.Always)]
+    public ItemTypes ItemType { get; set; }
+
+    [JsonProperty(Required = Required.Always)]
+    public string? ItemId { get; set; }
+
+    public SearchRelatedMessage()
+        : base("search/related")
     {
-        [JsonProperty(Required = Required.Always)]
-        public ItemTypes ItemType { get; set; }
+    }
 
-        [JsonProperty(Required = Required.Always)]
-        public string? ItemId { get; set; }
-
-        public SearchRelatedMessage()
-            : base("search/related")
-        {
-        }
-
-        public SearchRelatedMessage(ItemTypes itemType, string itemId)
-            : this()
-        {
-            ItemType = itemType;
-            ItemId = itemId;
-        }
+    public SearchRelatedMessage(ItemTypes itemType, string itemId)
+        : this()
+    {
+        ItemType = itemType;
+        ItemId = itemId;
     }
 }

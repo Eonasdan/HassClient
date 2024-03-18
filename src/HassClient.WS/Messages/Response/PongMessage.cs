@@ -1,10 +1,9 @@
-﻿namespace HassClient.WS.Messages.Response
+﻿namespace HassClient.WS.Messages.Response;
+
+internal class PongMessage : BaseIncomingMessage
 {
-    internal class PongMessage : BaseIncomingMessage
+    public PongMessage()
+        : base("pong")
     {
-        public PongMessage()
-            : base("pong")
-        {
         }
-    }
 }

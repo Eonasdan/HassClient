@@ -1,64 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace HassClient.Core.Serialization.Converters
+namespace HassClient.Core.Serialization.Converters;
+
+/// <summary>
+/// Converter to convert Set[Tuple[str, str]] to <see cref="Dictionary{TKey,TValue}"/>.
+/// </summary>
+public class TupleSetToDictionaryConverter : JsonConverter<Dictionary<string, string?>>
 {
-    /// <summary>
-    /// Converter to convert Set[Tuple[str, str]] to <see cref="Dictionary{TKey,TValue}"/>.
-    /// </summary>
-    public class TupleSetToDictionaryConverter : JsonConverter<Dictionary<string, string>>
+    public override Dictionary<string, string?> Read(ref Utf8JsonReader reader, Type typeToConvert,
+        JsonSerializerOptions options)
     {
-        /// <inheritdoc />
-        public override void WriteJson(JsonWriter writer, Dictionary<string, string> value, JsonSerializer serializer)
+        var values = JsonSerializer.Deserialize<string[][]>(ref reader, options);
+
+        if (values == null || values.Length == 0)
         {
-            var array = value.Select(x => new[] { x.Key, x.Value }).ToArray();
-            serializer.Serialize(writer, array);
+            return new Dictionary<string, string?>();
         }
 
-        /// <inheritdoc />
-        public override Dictionary<string, string> ReadJson(JsonReader reader, Type objectType, Dictionary<string, string> existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            var array = serializer.Deserialize<string[][]>(reader);
-
-            if (array == null ||
-                array.Length == 0)
-            {
-                return new Dictionary<string, string>();
-            }
-
-            return array.ToDictionary(x => x[0], x => x.Length > 1 ? x[1] : null);
-        }
+        return values.ToDictionary(x => x[0], x => x.Length > 1 ? x[1] : null);
     }
-    
-    
-    
-    public class TupleSetConverter : JsonConverter<List<Tuple<string, string>>>
+
+    public override void Write(Utf8JsonWriter writer, Dictionary<string, string?> value, JsonSerializerOptions options)
     {
-        /// <inheritdoc />
-        public override void WriteJson(JsonWriter writer, List<Tuple<string, string>>? value, JsonSerializer serializer)
-        {
-            if (value == null) return;
-            var array = value.Select(x => new[] { x.Item1, x.Item1 }).ToArray();
-            serializer.Serialize(writer, array);
-        }
-
-        /// <inheritdoc />
-        public override List<Tuple<string, string>> ReadJson(JsonReader reader, Type objectType, List<Tuple<string, string>>? existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            var array = serializer.Deserialize<string[][]>(reader);
-
-            if (array == null ||
-                array.Length == 0)
-            {
-                return [];
-            }
-
-            return array
-                .Select(x => new Tuple<string, string>(x[0], x[1]))
-                .ToList();;
-        }
+        var array = value.Select(x => new[] { x.Key, x.Value }).ToArray();
+        JsonSerializer.Serialize(writer, array, options);
     }
-    
+}
+
+public class TupleSetConverter : JsonConverter<List<Tuple<string, string>>>
+{
+    public override List<Tuple<string, string>> Read(ref Utf8JsonReader reader, Type typeToConvert,
+        JsonSerializerOptions options)
+    {
+        var values = JsonSerializer.Deserialize<string[][]>(ref reader, options);
+
+        if (values == null || values.Length == 0)
+        {
+            return [];
+        }
+
+        return values.Select(x => new Tuple<string, string>(x[0], x[1])).ToList();
+    }
+
+    public override void Write(Utf8JsonWriter writer, List<Tuple<string, string>> value, JsonSerializerOptions options)
+    {
+        var array = value.Select(x => new[] { x.Item1, x.Item2 }).ToArray();
+        JsonSerializer.Serialize(writer, array, options);
+    }
 }

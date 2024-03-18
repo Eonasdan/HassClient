@@ -1,10 +1,9 @@
-﻿namespace HassClient.WS.Messages.Commands
+﻿namespace HassClient.WS.Messages.Commands;
+
+internal class PingMessage : BaseOutgoingMessage
 {
-    internal class PingMessage : BaseOutgoingMessage
+    public PingMessage()
+        : base("ping")
     {
-        public PingMessage()
-            : base("ping")
-        {
         }
-    }
 }

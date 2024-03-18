@@ -1,200 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
-using HassClient.Core.Models.RegistryEntries.Modifiable;
-using HassClient.Core.Serialization.Converters;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 
-namespace HassClient.Core.Models.RegistryEntries
+namespace HassClient.Core.Models.RegistryEntries;
+
+/// <summary>
+/// Represents a device.
+/// <para>
+/// More information at <see href="https://developers.home-assistant.io/docs/device_registry_index/"/>.
+/// </para>
+/// </summary>
+[PublicAPI]
+public class Device
 {
+    [JsonPropertyName("area_id"), ModifiableProperty]
+    public string? AreaId { get; init; }
+
+    [JsonPropertyName("configuration_url")]
+    public string? ConfigurationUrl { get; init; }
+
+    [JsonPropertyName("config_entries")] public List<string> ConfigEntries { get; init; } = [];
+
+    [JsonPropertyName("connections")] public List<Tuple<string, string>> Connections { get; init; } = [];
+
     /// <summary>
-    /// Represents a device.
+    /// Gets a value indicating the disabling source, if any.
+    /// </summary>
+    [JsonPropertyName("disabled_by"), ModifiableProperty]
+    public DisabledByEnum DisabledBy { get; init; } = DisabledByEnum.None;
+
+    /// <summary>
+    /// Gets a value indicating whether the device is disabled.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsDisabled => DisabledBy != DisabledByEnum.None;
+
+    [JsonPropertyName("entry_type")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DeviceEntryTypes EntryType { get; init; } = DeviceEntryTypes.None;
+
+    [JsonPropertyName("hw_version")] public string? HwVersion { get; init; }
+
+    [JsonPropertyName("id")] public string Id { get; init; } = default!;
+
+    [JsonPropertyName("identifiers")] public List<Tuple<string, string>> Identifiers { get; init; } = [];
+
+    [JsonPropertyName("manufacturer")] public string? Manufacturer { get; init; }
+
+    [JsonPropertyName("model")] public string? Model { get; init; }
+
+    [JsonPropertyName("name_by_user"), ModifiableProperty]
+    public string? NameByUser { get; set; }
+
+    [JsonPropertyName("name")] private string OriginalName { get; init; } = default!;
+    
+    /// <summary>
+    /// Gets the current name of this device.
+    /// It will the one given by the user after creation; otherwise, <see cref="OriginalName"/>.
     /// <para>
-    /// More information at <see href="https://developers.home-assistant.io/docs/device_registry_index/"/>.
+    /// If set to <see langword="null"/>, the <see cref="OriginalName"/> will be used.
     /// </para>
     /// </summary>
-    public class Device : RegistryEntryBase
+    [JsonIgnore]
+    public string Name
     {
-        private readonly ModifiableProperty<string> _areaId = new(nameof(AreaId));
+        get => NameByUser ?? OriginalName;
+        set => NameByUser = value == OriginalName ? null : value;
+    }
 
-        [JsonProperty]
-        private readonly ModifiableProperty<DisabledByEnum?> _disabledBy = new(nameof(_disabledBy));
+    [JsonPropertyName("serial_number")] public string? SerialNumber { get; init; }
 
-        [JsonProperty]
-        private readonly ModifiableProperty<string> _nameByUser = new(nameof(_nameByUser));
+    [JsonPropertyName("sw_version")] 
+    public string[] SwVersion { get; init; } = [];
 
-        [JsonProperty("name")]
-        private string _originalName;
+    [JsonPropertyName("via_device_id")] public string? ViaDeviceId { get; init; }
+    
+    public override string ToString() => $"{nameof(Device)}: {Name}";
 
-        /// <inheritdoc />
-        protected internal override string? UniqueId
-        {
-            get => Id;
-            protected set => Id = value;
-        }
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        return obj is Device device &&
+               Id == device.Id;
+    }
 
-        /// <summary>
-        /// Gets the ID of this device.
-        /// </summary>
-        [JsonProperty]
-        public string? Id { get; set; }
-
-        /// <summary>
-        /// Gets the original name of the device assigned when was created.
-        /// </summary>
-        public string OriginalName => _originalName;
-
-        /// <summary>
-        /// Gets the current name of this device.
-        /// It will the one given by the user after creation; otherwise, <see cref="OriginalName"/>.
-        /// <para>
-        /// If set to <see langword="null"/>, the <see cref="OriginalName"/> will be used.
-        /// </para>
-        /// </summary>
-        [JsonIgnore]
-        public string Name
-        {
-            get => _nameByUser.Value ?? _originalName;
-            set => _nameByUser.Value = value == _originalName ? null : value;
-        }
-
-        /// <summary>
-        /// Gets the unique ids of the configuration entries associated with this device.
-        /// </summary>
-        [JsonProperty("config_entries")]
-        public string[] ConfigurationEntries { get; private set; }
-
-        /// <summary>
-        /// Gets a URL on which the device or service can be configured.
-        /// </summary>
-        [JsonPropertyName("ConfigurationUrl")]
-        public string? ConfigurationUrl { get; init; }
-
-        /// <summary>
-        /// Gets a set of tuples of (connection_type, connection identifier).
-        /// Connection types are defined in the device registry module.
-        /// </summary>
-        [JsonPropertyName("Connections")]
-        public List<Tuple<string, string>> Connections { get; init; }
-
-        /// <summary>
-        /// Gets a set of identifiers. They identify the device in the outside world.
-        /// An example is a serial number.
-        /// </summary>
-        [JsonPropertyName("Identifiers")]
-        public List<Tuple<string, string>> Identifiers { get; init; }
-
-        /// <summary>
-        /// Gets the manufacturer of the device.
-        /// </summary>
-        [JsonPropertyName("Manufacturer")]
-        public string? Manufacturer { get; init; }
-
-        /// <summary>
-        /// Gets the model of the device.
-        /// </summary>
-        [JsonPropertyName("Model")]
-        public string? Model { get; init; }
-
-        /// <summary>
-        /// Gets the firmware version of the device.
-        /// </summary>
-        [JsonProperty]
-        [JsonConverter(typeof(SingleOrArrayConverter))]
-        public string[] SwVersion { get; private set; } = [];
-
-        /// <summary>
-        /// Gets the hardware version of the device.
-        /// </summary>
-        [JsonPropertyName("HwVersion")]
-        public string? HwVersion { get; init; }
-
-        /// <summary>
-        /// Gets the type of entry.
-        /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public DeviceEntryTypes EntryType { get; private set; }
-
-        /// <summary>
-        /// Gets the identifier of a device that routes messages between this device and Home Assistant.
-        /// Examples of such devices are hubs, or parent devices of a sub-device.
-        /// This is used to show device topology in Home Assistant.
-        /// </summary>
-        [JsonPropertyName("ViaDeviceId")]
-        public string? ViaDeviceId { get; init; }
-
-        /// <summary>
-        /// Gets the area id which the device is placed in.
-        /// </summary>
-        public string? AreaId
-        {
-            get => _areaId.Value;
-            set => _areaId.Value = value;
-        }
-
-        /// <summary>
-        /// Gets the suggested name for the area where the device is located.
-        /// </summary>
-        [JsonPropertyName("SuggestedArea")]
-        public string? SuggestedArea { get; init; }
-
-        /// <summary>
-        /// Gets a value indicating the disabling source, if any.
-        /// </summary>
-        [JsonIgnore]
-        public DisabledByEnum DisabledBy => _disabledBy.Value ?? DisabledByEnum.None;
-
-        /// <summary>
-        /// Gets a value indicating whether the device is disabled.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsDisabled => DisabledBy != DisabledByEnum.None;
-
-        [JsonConstructor]
-        private Device()
-        {
-        }
-
-        // Used for testing purposes.
-        internal static Device CreateUnmodified(string id, string name, string areaId = null, DisabledByEnum disabledBy = DisabledByEnum.None)
-        {
-            var result = new Device
-            {
-                Id = id,
-                _originalName = name,
-                AreaId = areaId,
-                _disabledBy =
-                {
-                    Value = disabledBy
-                }
-            };
-
-            result.SaveChanges();
-
-            return result;
-        }
-
-        /// <inheritdoc />
-        protected override IEnumerable<IModifiableProperty> GetModifiableProperties()
-        {
-            yield return _areaId;
-            yield return _disabledBy;
-            yield return _nameByUser;
-        }
-
-        /// <inheritdoc />
-        public override string ToString() => $"{nameof(Device)}: {Name}";
-
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            return obj is Device device &&
-                   Id == device.Id;
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return -401120461 + EqualityComparer<string>.Default.GetHashCode(Id);
-        }
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return -401120461 + EqualityComparer<string>.Default.GetHashCode(Id);
     }
 }
+
+/// <summary>
+/// Defines the device entry type possible values.
+/// </summary>
+[PublicAPI]
+public enum DeviceEntryTypes
+{
+    /// <summary>
+    /// Device has not defined type.
+    /// </summary>
+    None,
+
+    /// <summary>
+    /// Device is a service entry type.
+    /// </summary>
+    Service,
+}
+
+public class ModifiablePropertyAttribute : Attribute;

@@ -1,10 +1,9 @@
-﻿namespace HassClient.WS.Messages.Commands
+﻿namespace HassClient.WS.Messages.Commands;
+
+internal class GetServicesMessage : BaseOutgoingMessage
 {
-    internal class GetServicesMessage : BaseOutgoingMessage
+    public GetServicesMessage()
+        : base("get_services")
     {
-        public GetServicesMessage()
-            : base("get_services")
-        {
         }
-    }
 }

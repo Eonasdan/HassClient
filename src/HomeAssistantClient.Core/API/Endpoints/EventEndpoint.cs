@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using HomeAssistantClient.Core.API.Models;
+﻿using HomeAssistantClient.Core.API.Models;
 using JetBrains.Annotations;
 
 namespace HomeAssistantClient.Core.API.Endpoints;

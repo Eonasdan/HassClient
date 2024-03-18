@@ -1,17 +1,16 @@
-﻿namespace HassClient.WS.Messages.Commands
+﻿namespace HassClient.WS.Messages.Commands;
+
+/// <summary>
+/// Represents an identifiable outgoing message (any but authentication messages).
+/// </summary>
+public abstract class BaseOutgoingMessage : BaseIdentifiableMessage
 {
     /// <summary>
-    /// Represents an identifiable outgoing message (any but authentication messages).
+    /// Initializes a new instance of the <see cref="BaseOutgoingMessage"/> class.
     /// </summary>
-    public abstract class BaseOutgoingMessage : BaseIdentifiableMessage
+    /// <param name="type"><inheritdoc/></param>
+    protected BaseOutgoingMessage(string type)
+        : base(type)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseOutgoingMessage"/> class.
-        /// </summary>
-        /// <param name="type"><inheritdoc/></param>
-        protected BaseOutgoingMessage(string type)
-            : base(type)
-        {
         }
-    }
 }

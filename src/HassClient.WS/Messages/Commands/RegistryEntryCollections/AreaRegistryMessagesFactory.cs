@@ -1,29 +1,28 @@
 ﻿using HassClient.Core.Models.RegistryEntries;
 
-namespace HassClient.WS.Messages.Commands.RegistryEntryCollections
+namespace HassClient.WS.Messages.Commands.RegistryEntryCollections;
+
+internal class AreaRegistryMessagesFactory : RegistryEntryCollectionMessagesFactory<Area>
 {
-    internal class AreaRegistryMessagesFactory : RegistryEntryCollectionMessagesFactory<Area>
+    public static readonly AreaRegistryMessagesFactory Instance = new();
+
+    public AreaRegistryMessagesFactory()
+        : base("config/area_registry", "area")
     {
-        public static readonly AreaRegistryMessagesFactory Instance = new();
+    }
 
-        public AreaRegistryMessagesFactory()
-            : base("config/area_registry", "area")
-        {
-        }
+    public new BaseOutgoingMessage CreateCreateMessage(Area? area)
+    {
+        return base.CreateCreateMessage(area);
+    }
 
-        public new BaseOutgoingMessage CreateCreateMessage(Area? area)
-        {
-            return base.CreateCreateMessage(area);
-        }
+    public new BaseOutgoingMessage CreateUpdateMessage(Area? area, bool forceUpdate)
+    {
+        return base.CreateUpdateMessage(area, forceUpdate);
+    }
 
-        public new BaseOutgoingMessage CreateUpdateMessage(Area? area, bool forceUpdate)
-        {
-            return base.CreateUpdateMessage(area, forceUpdate);
-        }
-
-        public new BaseOutgoingMessage CreateDeleteMessage(Area? area)
-        {
-            return base.CreateDeleteMessage(area);
-        }
+    public new BaseOutgoingMessage CreateDeleteMessage(Area? area)
+    {
+        return base.CreateDeleteMessage(area);
     }
 }

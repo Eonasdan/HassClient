@@ -1,27 +1,26 @@
 ﻿using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using HassClient.Core.Models;
-using Newtonsoft.Json;
 
-namespace HassClient.Core.Serialization.Converters
+namespace HassClient.Core.Serialization.Converters;
+
+/// <summary>
+/// Converter for <see cref="CalendarVersion"/>.
+/// </summary>
+public class CalendarVersionConverter : JsonConverter<CalendarVersion>
 {
-    /// <summary>
-    /// Converter for <see cref="CalendarVersion"/>.
-    /// </summary>
-    public class CalendarVersionConverter : JsonConverter<CalendarVersion>
+    public override CalendarVersion Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        /// <inheritdoc />
-        public override void WriteJson(JsonWriter writer, CalendarVersion value, JsonSerializer serializer)
-        {
-            serializer.Serialize(writer, value.ToString());
-        }
+        var versionStr = reader.GetString();
+        var existingValue = new CalendarVersion();
+        if (versionStr != null) existingValue.Parse(versionStr);
 
-        /// <inheritdoc />
-        public override CalendarVersion ReadJson(JsonReader reader, Type objectType, CalendarVersion existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            var versionStr = serializer.Deserialize<string>(reader);
-            existingValue = existingValue ?? new CalendarVersion();
-            existingValue.Parse(versionStr);
-            return existingValue;
-        }
+        return existingValue;
+    }
+
+    public override void Write(Utf8JsonWriter writer, CalendarVersion value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString());
     }
 }

@@ -1,28 +1,25 @@
-﻿using Newtonsoft.Json;
+﻿namespace HassClient.WS.Messages;
 
-namespace HassClient.WS.Messages
+/// <summary>
+/// Represents an identifiable message used by Web Socket API.
+/// </summary>
+public abstract class BaseIdentifiableMessage : BaseMessage
 {
     /// <summary>
-    /// Represents an identifiable message used by Web Socket API.
+    /// Gets the message identifier.
     /// </summary>
-    public abstract class BaseIdentifiableMessage : BaseMessage
-    {
-        /// <summary>
-        /// Gets the message identifier.
-        /// </summary>
-        [JsonProperty(Required = Required.Always)]
-        public uint Id { get; internal set; }
+    [JsonProperty(Required = Required.Always)]
+    public uint Id { get; internal set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseIdentifiableMessage"/> class.
-        /// </summary>
-        /// <param name="type"><inheritdoc/></param>
-        protected BaseIdentifiableMessage(string type)
-            : base(type)
-        {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseIdentifiableMessage"/> class.
+    /// </summary>
+    /// <param name="type"><inheritdoc/></param>
+    protected BaseIdentifiableMessage(string type)
+        : base(type)
+    {
         }
 
-        /// <inheritdoc />
-        public override string ToString() => $"{base.ToString()} Id:{Id}";
-    }
+    /// <inheritdoc />
+    public override string ToString() => $"{base.ToString()} Id:{Id}";
 }

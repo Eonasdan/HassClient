@@ -1,32 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
-namespace HassClient.Core.Serialization
+namespace HassClient.Core.Serialization;
+
+/// <summary>
+/// Contract resolver used to filter only selected properties during object serialization.
+/// </summary>
+public class SelectedPropertiesContractResolver : DefaultContractResolver
 {
+    private HashSet<string> _selectedProperties;
+
     /// <summary>
-    /// Contract resolver used to filter only selected properties during object serialization.
+    /// White-list containing the named of the properties to be included in the serialization.
     /// </summary>
-    public class SelectedPropertiesContractResolver : DefaultContractResolver
+    public IEnumerable<string> SelectedProperties
     {
-        private HashSet<string> _selectedProperties;
+        get => _selectedProperties;
+        set => _selectedProperties = [..value];
+    }
 
-        /// <summary>
-        /// White-list containing the named of the properties to be included in the serialization.
-        /// </summary>
-        public IEnumerable<string> SelectedProperties
-        {
-            get => _selectedProperties;
-            set => _selectedProperties = [..value];
-        }
-
-        /// <inheritdoc />
-        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
-        {
-            var allProps = base.CreateProperties(type, memberSerialization);
-            return allProps.Where(p => _selectedProperties.Contains(p.UnderlyingName)).ToList();
-        }
+    /// <inheritdoc />
+    protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
+    {
+        var allProps = base.CreateProperties(type, memberSerialization);
+        return allProps.Where(p => _selectedProperties.Contains(p.UnderlyingName)).ToList();
     }
 }

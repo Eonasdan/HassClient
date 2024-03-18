@@ -1,10 +1,9 @@
-﻿namespace HassClient.WS.Messages.Commands
+﻿namespace HassClient.WS.Messages.Commands;
+
+internal class GetPanelsMessage : BaseOutgoingMessage
 {
-    internal class GetPanelsMessage : BaseOutgoingMessage
+    public GetPanelsMessage()
+        : base("get_panels")
     {
-        public GetPanelsMessage()
-            : base("get_panels")
-        {
         }
-    }
 }
