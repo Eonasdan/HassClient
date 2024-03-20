@@ -24,7 +24,7 @@ namespace HassClient.Core.Helpers
         /// <returns>
         /// The domain as a <see cref="KnownDomains"/> if defined; otherwise, <see cref="KnownDomains.Undefined"/>.
         /// </returns>
-        public static KnownDomains AsKnownDomain(this string domain)
+        public static KnownDomains AsKnownDomain(this string? domain)
         {
             if (string.IsNullOrEmpty(domain))
             {
@@ -57,7 +57,7 @@ namespace HassClient.Core.Helpers
         /// <returns>
         /// The event type as a <see cref="KnownEventTypes"/> if defined; otherwise, <see cref="KnownEventTypes.Any"/>.
         /// </returns>
-        public static KnownEventTypes AsKnownEventType(this string eventType)
+        public static KnownEventTypes AsKnownEventType(this string? eventType)
         {
             if (string.IsNullOrEmpty(eventType))
             {
@@ -90,7 +90,7 @@ namespace HassClient.Core.Helpers
         /// <returns>
         /// The service as a <see cref="KnownServices"/> if defined; otherwise, <see cref="KnownServices.Undefined"/>.
         /// </returns>
-        public static KnownServices AsKnownService(this string service)
+        public static KnownServices AsKnownService(this string? service)
         {
             if (string.IsNullOrEmpty(service))
             {
@@ -123,7 +123,7 @@ namespace HassClient.Core.Helpers
         /// <returns>
         /// The state as a <see cref="KnownStates"/> if defined; otherwise, <see cref="KnownStates.Undefined"/>.
         /// </returns>
-        public static KnownStates AsKnownState(this string state)
+        public static KnownStates AsKnownState(this string? state)
         {
             return KnownStatesCache.AsEnum(state);
         }

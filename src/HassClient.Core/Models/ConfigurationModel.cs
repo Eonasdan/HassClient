@@ -12,15 +12,15 @@ namespace HassClient.Core.Models
         [JsonProperty("whitelist_external_dirs")]
         private string[] WhitelistExternalDirs
         {
-            get => AllowedExternalDirs?.ToArray();
-            set => AllowedExternalDirs = AllowedExternalDirs ?? value.ToList();
+            get => AllowedExternalDirs.ToArray();
+            set => AllowedExternalDirs = value.ToList();
         }
 
         [JsonProperty("allowlist_external_dirs")]
         private string[] AllowListExternalDirs
         {
-            get => AllowedExternalDirs?.ToArray();
-            set => AllowedExternalDirs = AllowedExternalDirs ?? value.ToList();
+            get => AllowedExternalDirs.ToArray();
+            set => AllowedExternalDirs = value.ToList();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace HassClient.Core.Models
         /// Gets the list of components loaded, in the [domain] or [domain].[component] format.
         /// </summary>
         [JsonProperty]
-        public List<string> Components { get; private set; }
+        public List<string> Components { get; private set; } = [];
 
         /// <summary>
         /// Gets the relative path to the configuration directory (usually "/config").
@@ -75,7 +75,7 @@ namespace HassClient.Core.Models
         /// Gets the list of folders that can be used as sources for sending files. (e.g. /config/www).
         /// </summary>
         [JsonIgnore]
-        public List<string> AllowedExternalDirs { get; private set; }
+        public List<string> AllowedExternalDirs { get; private set; } = [];
 
         /// <summary>
         /// Gets the list of external URLs that can be fetched.
@@ -84,7 +84,7 @@ namespace HassClient.Core.Models
         /// </para>
         /// </summary>
         [JsonProperty("allowlist_external_urls")]
-        public List<string> AllowedExternalUrls { get; private set; }
+        public List<string> AllowedExternalUrls { get; private set; } = [];
 
         /// <summary>
         /// Gets the version of Home Assistant that is currently running.

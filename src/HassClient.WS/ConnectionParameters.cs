@@ -3,7 +3,7 @@
 namespace HassClient.WS
 {
     /// <summary>
-    /// Represents the connection parameters used by <see cref="HassWsApi"/>.
+    /// Represents the connection parameters used by <see cref="HassClientWebSocket"/>.
     /// </summary>
     public class ConnectionParameters
     {
@@ -51,7 +51,7 @@ namespace HassClient.WS
         /// <returns>
         /// The connection parameters based on the specified Home Assistant base URL and Access Token.
         /// </returns>
-        public static ConnectionParameters? CreateFromInstanceBaseUrl(string instanceBaseUrl, string accessToken)
+        public static ConnectionParameters CreateFromInstanceBaseUrl(string instanceBaseUrl, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(instanceBaseUrl))
             {

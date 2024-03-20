@@ -5,11 +5,12 @@ namespace HassClient.WS.AuthFlow;
 public class HomeAssistantConfiguration
 {
     private const string SectionName = "HomeAssistant";
-    
-    public string? Uri { get; set; }
+
+    public string Uri { get; set; } = default!;
     public string? ClientId { get; set; }
 
     public bool LimitHassInstance { get; set; } = true;
+    public string? Token { get; set; }
 
     public static HomeAssistantConfiguration? FromConfig(IConfiguration configuration)
     {

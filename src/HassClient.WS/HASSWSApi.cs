@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -66,7 +66,7 @@ namespace HassClient.WS
         /// A cancellation token used to propagate notification that this operation should be canceled.
         /// </param>
         /// <returns>A task representing the connection work.</returns>
-        public async Task ConnectAsync(ConnectionParameters? connectionParameters, int retries = 0,
+        public async Task ConnectAsync(ConnectionParameters connectionParameters, int retries = 0,
             CancellationToken cancellationToken = default)
         {
             await _hassClientWebSocket.ConnectAsync(connectionParameters, retries, () =>
@@ -194,7 +194,7 @@ namespace HassClient.WS
         {
             var commandMessage = new GetConfigMessage();
             var result = await _hassClientWebSocket.SendCommandWithResultAsync(commandMessage, cancellationToken);
-            if (!result.Success)
+            if (!(result?.Success ?? false))
             {
                 return false;
             }
@@ -1043,7 +1043,7 @@ namespace HassClient.WS
         }
 
         /// <summary>
-        /// Sends a customized command to the Home Assistant instance. This is useful when a command is not defined by the <see cref="HassWsApi"/>.
+        /// Sends a customized command to the Home Assistant instance. This is useful when a command is not defined by the <see cref="HassClientWebSocket"/>.
         /// </summary>
         /// <param name="rawCommandMessage">The raw command message to send.</param>
         /// <param name="cancellationToken">
@@ -1062,7 +1062,7 @@ namespace HassClient.WS
         }
 
         /// <summary>
-        /// Sends a customized command to the Home Assistant instance. This is useful when a command is not defined by the <see cref="HassWsApi"/>.
+        /// Sends a customized command to the Home Assistant instance. This is useful when a command is not defined by the <see cref="HassClientWebSocket"/>.
         /// </summary>
         /// <param name="rawCommandMessage">The raw command message to send.</param>
         /// <param name="cancellationToken">
@@ -1078,4 +1078,4 @@ namespace HassClient.WS
             return _hassClientWebSocket.SendCommandWithSuccessAsync(rawCommandMessage, cancellationToken);
         }
     }
-}
+}*/

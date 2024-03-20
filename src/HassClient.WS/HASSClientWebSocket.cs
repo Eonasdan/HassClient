@@ -24,7 +24,7 @@ namespace HassClient.WS
 {
     /// <summary>
     /// Represents an abstraction layer over <see cref="ClientWebSocket"/> used by
-    /// <see cref="HassWsApi"/> to send commands and subscribe for events.
+    /// <see cref="HassClientWebSocket"/> to send commands and subscribe for events.
     /// </summary>
     public class HassClientWebSocket : IDisposable
     {
@@ -506,33 +506,29 @@ namespace HassClient.WS
 
         private void CheckIsDisposed()
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(HassClientWebSocket));
-            }
+            if (!IsDisposed) return;
+            throw new ObjectDisposedException(nameof(HassClientWebSocket));
         }
 
         private void ClearSocketResources()
         {
-            if (ConnectionState != ConnectionStates.Disconnected)
+            if (ConnectionState == ConnectionStates.Disconnected) return;
+            ConnectionState = ConnectionStates.Disconnected;
+            IsReconnecting = false;
+
+            _connectionParameters = null;
+
+            if (_connectionTcs?.TrySetResult(false) == false)
             {
-                ConnectionState = ConnectionStates.Disconnected;
-                IsReconnecting = false;
-
-                _connectionParameters = null;
-
-                if (_connectionTcs?.TrySetResult(false) == false)
-                {
-                    _connectionTcs = null;
-                }
-
-                _socket?.Abort();
-                _socket?.Dispose();
-
-                _socketEventCallbacksBySubscriptionId.Clear();
-                _incomingMessageAwaitersById.Clear();
-                _receivedEventsChannel?.Writer.Complete();
+                _connectionTcs = null;
             }
+
+            _socket?.Abort();
+            _socket?.Dispose();
+
+            _socketEventCallbacksBySubscriptionId.Clear();
+            _incomingMessageAwaitersById.Clear();
+            _receivedEventsChannel?.Writer.Complete();
         }
 
         private async Task<TMessage> ReceiveMessage<TMessage>(ArraySegment<byte> buffer,
@@ -629,7 +625,7 @@ namespace HassClient.WS
             }
         }
 
-        private async Task<ResultMessage?> SendCommandAsync(BaseOutgoingMessage commandMessage,
+        private async Task<ResultMessage> SendCommandAsync(BaseIdentifiableMessage commandMessage,
             CancellationToken cancellationToken)
         {
             if (ConnectionState != ConnectionStates.Connected)
@@ -639,7 +635,7 @@ namespace HassClient.WS
 
             try
             {
-                if (_closeConnectionCts == null) return null;
+                if (_closeConnectionCts == null) return new ResultMessage { Success = false };
                 var linkedCts =
                     CancellationTokenSource.CreateLinkedTokenSource(_closeConnectionCts.Token, cancellationToken);
                 var responseTcs = new TaskCompletionSource<BaseIncomingMessage>(linkedCts.Token);
@@ -662,14 +658,14 @@ namespace HassClient.WS
             catch (OperationCanceledException)
             {
                 if (commandMessage.Id <= 0) throw;
-                _incomingMessageAwaitersById.TryRemove(commandMessage.Id, out var _);
+                _incomingMessageAwaitersById.TryRemove(commandMessage.Id, out _);
                 _socketEventCallbacksBySubscriptionId.Remove(commandMessage.Id);
 
                 throw;
             }
         }
 
-        private void CheckResultMessageError(BaseOutgoingMessage commandMessage, ResultMessage? resultMessage)
+        private static void CheckResultMessageError(BaseOutgoingMessage commandMessage, ResultMessage? resultMessage)
         {
             var errorInfo = resultMessage?.Error;
             if (errorInfo == null)
@@ -702,7 +698,7 @@ namespace HassClient.WS
         /// <returns>
         /// A task representing the asynchronous operation. The result of the task is the message returned by the server.
         /// </returns>
-        internal async Task<ResultMessage?> SendCommandWithResultAsync(BaseOutgoingMessage commandMessage,
+        internal async Task<ResultMessage> SendCommandWithResultAsync(BaseOutgoingMessage commandMessage,
             CancellationToken cancellationToken)
         {
             CheckIsDisposed();
@@ -727,9 +723,7 @@ namespace HassClient.WS
             CancellationToken cancellationToken)
         {
             var resultMessage = await SendCommandWithResultAsync(commandMessage, cancellationToken);
-            if (resultMessage != null)
-                return resultMessage is { Success: false } ? default : resultMessage.DeserializeResult<TResult>();
-            return default;
+            return resultMessage is { Success: false } ? default : resultMessage.DeserializeResult<TResult>();
         }
 
         /// <summary>
@@ -818,25 +812,27 @@ namespace HassClient.WS
             return true;
         }
 
-        internal Task<bool> AddEventHandlerSubscriptionAsync<T>(T value,
-            KnownEventTypes eventType, CancellationToken cancellationToken) where T : Delegate
+        public Task<bool> AddEventHandlerSubscriptionAsync<T>(T value,
+            KnownEventTypes eventType= KnownEventTypes.Any,
+            CancellationToken cancellationToken = default) where T : Delegate
         {
             return AddEventHandlerSubscriptionAsync(value, eventType.ToEventTypeString(), cancellationToken);
         }
 
-        internal Task<bool> RemoveEventHandlerSubscriptionAsync<T>(T value,
-            KnownEventTypes eventType, CancellationToken cancellationToken) where T : Delegate
+        public Task<bool> RemoveEventHandlerSubscriptionAsync<T>(T value,
+            KnownEventTypes eventType= KnownEventTypes.Any,
+            CancellationToken cancellationToken = default) where T : Delegate
         {
             return RemoveEventHandlerSubscriptionAsync(value, eventType.ToEventTypeString(), cancellationToken);
         }
 
-        internal Task<bool> AddEventHandlerSubscriptionAsync<T>(T value,
+        public Task<bool> AddEventHandlerSubscriptionAsync<T>(T value,
             CancellationToken cancellationToken) where T : Delegate
         {
             return AddEventHandlerSubscriptionAsync(value, Event.AnyEventFilter, cancellationToken);
         }
 
-        internal Task<bool> RemoveEventHandlerSubscriptionAsync<T>(T value,
+        public Task<bool> RemoveEventHandlerSubscriptionAsync<T>(T value,
             CancellationToken cancellationToken) where T : Delegate
         {
             return RemoveEventHandlerSubscriptionAsync(value, Event.AnyEventFilter, cancellationToken);

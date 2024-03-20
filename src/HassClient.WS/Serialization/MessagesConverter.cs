@@ -28,17 +28,19 @@ namespace HassClient.WS.Serialization
         public MessagesConverter()
         {
             _factoriesByType = Assembly.GetAssembly(_baseMessageType)
-                                 .GetTypes()
-                                 .Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(_baseMessageType) && x.GetConstructor(Type.EmptyTypes) != null)
+                ?.GetTypes()
+                                 .Where(x => x is { IsClass: true, IsAbstract: false } && x.IsSubclassOf(_baseMessageType) && x.GetConstructor(Type.EmptyTypes) != null)
                                  .Select(x => Expression.Lambda<Func<BaseMessage>>(Expression.New(x)).Compile())
-                                 .ToDictionary(x => x().Type);
+                                 .ToDictionary(x => x().Type) ?? new Dictionary<string, Func<BaseMessage>>();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             var obj = JObject.Load(reader);
-            var messageType = (string)obj["type"];
+            var messageType = (string?)obj["type"];
 
+            if (string.IsNullOrWhiteSpace(messageType)) throw new Exception("Message Type was null");
+            
             BaseMessage message;
             if (_factoriesByType.TryGetValue(messageType, out var factory))
             {
@@ -47,7 +49,7 @@ namespace HassClient.WS.Serialization
             }
             else
             {
-                var id = obj.GetValue("id").Value<uint>();
+                var id = (obj.GetValue("id") ?? throw new InvalidOperationException()).Value<uint>();
                 obj.Remove("id");
                 obj.Remove("type");
                 message = new RawCommandMessage(messageType, obj) { Id = id };
@@ -56,7 +58,7 @@ namespace HassClient.WS.Serialization
             return message;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }

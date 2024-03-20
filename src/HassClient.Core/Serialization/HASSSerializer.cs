@@ -189,7 +189,7 @@ namespace HassClient.Core.Serialization
         /// of the underlying type of <typeparamref name="TEnum"/>. Note that this value need not be a member of the
         /// <typeparamref name="TEnum"/> enumeration. This parameter is passed uninitialized.</param>
         /// <returns><see langword="true"/> if the value parameter was converted successfully; otherwise, <see langword="false"/>.</returns>
-        public static bool TryGetEnumFromSnakeCase<TEnum>(string value, out TEnum result)
+        public static bool TryGetEnumFromSnakeCase<TEnum>(string? value, out TEnum result)
             where TEnum : Enum
         {
             try
