@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using HassClient.Core.Models;
+using HassClient.WS.Extensions;
 using NUnit.Framework;
 
 namespace HassClient.WS.Tests

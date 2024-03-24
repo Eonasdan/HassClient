@@ -3,6 +3,7 @@ using HassClient.Core.Helpers;
 using HassClient.Core.Models;
 using HassClient.Core.Models.Events;
 using HassClient.Core.Serialization;
+using HassClient.WS.Extensions;
 using HassClient.WS.Messages.Response;
 using HassClient.WS.Tests.Mocks;
 using NUnit.Framework;

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HassClient.Core.Models.RegistryEntries;
 using HassClient.Core.Models.RegistryEntries.StorageEntities;
 using HassClient.Core.Tests;
+using HassClient.WS.Extensions;
 using NUnit.Framework;
 
 namespace HassClient.WS.Tests.RegistryEntryApiTests.StorageEntityRegistryEntryApiTests

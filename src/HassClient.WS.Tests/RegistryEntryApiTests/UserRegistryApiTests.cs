@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HassClient.Core.Models.RegistryEntries;
 using HassClient.Core.Tests;
+using HassClient.WS.Extensions;
 using NUnit.Framework;
 
 namespace HassClient.WS.Tests.RegistryEntryApiTests

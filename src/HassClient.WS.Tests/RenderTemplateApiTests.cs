@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HassClient.WS.Extensions;
 using NUnit.Framework;
 
 namespace HassClient.WS.Tests

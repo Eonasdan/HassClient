@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using HassClient.WS.Extensions;
 using HassClient.WS.Messages.Commands;
 using HassClient.WS.Messages.Response;
 using NUnit.Framework;

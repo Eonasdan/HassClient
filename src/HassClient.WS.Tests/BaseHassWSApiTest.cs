@@ -14,7 +14,7 @@ namespace HassClient.WS.Tests
 
         private readonly ConnectionParameters _connectionParameters;
 
-        protected HassWsApi HassWsApi;
+        protected HassClientWebSocket HassWsApi;
 
         public BaseHassWsApiTest()
         {
@@ -37,7 +37,7 @@ namespace HassClient.WS.Tests
         [OneTimeSetUp]
         protected virtual async Task OneTimeSetUp()
         {
-            HassWsApi = new HassWsApi();
+            HassWsApi = new HassClientWebSocket();
             await HassWsApi.ConnectAsync(_connectionParameters);
 
             HassSerializer.DefaultSettings.MissingMemberHandling = MissingMemberHandling.Error;
