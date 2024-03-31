@@ -30,7 +30,7 @@ namespace HassClient.Core.Serialization
                 new StringEnumConverter(NamingStrategy),
                 new TupleSetToDictionaryConverter(),
                 new TupleSetConverter(),
-            },
+            }
         };
 
         private static readonly JsonSerializer Serializer = CreateSerializer();

@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using HassClient.Core.API.Models.WellKnowStates;
+using HassClient.Core.Models;
 using HassClient.Core.Models.KnownEnums;
 using HassClient.WS.Extensions;
 using JetBrains.Annotations;
@@ -15,12 +16,12 @@ public static class WeatherServices
     /// <summary>
     /// Get forecasts
     /// </summary>
-    /// <param name="client"></param>
+    /// <param name="wrapper"></param>
     /// <param name="forecastRequest"></param>
-    public static async Task<List<Forecast>> GetForecast(HassClientWebSocket client,
+    public static async Task<List<Forecast>> GetForecastAsync(IHomeAssistantClientWrapper wrapper,
         WeatherForecastRequest forecastRequest)
     {
-        var result = await client.CallServiceAsync<Dictionary<string, ForecastResponse>>("weather", "get_forecasts",
+        var result = await wrapper.WebSocketClient.CallServiceAsync<Dictionary<string, ForecastResponse>>("weather", "get_forecasts",
             data: forecastRequest
         );
 
@@ -29,7 +30,16 @@ public static class WeatherServices
 
         return response.Forecasts;
     }
-    //todo also get from "state" since that has current temps
+    
+    public static async Task<(KnownStates State, WeatherState.WeatherAttributes Weather)?> GetCurrentAsync(IHomeAssistantClientWrapper wrapper)
+    {
+        var weatherState = await wrapper.ApiClient.State
+            .GetStateAsync<WeatherState>("weather.forecast_home");
+
+        if (weatherState is null) return null;
+
+        return (weatherState.State, weatherState.Attributes);
+    }
 
     public class WeatherForecastRequest(
         ForecastType type = ForecastType.Daily,
@@ -52,25 +62,5 @@ public static class WeatherServices
     public class ForecastResponse
     {
         [JsonProperty("forecast")] public List<Forecast> Forecasts { get; set; } = [];
-    }
-
-    public class Forecast
-    {
-        [JsonProperty("condition")] public KnownStates Condition { get; set; }
-
-        [JsonProperty("datetime")] public DateTimeOffset Datetime { get; set; }
-
-        [JsonProperty("wind_bearing")] public double WindBearing { get; set; }
-
-        [JsonProperty("temperature")] public long Temperature { get; set; }
-
-        // ReSharper disable once StringLiteralTypo
-        [JsonProperty("templow")] public long TemperatureLow { get; set; }
-
-        [JsonProperty("wind_speed")] public double WindSpeed { get; set; }
-
-        [JsonProperty("precipitation")] public double Precipitation { get; set; }
-
-        [JsonProperty("humidity")] public long Humidity { get; set; }
     }
 }

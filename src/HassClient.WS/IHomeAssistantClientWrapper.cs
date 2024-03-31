@@ -5,9 +5,10 @@ using JetBrains.Annotations;
 namespace HassClient.WS;
 
 [PublicAPI]
-public interface IHASocketWrapper : IDisposable
+public interface IHomeAssistantClientWrapper : IDisposable
 {
-    HassClientWebSocket Client { get; }
+    HassClientWebSocket WebSocketClient { get; }
+    ApiClient ApiClient { get; }
     bool IsConnected { get; }
     Task OpenAsync();
     Task CloseAsync();
