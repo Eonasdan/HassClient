@@ -4,18 +4,13 @@ using HassClient.WS.Messages.Response;
 
 namespace HassClient.WS
 {
-    internal class SocketEventSubscription
+    internal class SocketEventSubscription(uint subscriptionId)
     {
         private Delegate? _internalEventHandler;
 
-        public uint SubscriptionId { get; set; }
+        public uint SubscriptionId { get; set; } = subscriptionId;
 
         public uint SubscriptionCount { get; private set; }
-
-        public SocketEventSubscription(uint subscriptionId)
-        {
-            SubscriptionId = subscriptionId;
-        }
 
         public void AddSubscription<T>(T eventHandler) where T : Delegate
         {

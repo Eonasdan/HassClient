@@ -9,7 +9,7 @@ public class Forecast
 {
     [JsonProperty("condition")]
     [JsonPropertyName("condition")]
-    public KnownStates Condition { get; set; }
+    public KnowWeatherStates Condition { get; set; }
 
     [JsonProperty("datetime")]
     [JsonPropertyName("datetime")]

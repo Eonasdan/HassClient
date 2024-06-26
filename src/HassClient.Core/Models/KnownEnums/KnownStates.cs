@@ -43,12 +43,10 @@ public enum KnownStates
     Arming,
     Auto,
     BackedUp,
-    BellowHorizon,
+    BelowHorizon,
     Cleaning,
-    [EnumMember(Value = "clear-night")] ClearNight,
     Closed,
     Closing,
-    Cloudy,
     Configure,
     Configured,
     Cool,
@@ -60,21 +58,14 @@ public enum KnownStates
     Dry,
     Eco,
     Error,
-    Exceptional,
     FanOnly,
     Far,
-    Fog,
-    Hail,
     Hans,
     Heat,
     HeatCool,
     Home,
     Idle,
     Initializing,
-    Lightning,
-
-    [EnumMember(Value = "lightning-rainy")]
-    LightningRainy,
     Locked,
     None,
     NotHome,
@@ -84,32 +75,52 @@ public enum KnownStates
     On,
     Open,
     Opening,
-    Partlycloudy,
     Paused,
     Pending,
     Playing,
-    Pouring,
     PriorityOnly,
     Problem,
-    Rainy,
     Ready,
     Recording,
     Returning,
     Sleeping,
-    Snowy,
-    [EnumMember(Value = "snowy-rainy")] SnowyRainy,
     Standby,
     Still,
     Stopped,
     Streaming,
-    Sunny,
     Triggered,
     Unlocked,
     Vibrate,
-    Windy,
-    [EnumMember(Value = "windy-variant")] WindyVariant,
     Zoning,
 }
+
+
+[JsonConverter(typeof(KebabJsonStringEnumConverter<KnowWeatherStates>))]
+[PublicAPI]
+public enum KnowWeatherStates
+{
+    [EnumMember(Value = "clear-night")] ClearNight,
+    Cloudy,
+    Exceptional,
+    Fog,
+    Hail,
+    Lightning,
+    [EnumMember(Value = "lightning-rainy")]
+    LightningRainy,
+    // ReSharper disable once StringLiteralTypo
+    [EnumMember(Value = "partlycloudy")]
+    PartlyCloudy,
+    Pouring,
+    Rainy,
+    Snowy,
+    [EnumMember(Value = "snowy-rainy")] SnowyRainy,
+    Sunny,
+    Windy,
+    [EnumMember(Value = "windy-variant")] WindyVariant
+}
+
+public class KebabJsonStringEnumConverter<TEnum>() :
+    JsonStringEnumConverter<TEnum>(JsonNamingPolicy.KebabCaseLower) where TEnum : struct, Enum;
 
 public class SnakeJsonStringEnumConverter<TEnum>() :
     JsonStringEnumConverter<TEnum>(JsonNamingPolicy.SnakeCaseLower) where TEnum : struct, Enum;

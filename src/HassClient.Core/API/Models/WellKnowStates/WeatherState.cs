@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using HassClient.Core.Models;
+using HassClient.Core.Models.KnownEnums;
 using JetBrains.Annotations;
 
 namespace HassClient.Core.API.Models.WellKnowStates;
@@ -10,6 +10,9 @@ namespace HassClient.Core.API.Models.WellKnowStates;
 public class WeatherState : BaseState
 {
     [JsonPropertyName("attributes")] public WeatherAttributes Attributes { get; init; } = default!;
+    
+    [JsonPropertyName("state")]
+    public new KnowWeatherStates State { get; set; }
 
     [PublicAPI]
     public class WeatherAttributes

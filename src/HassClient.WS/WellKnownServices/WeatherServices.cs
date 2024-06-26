@@ -31,7 +31,7 @@ public static class WeatherServices
         return response.Forecasts;
     }
     
-    public static async Task<(KnownStates State, WeatherState.WeatherAttributes Weather)?> GetCurrentAsync(IHomeAssistantClientWrapper wrapper)
+    public static async Task<(KnowWeatherStates State, WeatherState.WeatherAttributes Weather)?> GetCurrentAsync(IHomeAssistantClientWrapper wrapper)
     {
         var weatherState = await wrapper.ApiClient.State
             .GetStateAsync<WeatherState>("weather.forecast_home");
@@ -39,6 +39,11 @@ public static class WeatherServices
         if (weatherState is null) return null;
 
         return (weatherState.State, weatherState.Attributes);
+    }
+
+    public static Task<SunState?> GetSunAsync(IHomeAssistantClientWrapper wrapper)
+    {
+        return wrapper.ApiClient.State.GetStateAsync<SunState>("sun.sun");
     }
 
     public class WeatherForecastRequest(
