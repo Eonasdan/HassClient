@@ -13,11 +13,11 @@ namespace HassClient.WS;
 [PublicAPI]
 public class ApiClient : JsonClient
 {
-    public ApiClient(HttpClient client, HomeAssistantConfiguration homeAssistantConfiguration) : base(client)
+    public ApiClient(IHttpClientFactory factory, HomeAssistantConfiguration homeAssistantConfiguration) : base(factory)
     {
-        client.BaseAddress = new Uri($"{homeAssistantConfiguration!.Uri}/api/");
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", homeAssistantConfiguration.Token);
-        client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("identity"));
+        HttpClient.BaseAddress = new Uri($"{homeAssistantConfiguration!.Uri}/api/");
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", homeAssistantConfiguration.Token);
+        HttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("identity"));
 
         Automation = new AutomationEndpoint(this);
         Calendar = new CalendarEndpoint(this);
@@ -35,7 +35,7 @@ public class ApiClient : JsonClient
         Stats = new StatsEndpoint(this);
         Template = new TemplateEndpoint(this);
     }
-    
+
     public async Task<MessageObject?> GetStatusMessage() => await GetAsync<MessageObject>("");
 
     public AutomationEndpoint Automation { get; }
