@@ -10,7 +10,7 @@ namespace HassClient.Core.API.Models.WellKnowStates;
 public class WeatherState : BaseState
 {
     [JsonPropertyName("attributes")] public WeatherAttributes Attributes { get; init; } = default!;
-    
+
     [JsonPropertyName("state")]
     public new KnowWeatherStates State { get; set; }
 
@@ -53,7 +53,7 @@ public class WeatherState : BaseState
         [JsonPropertyName("precipitation_unit")]
         public string PrecipitationUnit { get; init; } = default!;
 
-        [JsonPropertyName("forecast")] public List<Forecast> Forecast { get; init; } = [];
+        //[JsonPropertyName("forecast")] public List<Forecast> Forecast { get; init; } = [];
 
         [JsonPropertyName("attribution")]
         public string Attribution { get; init; } = default!;
