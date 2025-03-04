@@ -14,25 +14,25 @@ namespace HassClient.WS.Tests.Mocks.HassServer
             return receivedCommand is SubscribeEventsMessage || receivedCommand is UnsubscribeEventsMessage;
         }
 
-        public override BaseIdentifiableMessage ProccessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
+        public override BaseIdentifiableMessage ProcessCommand(MockHassServerRequestContext context, BaseIdentifiableMessage receivedCommand)
         {
             if (receivedCommand is SubscribeEventsMessage subscribeMessage)
             {
                 var eventType = subscribeMessage.EventType ?? KnownEventTypes.Any.ToEventTypeString();
-                if (!this.subscribersByEventType.TryGetValue(eventType, out var subcribers))
+                if (!this.subscribersByEventType.TryGetValue(eventType, out var subscribers))
                 {
-                    subcribers = new List<uint>();
-                    this.subscribersByEventType.Add(eventType, subcribers);
+                    subscribers = new List<uint>();
+                    this.subscribersByEventType.Add(eventType, subscribers);
 
                 }
-                subcribers.Add(subscribeMessage.Id);
+                subscribers.Add(subscribeMessage.Id);
                 return this.CreateResultMessageWithResult(null);
             }
             else if (receivedCommand is UnsubscribeEventsMessage unsubscribeMessage)
             {
                 foreach (var item in this.subscribersByEventType.Values)
                 {
-                    if (item.Remove(unsubscribeMessage.SubscriptionId))
+                    if (item.Remove(unsubscribeMessage.Subscription))
                     {
                         //success = true;
                         break;

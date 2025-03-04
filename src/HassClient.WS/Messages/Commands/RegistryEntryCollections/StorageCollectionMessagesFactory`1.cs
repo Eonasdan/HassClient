@@ -44,42 +44,44 @@ namespace HassClient.WS.Messages
         }
 
         /// <summary>
-        /// Creates a <see cref="BaseOutgoingMessage"/> used to add a new registry entry in the storage collection.
+        /// Builds a <see cref="BaseOutgoingMessage"/> used to add a new registry entry in the storage collection.
         /// </summary>
         /// <param name="entry">The storage collection entry.</param>
         /// <returns>
         /// A <see cref="BaseOutgoingMessage"/> used to add a new registry entry in the storage collection.
         /// </returns>
-        public new BaseOutgoingMessage CreateCreateMessage(TStorageEntity entry)
+        public new BaseOutgoingMessage BuildCreateMessage(TStorageEntity entry)
         {
-            return base.CreateCreateMessage(entry);
+            return base.BuildCreateMessage(entry);
         }
 
         /// <summary>
-        /// Creates a <see cref="BaseOutgoingMessage"/> used to update an existing registry entry in the storage collection.
+        /// Builds a <see cref="BaseOutgoingMessage"/> used to update an existing registry entry in the storage collection.
         /// </summary>
         /// <param name="entry">The storage collection entry.</param>
         /// <param name="forceUpdate">
-        /// Indicates if the update message force the update of every modifiable property.
+        /// Indicates if the update message force the update of every modifiable property. If the entity does not
+        /// support partial updates, this parameter is ignored.
         /// </param>
         /// <returns>
         /// A <see cref="BaseOutgoingMessage"/> used update an existing registry entry in the storage collection.
         /// </returns>
-        public new BaseOutgoingMessage CreateUpdateMessage(TStorageEntity entry, bool forceUpdate)
+        public new BaseOutgoingMessage BuildUpdateMessage(TStorageEntity entry, bool forceUpdate)
         {
-            return base.CreateUpdateMessage(entry, forceUpdate);
+            var shouldForceUpdate = !entry.SupportsPartialUpdates || forceUpdate;
+            return base.BuildUpdateMessage(entry, shouldForceUpdate);
         }
 
         /// <summary>
-        /// Creates a <see cref="BaseOutgoingMessage"/> used to delete an existing registry entry from the storage collection.
+        /// Builds a <see cref="BaseOutgoingMessage"/> used to delete an existing registry entry from the storage collection.
         /// </summary>
         /// <param name="entry">The storage collection entry.</param>
         /// <returns>
         /// A <see cref="BaseOutgoingMessage"/> used delete an existing registry entry from the storage collection.
         /// </returns>
-        public new BaseOutgoingMessage CreateDeleteMessage(TStorageEntity entry)
+        public BaseOutgoingMessage BuildDeleteMessage(TStorageEntity entry)
         {
-            return base.CreateDeleteMessage(entry);
+            return base.BuildDeleteMessage(entry);
         }
     }
 }

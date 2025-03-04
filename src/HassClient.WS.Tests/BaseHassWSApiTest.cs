@@ -2,6 +2,7 @@ using HassClient.Serialization;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HassClient.WS.Tests
@@ -11,9 +12,11 @@ namespace HassClient.WS.Tests
         public const string TestsInstanceBaseUrlVar = "TestsInstanceBaseUrl";
         public const string TestsAccessTokenVar = "TestsAccessToken";
 
+        private readonly CancellationTokenSource cts;
         private readonly ConnectionParameters connectionParameters;
+        protected readonly HassWSApi hassWSApi;
 
-        protected HassWSApi hassWSApi;
+        protected CancellationToken CancellationToken => this.cts.Token;
 
         public BaseHassWSApiTest()
         {
@@ -30,14 +33,15 @@ namespace HassClient.WS.Tests
                 Assert.Ignore($"Hass access token for tests not provided. It should be set in the environment variable '{TestsAccessTokenVar}'");
             }
 
+            this.cts = new CancellationTokenSource();
             this.connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(instanceBaseUrl, accessToken);
+            this.hassWSApi = new HassWSApi();
         }
 
         [OneTimeSetUp]
         protected virtual async Task OneTimeSetUp()
         {
-            this.hassWSApi = new HassWSApi();
-            await this.hassWSApi.ConnectAsync(this.connectionParameters);
+            await this.hassWSApi.ConnectAsync(this.connectionParameters, cancellationToken: this.cts.Token);
 
             HassSerializer.DefaultSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
             HassSerializer.DefaultSettings.Error += this.HassSerializerError;
@@ -57,6 +61,8 @@ namespace HassClient.WS.Tests
         [OneTimeTearDown]
         protected virtual Task OneTimeTearDown()
         {
+            this.cts?.Cancel();
+            this.cts?.Dispose();
             return Task.CompletedTask;
         }
     }

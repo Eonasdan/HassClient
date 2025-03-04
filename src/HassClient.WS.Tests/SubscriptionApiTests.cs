@@ -5,81 +5,144 @@ using HassClient.WS.Messages;
 using HassClient.WS.Tests.Mocks;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using static HassClient.WS.Tests.Mocks.MockEventListener;
 
 namespace HassClient.WS.Tests
 {
     public class SubscriptionApiTests : BaseHassWSApiTest
     {
-        private const string testEntitytId = "light.ceiling_lights";
+        private const string testEntityId = "light.ceiling_lights";
 
-        private async Task<StateChangedEvent> ForceStateChangedAndGetEventData(MockEventSubscriber subscriber)
+        private async Task<EventData<StateChangedEvent>> ForceStateChangedAndGetEventData(MockEventListener listener)
         {
-            var domain = testEntitytId.GetDomain();
-            var update = await this.hassWSApi.CallServiceForEntitiesAsync(domain, "toggle", testEntitytId);
-            Assert.NotNull(update, "SetUp failed");
+            var domain = testEntityId.GetDomain();
+            var update = await this.hassWSApi.Services.CallForEntitiesAsync(domain, "toggle", testEntityId);
+            Assert.NotNull(update, "SetUp failed. Service call failed");
 
-            var eventResultInfo = await subscriber.WaitFirstEventArgWithTimeoutAsync<EventResultInfo>(
-                                            (x) => HassSerializer.TryGetEnumFromSnakeCase<KnownEventTypes>(x.EventType, out var knownEventType) &&
-                                                   knownEventType == KnownEventTypes.StateChanged,
-                                            500);
+            var eventData = await listener.WaitFirstEventWithTimeoutAsync<EventResultInfo>(
+                    (x) => HassSerializer.TryGetEnumFromSnakeCase<KnownEventTypes>(x.EventType, out var knownEventType) &&
+                            knownEventType == KnownEventTypes.StateChanged,
+                    millisecondsTimeout: 500);
 
-            Assert.NotNull(eventResultInfo, "SetUp failed");
+            if (eventData == null)
+            {
+                return null;
+            }
 
-            return eventResultInfo.DeserializeData<StateChangedEvent>();
+            var args = eventData.Args.DeserializeData<StateChangedEvent>();
+            return new EventData<StateChangedEvent>(eventData.Sender, args);
         }
 
         [Test]
         public async Task AddMultipleEventHandlerSubscriptionForAnyEvent()
         {
-            var testEventHandler1 = new MockEventHandler<EventResultInfo>();
-            var testEventHandler2 = new MockEventHandler<EventResultInfo>();
-            var subscriber1 = new MockEventSubscriber();
-            var subscriber2 = new MockEventSubscriber();
-            testEventHandler1.Event += subscriber1.Handle;
-            testEventHandler2.Event += subscriber2.Handle;
-            var result1 = await this.hassWSApi.AddEventHandlerSubscriptionAsync(testEventHandler1.EventHandler);
-            var result2 = await this.hassWSApi.AddEventHandlerSubscriptionAsync(testEventHandler2.EventHandler);
+            var listener1 = new MockEventListener();
+            var listener2 = new MockEventListener();
+            var result1 = await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener1.Handle);
+            var result2 = await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener2.Handle);
 
             Assert.IsTrue(result1);
             Assert.IsTrue(result2);
 
-            var eventData = await this.ForceStateChangedAndGetEventData(subscriber1);
+            var eventData = await this.ForceStateChangedAndGetEventData(listener1);
 
-            Assert.NotZero(subscriber1.HitCount);
-            Assert.AreEqual(subscriber1.HitCount, subscriber2.HitCount);
-            Assert.IsTrue(eventData.EntityId == testEntitytId);
+            Assert.NotZero(listener1.HitCount);
+            Assert.AreEqual(listener1.HitCount, listener2.HitCount);
+            Assert.NotNull(eventData);
+            Assert.AreEqual(eventData.Sender, this.hassWSApi.WebSocket);
+            Assert.IsTrue(eventData.Args.EntityId == testEntityId);
+            Assert.NotNull(eventData.Args.NewState.State);
         }
 
         [Test]
         public async Task AddEventHandlerSubscriptionForAnyEvent()
         {
-            var testEventHandler = new MockEventHandler<EventResultInfo>();
-            var subscriber = new MockEventSubscriber();
-            testEventHandler.Event += subscriber.Handle;
-            var result = await this.hassWSApi.AddEventHandlerSubscriptionAsync(testEventHandler.EventHandler);
+            var listener = new MockEventListener();
+            var result = await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener.Handle);
 
             Assert.IsTrue(result);
 
-            await this.ForceStateChangedAndGetEventData(subscriber);
+            var eventData = await this.ForceStateChangedAndGetEventData(listener);
 
-            Assert.NotZero(subscriber.HitCount);
+            Assert.NotZero(listener.HitCount);
+            Assert.NotNull(eventData);
+            Assert.AreEqual(eventData.Sender, this.hassWSApi.WebSocket);
+            Assert.IsTrue(eventData.Args.EntityId == testEntityId);
+            Assert.NotNull(eventData.Args.NewState.State);
         }
 
         [Test]
         public async Task AddEventHandlerSubscriptionForStateChangedEvents()
         {
-            var testEventHandler = new MockEventHandler<EventResultInfo>();
-            var subscriber = new MockEventSubscriber();
-            testEventHandler.Event += subscriber.Handle;
-            var result = await this.hassWSApi.AddEventHandlerSubscriptionAsync(testEventHandler.EventHandler, KnownEventTypes.StateChanged);
+            var listener = new MockEventListener();
+            var result = await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener.Handle, KnownEventTypes.StateChanged);
 
             Assert.IsTrue(result);
 
-            var eventData = await this.ForceStateChangedAndGetEventData(subscriber);
+            var eventData = await this.ForceStateChangedAndGetEventData(listener);
 
-            Assert.NotZero(subscriber.HitCount);
-            Assert.IsTrue(eventData.EntityId == testEntitytId);
-            Assert.NotNull(eventData.NewState.State);
+            Assert.NotZero(listener.HitCount);
+            Assert.NotNull(eventData);
+            Assert.AreEqual(eventData.Sender, this.hassWSApi.WebSocket);
+            Assert.IsTrue(eventData.Args.EntityId == testEntityId);
+            Assert.NotNull(eventData.Args.NewState.State);
+        }
+
+        [Test]
+        public async Task RemoveEventHandlerSubscription_RemovesSingleHandler()
+        {
+            var listener = new MockEventListener();
+            var result = await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener.Handle);
+            Assert.IsTrue(result);
+
+            var removeResult = await this.hassWSApi.RemoveEventHandlerSubscriptionAsync(listener.Handle);
+            Assert.IsTrue(removeResult);
+
+            var eventsHitAfterUnsubscribe = listener.HitCount;
+
+            // Force a state change and verify the listener doesn't receive it
+            await this.ForceStateChangedAndGetEventData(new MockEventListener());
+            Assert.AreEqual(listener.HitCount, eventsHitAfterUnsubscribe);
+        }
+
+        [Test]
+        public async Task RemoveEventHandlerSubscription_RemovesSpecificEventTypeHandler()
+        {
+            var listener = new MockEventListener();
+            var result = await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener.Handle, KnownEventTypes.StateChanged);
+            Assert.IsTrue(result);
+
+            var removeResult = await this.hassWSApi.RemoveEventHandlerSubscriptionAsync(listener.Handle, KnownEventTypes.StateChanged);
+            Assert.IsTrue(removeResult);
+
+            // Force a state change and verify the listener doesn't receive it
+            await this.ForceStateChangedAndGetEventData(new MockEventListener());
+            Assert.Zero(listener.HitCount);
+        }
+
+        [Test]
+        public async Task RemoveEventHandlerSubscription_RemovesOneOfMultipleHandlers()
+        {
+            var listener1 = new MockEventListener();
+            var listener2 = new MockEventListener();
+            await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener1.Handle);
+            await this.hassWSApi.AddEventHandlerSubscriptionAsync(listener2.Handle);
+
+            var removeResult = await this.hassWSApi.RemoveEventHandlerSubscriptionAsync(listener1.Handle);
+            Assert.IsTrue(removeResult);
+
+            // Force a state change and verify only listener2 receives it
+            var eventData = await this.ForceStateChangedAndGetEventData(listener2);
+            Assert.Zero(listener1.HitCount);
+            Assert.NotZero(listener2.HitCount);
+        }
+
+        [Test]
+        public async Task RemoveEventHandlerSubscription_ReturnsFalseForNonexistentHandler()
+        {
+            var listener = new MockEventListener();
+            var removeResult = await this.hassWSApi.RemoveEventHandlerSubscriptionAsync(listener.Handle);
+            Assert.IsFalse(removeResult);
         }
     }
 }
